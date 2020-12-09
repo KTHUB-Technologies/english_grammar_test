@@ -1,0 +1,29 @@
+class Images {
+  static const logo = 'lib/res/images/logo.png';
+  static const logo2 = 'lib/res/images/logo2.png';
+  static const vn_flag = 'lib/res/images/vn-flag.png';
+  static const us_flag = 'lib/res/images/us-flag.png';
+  static const badge_diamond = 'lib/res/images/badge_diamond.png';
+  static const badge_ruby = 'lib/res/images/badge_ruby.png';
+  static const badge_gold = 'lib/res/images/badge_gold.png';
+  static const badge_silver = 'lib/res/images/badge_silver.png';
+  static const badge_normal = 'lib/res/images/badge_normal.png';
+  static const ic_product = 'lib/res/images/ic_product.png';
+  static const ic_service = 'lib/res/images/ic_service.png';
+  static const ic_notification = 'lib/res/images/ic_notification.png';
+  static const ic_account = 'lib/res/images/ic_account.png';
+  static const ic_logo = 'lib/res/images/ic_logo.png';
+  static const ic_trolley = 'lib/res/images/ic_trolley.png';
+  static const demoAvatar = 'lib/res/images/trump.jpg';
+  static const ic_account_white = 'lib/res/images/ic_account_white.png';
+  static const ic_home_white = 'lib/res/images/ic_home_white.png';
+  static const ic_product_white = 'lib/res/images/ic_product_white.png';
+  static const ic_service_white = 'lib/res/images/ic_service_white.png';
+  static const ic_booking = 'lib/res/images/ic_booking.png';
+  static const ic_barcode = 'lib/res/images/ic_barcode.png';
+  static const happy_birthday = 'lib/res/images/happy_birthday.jpg';
+  static const miss_you = 'lib/res/images/miss_you.jpg';
+  static const thank_you = 'lib/res/images/thank_you.jpg';
+  static const save_money = 'lib/res/images/save_money.jpg';
+  static const shipper = '/Users/phamvinh/Documents/GitHub/tocviet_customer/lib/res/images/shipper.jpg';
+}
