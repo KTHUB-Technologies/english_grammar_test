@@ -4,72 +4,26 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
-import 'package:tocviet_customer/controller/app_store_controller.dart';
-import 'package:tocviet_customer/controller/booking_store_controller.dart';
-import 'package:tocviet_customer/controller/cart_product_store_controller.dart';
-import 'package:tocviet_customer/controller/cart_service_store_controller.dart';
-import 'package:tocviet_customer/controller/history_store_controller.dart';
-import 'package:tocviet_customer/controller/home_store_controller.dart';
-import 'package:tocviet_customer/controller/main_store_controller.dart';
-import 'package:tocviet_customer/controller/notification_store_controller.dart';
-import 'package:tocviet_customer/controller/product_store_controller.dart';
-import 'package:tocviet_customer/controller/service_store_controller.dart';
-import 'package:tocviet_customer/controller/user_store_controller.dart';
-import 'package:tocviet_customer/controller/wallet_store_controller.dart';
-import 'package:tocviet_customer/localization/flutter_localizations_delegate.dart';
-import 'package:tocviet_customer/router/routes.dart';
-import 'package:tocviet_customer/screen/no_connection.dart';
-import 'package:tocviet_customer/screen/splash/splash_screen.dart';
-import 'package:tocviet_customer/theme/colors.dart';
-import 'package:tocviet_customer/theme/fonts.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
+import 'package:the_enest_english_grammar_test/localization/flutter_localizations_delegate.dart';
+import 'package:the_enest_english_grammar_test/routes/routes.dart';
+import 'package:the_enest_english_grammar_test/screens/splash/splash_screen.dart';
 
-class TocVietUserApp extends StatefulWidget {
-  // static var router;
-//
-//   TocVietUserApp({Key key}) : super(key: key) {
-//     final router =  fluro.Router();
-//     Routes.configureRoutes(router);
-//     TocVietUserApp.router = router;
-//   }
-//
+
+class EnglishGrammarTestApp extends StatefulWidget {
   @override
-  State<TocVietUserApp> createState() => _AppState();
+  State<EnglishGrammarTestApp> createState() => _EnglishGrammarTestAppState();
 }
 
-class _AppState extends State<TocVietUserApp> {
+class _EnglishGrammarTestAppState extends State<EnglishGrammarTestApp> {
   final GlobalKey<NavigatorState> nav = GlobalKey<NavigatorState>();
-
-  final AppStoreController appStore= Get.put(AppStoreController());
-
+  final AppController appStore= Get.put(AppController());
   StreamSubscription connectivitySubscription;
-
-  ConnectivityResult _previousResult;
 
   @override
   void initState() {
     super.initState();
-    connectivitySubscription = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult connectivityResult) {
-      if (connectivityResult == ConnectivityResult.none) {
-        if (nav.currentState != null) {
-          nav.currentState.pushReplacement(MaterialPageRoute(
-              builder: (BuildContext _) => NoConnectionScreen()));
-        }
-      } else if (_previousResult == ConnectivityResult.none) {
-        if (nav.currentState != null) {
-          nav.currentState.pushReplacement(
-              MaterialPageRoute(builder: (BuildContext _) => SplashScreen()));
-        } else {
-          if (nav.currentState != null) {
-            nav.currentState.pushReplacement(
-                MaterialPageRoute(builder: (BuildContext _) => SplashScreen()));
-          }
-        }
-      }
-
-      _previousResult = connectivityResult;
-    });
   }
 
   @override
@@ -84,21 +38,7 @@ class _AppState extends State<TocVietUserApp> {
     return Obx((){
         return GetMaterialApp(
             navigatorKey: nav,
-            initialBinding: BindingsBuilder((){
-              Get.put(BookingStoreController());
-              Get.put(CartProductStoreController());
-              Get.put(CartServiceStoreController());
-              Get.put(HistoryStoreController());
-              Get.put(HomeStoreController());
-              Get.put(MainStoreController());
-              Get.put(NotificationStoreController());
-              Get.put(ProductStoreController());
-              Get.put(ServiceStoreController());
-              Get.put(UserStoreController());
-              Get.put(WalletStoreController());
-            }),
             getPages: Routes.route,
-            color: AppColors.primary,
             debugShowCheckedModeBanner: false,
             title: '',
             supportedLocales: [
@@ -113,9 +53,8 @@ class _AppState extends State<TocVietUserApp> {
               GlobalCupertinoLocalizations.delegate,
             ],
             theme: ThemeData(
-                primaryColor: AppColors.primary,
-                accentColor: AppColors.primary,
-                fontFamily: Fonts.Lato,
+               // primaryColor: AppColors.primary,
+             //   accentColor: AppColors.primary,
                 primaryIconTheme: IconThemeData(color: Colors.white)),
             home: SplashScreen());
       },

@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tocviet_customer/helper/shared_preferences_helper.dart';
+import 'package:the_enest_english_grammar_test/helper/shared_preferences_helper.dart';
 
-class AppStoreController extends GetxController{
+class AppController extends GetxController{
 
   int value = 0;
 
@@ -26,7 +26,7 @@ class AppStoreController extends GetxController{
 
   getDefaultLanguage() async {
     String languageCode =
-    await SharedPreferencesHelper.getStringValue('languageCode');
+    await SharedPreferencesHelper.getStringValue(SharedPreferencesHelper.LANGUAGE_CODE);
     if(languageCode.isNotEmpty){
       switch (languageCode){
         case "vi":

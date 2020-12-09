@@ -1,20 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tocviet_customer/auth/auth_helper.dart';
-import 'package:tocviet_customer/controller/home_store_controller.dart';
-import 'package:tocviet_customer/controller/user_store_controller.dart';
-import 'package:tocviet_customer/helper/shared_preferences_helper.dart';
-import 'package:tocviet_customer/localization/flutter_localizations.dart';
-import 'package:tocviet_customer/model/user.dart';
-import 'package:tocviet_customer/res/images/images.dart';
-import 'package:tocviet_customer/screen/login_screen/collect_customer_information.dart';
-import 'package:tocviet_customer/theme/colors.dart';
-import 'package:tocviet_customer/utils/utils.dart';
-import 'package:tocviet_customer/widget/fade_container.dart';
+import 'package:the_enest_english_grammar_test/commons/fade_container.dart';
+import 'package:the_enest_english_grammar_test/helper/utils.dart';
+import 'package:the_enest_english_grammar_test/res/images/images.dart';
+
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -22,8 +14,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin{
-  final UserStoreController userStore = Get.find();
-  final HomeStoreController homeStore = Get.find();
   Timer timer;
 
   ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~///
@@ -47,14 +37,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     final logoSize = getScreenWidth(context) / 2;
-    homeStore.getNews();
-    homeStore.getHotStyleInMonth();
     return Scaffold(
-      backgroundColor: AppColors.black,
+      backgroundColor: Colors.white,
       body: Center(
         child: FadeContainer(
           child: Image.asset(
-            Images.logo2,
+            Images.logo,
             width: logoSize,
             height: logoSize,
           ),
@@ -82,26 +70,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     timer=Timer.periodic(Duration(seconds: 2), (timer) async {
       await _loadUserData();
-      if (userStore.user.value==null) {
-        _navigateToLoginScreen();
-      } else {
         _navigateToMainScreen();
-      }
     });
   }
 
   _loadUserData() async {
-    var user = await SharedPreferencesHelper.getStringValue(
-        SharedPreferencesHelper.USER);
-    if (user.isNotEmpty) {
-      userStore.user.value = UserTocViet.fromJson(jsonDecode(user));
-    }
-  }
 
-  _navigateToLoginScreen() {
-    Get.offNamedUntil('/LoginScreen', (route) => false);
   }
-
   _navigateToMainScreen() {
     Get.offNamedUntil('/MainScreen', (route) => false);
   }

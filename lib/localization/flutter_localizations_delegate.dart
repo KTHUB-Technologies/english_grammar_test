@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:tocviet_customer/localization/flutter_localizations.dart';
+import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
+
 
 class FlutterLocalizationsDelegate extends LocalizationsDelegate<FlutterLocalizations> {
 
