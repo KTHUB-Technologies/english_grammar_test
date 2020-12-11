@@ -10,10 +10,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:the_enest_english_grammar_test/main.dart';
 
+import '../lib/app/app.dart';
+
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+    await tester.pumpWidget(EnglishGrammarTestApp());
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

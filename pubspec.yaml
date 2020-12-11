@@ -28,6 +28,7 @@ dependencies:
   google_sign_in: ^4.5.6
   flutter_facebook_login: ^3.0.0
   http: ^0.12.2
+  flutter_rating_bar: ^3.2.0+1
   dio:
   google_fonts: ^1.1.1
 dev_dependencies:
@@ -56,3 +57,5 @@ flutter:
     - lib/res/images/
     - lib/res/strings/en.json
     - lib/res/strings/vi.json
+    - lib/res/strings/Question_Data.json
+    - lib/res/strings/question.json

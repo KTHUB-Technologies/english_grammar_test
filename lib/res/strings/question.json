@@ -1,0 +1,50 @@
+[
+  {
+    "categoryId": 1,
+    "categoryName": "",
+    "correctAnswer": 2,
+    "explanation": "Go off: If an alarm, etc. goes off, it makes a sudden loud noise",
+    "explanationVi": null,
+    "groupId": "",
+    "id": 1,
+    "level": 1,
+    "options": "against///off///through",
+    "task": "I had just fallen asleep when the alarm went ..."
+  },
+  {
+    "categoryId": 1,
+    "categoryName": "",
+    "correctAnswer": 2,
+    "explanation": "Go along with: To agree with somebody/something\nGo on: continue\nGo off: explode a fire",
+    "explanationVi": null,
+    "groupId": "",
+    "id": 40,
+    "level": 1,
+    "options": "on///along with///off",
+    "task": "I cannot go ... his suggestion."
+  },
+  {
+    "categoryId": 1,
+    "categoryName": "",
+    "correctAnswer": 3,
+    "explanation": "set up = establish\nturn over = (of an engine) start or continue to run\nput down = put an end to",
+    "explanationVi": null,
+    "groupId": "",
+    "id": 2,
+    "level": 3,
+    "options": "set up///turn over///put down",
+    "task": "The strike was ... by military units."
+  },
+  {
+    "categoryId": 3,
+    "categoryName": "",
+    "correctAnswer": 2,
+    "explanation": "Buildings and people can be tall, most other things are high (planes, mountains, ceilings, etc.)\nThese choices are one syllable adjectives, we add est\nS + V + the + adj/adv + est + noun/pronoun",
+    "explanationVi": null,
+    "groupId": "",
+    "id": 4,
+    "level": 2,
+    "options": "fastest///tallest///greatest///highest",
+    "task": "It's the ... building in the city"
+  }
+]
