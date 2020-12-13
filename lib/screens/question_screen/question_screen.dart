@@ -1,4 +1,5 @@
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,6 +7,7 @@ import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
+import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/check_answer/check_answer_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
@@ -22,6 +24,7 @@ class QuestionScreen extends StatefulWidget {
 
 class _QuestionScreenState extends State<QuestionScreen> {
   final LevelController levelController = Get.find();
+  final player=AudioPlayer();
   int countTrue;
 
   List<Widget> get listQuestion => levelController.questionsFromCategory.map((question) => buildCardQuestion(question)).toList();
@@ -59,6 +62,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                       ),
                       Dimens.height20,
                       AppButton('Check Answer',onTap: (){
+                        player.play(Sounds.touch);
                         Get.to(CheckAnswerScreen(question: levelController.questionsFromCategory,));
                       },),
                     ],
@@ -71,15 +75,17 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 child: levelController.index.value==levelController.questionsFromCategory.length?SizedBox():levelController.questionsFromCategory.length>(levelController.index.value+1)?AppButton(
                   '>',
                   onTap: () {
+                    player.play(Sounds.touch);
                     levelController.index.value++;
                   },
                 ):AppButton(
                   'SUBMIT',
                   onTap: () {
                     countTrue = 0;
+                    player.play(Sounds.touch);
                     for (var checkTrue in levelController.questionsFromCategory) {
                       if (checkTrue.checkedAnswer.value ==
-                          checkTrue.correctAnswer) countTrue++;
+                          checkTrue.correctAnswer-1) countTrue++;
                     }
                     levelController.index.value=levelController.questionsFromCategory.length;
                   },
@@ -122,7 +128,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                     ),
                     trailing: question.checkedAnswer.value == options.indexOf(e)
                         ? question.checkedAnswer.value ==
-                        question.correctAnswer
+                        question.correctAnswer-1
                         ? Icon(
                       Icons.check,
                       color: Colors.green,
@@ -136,6 +142,14 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 ),
                 onTap: () {
                   question.checkedAnswer.value=options.indexOf(e);
+                  if(question.checkedAnswer.value==question.correctAnswer-1){
+                    player.play(Sounds.correct);
+                    print('correct');
+                  }
+                  else{
+                    player.play(Sounds.in_correct);
+                    print('incorrect');
+                  }
                 },
               );
             }).toList(),

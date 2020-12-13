@@ -31,6 +31,7 @@ dependencies:
   flutter_rating_bar: ^3.2.0+1
   dio:
   google_fonts: ^1.1.1
+  audioplayers: ^0.17.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -55,7 +56,11 @@ flutter:
   assets:
     - lib/res/strings/
     - lib/res/images/
+    - lib/res/sounds/
     - lib/res/strings/en.json
     - lib/res/strings/vi.json
     - lib/res/strings/Question_Data.json
     - lib/res/strings/question.json
+    - lib/res/sounds/sound_correct.mp3
+    - lib/res/sounds/sound_in_correct.mp3
+    - lib/res/sounds/sound_touch.mp3

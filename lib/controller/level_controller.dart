@@ -26,7 +26,7 @@ class LevelController extends GetxController{
     await loadJson();
     questions = RxList<Question>(listQuestions.where((f) => f.level==level).toList());
     questionsFromCategory= RxList<Question>(questions.where((c) => c.categoryId==categoryId).toList());
-    print(questionsFromCategory);
+    print(questionsFromCategory.length);
   }
 
   // RxList<Widget>  answers=RxList<Widget>([]);

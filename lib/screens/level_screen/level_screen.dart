@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
@@ -5,6 +6,7 @@ import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
+import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/question_screen/question_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
@@ -19,6 +21,7 @@ class LevelScreen extends StatefulWidget {
 
 class _LevelScreenState extends State<LevelScreen> {
   final LevelController levelController = Get.find();
+  final player=AudioPlayer();
 
   @override
   void initState() {
@@ -128,6 +131,7 @@ class _LevelScreenState extends State<LevelScreen> {
         ),
       ),
       onTap: () async {
+        player.play(Sounds.touch);
         onTap();
       },
     );
