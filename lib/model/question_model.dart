@@ -12,7 +12,8 @@ class Question{
   final int level;
   final String options;
   final String task;
-  final Rx<int> checkedAnswer;
+  final Rx<int> currentChecked;
+  final Rx<int> isCorrectA;
 
   Question.fromJson(Map<dynamic,dynamic>json):
         categoryId=json['categoryId'],
@@ -25,7 +26,8 @@ class Question{
         level=json['level'],
         options=json['options'],
         task=json['task'],
-        checkedAnswer=Rx<int>(json['checkedAnswer']);
+        currentChecked=Rx<int>(json['currentChecked']),
+        isCorrectA=Rx<int>(json['isCorrectA']);
 }
 
 // abstract class Model{

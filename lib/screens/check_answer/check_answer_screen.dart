@@ -18,6 +18,7 @@ class CheckAnswerScreen extends StatefulWidget {
 class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
   List<String> options = [];
   Rx<int> index=Rx<int>(0);
+  GlobalKey<ScaffoldState> _drawerKey=GlobalKey();
 
   List<Widget> get listCheckedAnswer => widget.question.map((e){
     options=e.options.split('///');
@@ -29,17 +30,17 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
           children: <Widget>[
             AppText(text: '${widget.question.indexOf(e)+1}. ${e.task}'),
             Dimens.height10,
-            e.checkedAnswer.value == e.correctAnswer - 1
+            e.currentChecked.value == e.correctAnswer - 1
                 ? AppText(
-              text: options[e.checkedAnswer.value],
+              text: options[e.currentChecked.value],
               color: Colors.green,
             )
                 : AppText(
-              text: options[e.checkedAnswer.value],
+              text: options[e.currentChecked.value],
               color: Colors.red,
             ),
             Dimens.height10,
-            e.checkedAnswer.value == e.correctAnswer - 1
+            e.currentChecked.value == e.correctAnswer - 1
                 ? SizedBox()
                 : AppText(
               text: 'Correct Answer: ${options[e.correctAnswer - 1]}',
@@ -75,16 +76,25 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _drawerKey,
+      appBar: AppBar(
+        title: AppText(text: 'Check Answer'),
+        leading: IconButton(icon: Icon(Icons.arrow_back_ios_outlined),onPressed: (){Get.back();},),
+      ),
       drawer: ListCheck(
         question: widget.question,
         index: index,
       ),
-      appBar: AppBar(
-        title: AppText(text: 'Check Answer'),
-      ),
       body: Obx((){
         return listCheckedAnswer[index.value];
       }),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.menu),
+        onPressed: (){
+          _drawerKey.currentState.openDrawer();
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
@@ -104,7 +114,6 @@ class _ListCheckState extends State<ListCheck> {
     return Drawer(
       child: Column(children: <Widget>[
         Container(
-          color: Colors.blue,
           width: getScreenWidth(context),
           height: getScreenHeight(context)/8,
           child: DrawerHeader(
@@ -115,9 +124,7 @@ class _ListCheckState extends State<ListCheck> {
             ),
           ),
         ),
-        Container(
-          height: getScreenHeight(context)/5,
-          color: Colors.red,
+        Expanded(
           child: ListView(
             padding: EdgeInsets.zero,
             children: widget.question.map((e) {
@@ -127,7 +134,7 @@ class _ListCheckState extends State<ListCheck> {
                     title: AppText(
                       text: '${widget.question.indexOf(e)+1}. ${e.task}',
                     ),
-                    trailing: e.checkedAnswer.value == e.correctAnswer - 1
+                    trailing: e.currentChecked.value == e.correctAnswer - 1
                         ? Icon(
                             Icons.check,
                             color: Colors.green,

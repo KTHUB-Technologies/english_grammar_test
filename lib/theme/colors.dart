@@ -15,5 +15,5 @@ class AppColors {
   static const List<Color> gradientColorPrimary  = [Color(0xFF29B6F6),Color(0xFF01579B)];
   static const List<Color> gradientColorWhite  = [Colors.white,Colors.white];
   static const transparent = Colors.transparent;
-  static const moneyColor = Color(0xff0f4a3c);
+  static const green = Color(0xFF64DD17);
 }
