@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
+import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
@@ -27,10 +28,14 @@ class QuestionScreen extends StatefulWidget {
 class _QuestionScreenState extends State<QuestionScreen> {
   final LevelController levelController = Get.find();
   final player = AudioPlayer();
-  int countTrue;
+  Rx<int> countTrue = Rx<int>();
 
   List<Widget> get listQuestion => levelController.questionsFromCategory
-      .map((question) => CardQuestion(player: player, question: question))
+      .map((question) => CardQuestion(
+            player: player,
+            question: question,
+            countTrue: countTrue,
+          ))
       .toList();
 
   @override
@@ -44,9 +49,27 @@ class _QuestionScreenState extends State<QuestionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: AppText(
-          text: '${widget.categoryId}',
+          text: '${widget.level}',
           textSize: Dimens.paragraphHeaderTextSize,
           color: AppColors.white,
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            showCupertinoDialog(context: context,builder: (context){
+              return IOSDialog(
+                title: 'WARNING',
+                content: "If you exit now, your results will be cancel!!!",
+                cancel: (){
+                  Get.back();
+                },
+                confirm: (){
+                  Get.back();
+                  Get.back();
+                },
+              );
+            });
+          },
         ),
       ),
       body: Obx(() {
@@ -64,7 +87,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                               children: <Widget>[
                                 AppText(
                                   text:
-                                      'Score: $countTrue/${levelController.questionsFromCategory.length}',
+                                      'Score: ${countTrue.value}/${levelController.questionsFromCategory.length}',
                                 ),
                                 Dimens.height20,
                                 AppButton(
@@ -87,52 +110,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
                           )
                     : listQuestion[levelController.index.value],
               ),
-              Container(
-                child: levelController.index.value ==
-                        levelController.questionsFromCategory.length
-                    ? SizedBox()
-                    : levelController.questionsFromCategory.length >
-                            (levelController.index.value + 1)
-                        ? AppButton(
-                            'NEXT',
-                            onTap: () {
-                              player.play(Sounds.touch);
-                              levelController.index.value++;
-                            },
-                          )
-                        : Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: AppButton(
-                                  'PREVIOUS',
-                                  onTap: () {
-                                    player.play(Sounds.touch);
-                                    levelController.index.value--;
-                                  },
-                                ),
-                              ),
-                              Dimens.width10,
-                              Expanded(
-                                child: AppButton(
-                                  'SUBMIT',
-                                  onTap: () {
-                                    countTrue = 0;
-                                    player.play(Sounds.touch);
-                                    for (var checkTrue in levelController
-                                        .questionsFromCategory) {
-                                      if (checkTrue.currentChecked.value ==
-                                          checkTrue.correctAnswer - 1)
-                                        countTrue++;
-                                    }
-                                    levelController.index.value =
-                                        levelController
-                                            .questionsFromCategory.length;
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-              ),
             ],
           ),
         );
@@ -146,22 +123,21 @@ class CardQuestion extends StatefulWidget {
     Key key,
     this.player,
     this.question,
+    this.countTrue,
   }) : super(key: key);
 
   final AudioPlayer player;
   final Question question;
+  final Rx<int> countTrue;
 
   @override
   _CardQuestionState createState() => _CardQuestionState();
 }
 
 class _CardQuestionState extends State<CardQuestion> {
-  bool isSelected = false;
-  bool isShowAnswer;
-
+  final LevelController levelController = Get.find();
   @override
   void initState() {
-     isShowAnswer =false;
     super.initState();
   }
 
@@ -179,112 +155,74 @@ class _CardQuestionState extends State<CardQuestion> {
               textSize: Dimens.paragraphHeaderTextSize,
             ),
             Dimens.height10,
-
             Column(
               children: options.map((e) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: GestureDetector(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: widget.question.currentChecked.value ==
+                  child: AbsorbPointer(
+                    absorbing:
+                        widget.question.currentChecked.value.isNullOrBlank
+                            ? false
+                            : true,
+                    child: GestureDetector(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: widget.question.currentChecked.value ==
+                                    options.indexOf(e)
+                                ? widget.question.currentChecked.value ==
+                                        widget.question.correctAnswer - 1
+                                    ? AppColors.green
+                                    : AppColors.red
+                                : AppColors.transparent,
+                          ),
+                        ),
+                        child: ListTile(
+                          title: AppText(
+                            text: e,
+                          ),
+                          trailing: widget.question.currentChecked.value ==
                                   options.indexOf(e)
                               ? widget.question.currentChecked.value ==
-                                      widget.question.isCorrectA.value
-                                  ? AppColors.green
-                                  : AppColors.red
-                              : AppColors.black,
-
-                          // color: widget.question.currentChecked.value != null
-                          //     ? widget.question.currentChecked.value ==
-                          //             options.indexOf(e)
-                          //         ? widget.question.currentChecked.value ==
-                          //                 widget.question.correctAnswer - 1
-                          //             ? widget.question.isCorrectA.value != null
-                          //                 ? widget.question.isCorrectA.value ==
-                          //                         options.indexOf(e)
-                          //                     ? widget.question.isCorrectA
-                          //                                 .value ==
-                          //                             widget.question
-                          //                                     .correctAnswer -
-                          //                                 1
-                          //                         ? widget.question.isCorrectA
-                          //                                     .value ==
-                          //                                 widget.question
-                          //                                         .correctAnswer -
-                          //                                     1
-                          //                             ? AppColors.green
-                          //                             : AppColors.red
-                          //                         : AppColors.green
-                          //                     : AppColors.red
-                          //                 : AppColors.green
-                          //             : AppColors.red
-                          //         : AppColors.green
-                          //     : AppColors.transparent,
+                                      widget.question.correctAnswer - 1
+                                  ? Icon(
+                                      Icons.check,
+                                      color: Colors.green,
+                                    )
+                                  : Icon(
+                                      Icons.clear,
+                                      color: Colors.red,
+                                    )
+                              : SizedBox(),
                         ),
                       ),
-                      child: ListTile(
-                        title: AppText(
-                          text: e,
-                        ),
-                        // trailing: widget.question.currentChecked.value ==
-                        //         options.indexOf(e)
-                        //     ? widget.question.currentChecked.value ==
-                        //             widget.question.correctAnswer - 1
-                        //         ? widget.question.isCorrectA.value ==
-                        //                 options.indexOf(e)
-                        //             ? widget.question.isCorrectA.value ==
-                        //                     widget.question.correctAnswer - 1
-                        //                 ? Icon(
-                        //                     Icons.check,
-                        //                     color: Colors.green,
-                        //                   )
-                        //                 : Icon(
-                        //                     Icons.clear,
-                        //                     color: Colors.red,
-                        //                   )
-                        //             : SizedBox()
-                        //         : Icon(
-                        //             Icons.clear,
-                        //             color: Colors.red,
-                        //           )
-                        //     : SizedBox(),
-                      ),
+                      onTap: () {
+                        widget.question.currentChecked.value =
+                            options.indexOf(e);
+                        if (widget.question.currentChecked.value ==
+                            widget.question.correctAnswer - 1) {
+                          widget.player.play(Sounds.correct);
+                        } else {
+                          widget.player.play(Sounds.in_correct);
+                        }
+                      },
                     ),
-                    onTap: () {
-                      widget.question.currentChecked.value = options.indexOf(e);
-                      widget.question.isCorrectA.value =
-                          widget.question.correctAnswer - 1;
-                      if (widget.question.currentChecked.value ==
-                          widget.question.correctAnswer - 1) {
-                        widget.player.play(Sounds.correct);
-                      } else {
-                        widget.player.play(Sounds.in_correct);
-                      }
-                    },
                   ),
                 );
               }).toList(),
             ),
 
+            // Dimens.height30,
             // Column(
             //   children: options.map((e) {
             //     return Padding(
             //       padding: const EdgeInsets.symmetric(vertical: 8.0),
-            //       child: GestureDetector(
-            //         child: Answer(
-            //           question: widget.question,
-            //           options: options,
-            //           answer: e,
-            //           player: widget.player,
-            //         ),
-            //         onTap: () {
-            //           widget.question.currentChecked.value = options.indexOf(e);
-            //           widget.question.isCorrectA.value =
-            //               widget.question.correctAnswer - 1;
-            //         },
+            //       child: Answer(
+            //         question: widget.question,
+            //         options: options,
+            //         answer: e,
+            //         player: widget.player,
             //       ),
             //     );
             //   }).toList(),
@@ -301,6 +239,52 @@ class _CardQuestionState extends State<CardQuestion> {
                     ),
                   ),
             Dimens.height10,
+            Container(
+              child: levelController.index.value ==
+                      levelController.questionsFromCategory.length
+                  ? SizedBox()
+                  : levelController.questionsFromCategory.length >
+                          (levelController.index.value + 1)
+                      ? widget.question.currentChecked.value != null
+                          ? AppButton(
+                              'NEXT',
+                              onTap: () {
+                                widget.player.play(Sounds.touch);
+                                levelController.index.value++;
+                              },
+                            )
+                          : SizedBox()
+                      : Column(
+                          children: <Widget>[
+                            AppButton(
+                              'PREVIOUS',
+                              onTap: () {
+                                widget.player.play(Sounds.touch);
+                                levelController.index.value--;
+                              },
+                            ),
+                            Dimens.height10,
+                            widget.question.currentChecked.value != null
+                                ? AppButton(
+                                    'SUBMIT',
+                                    onTap: () {
+                                      widget.countTrue.value = 0;
+                                      widget.player.play(Sounds.touch);
+                                      for (var checkTrue in levelController
+                                          .questionsFromCategory) {
+                                        if (checkTrue.currentChecked.value ==
+                                            checkTrue.correctAnswer - 1)
+                                          widget.countTrue.value++;
+                                      }
+                                      levelController.index.value =
+                                          levelController
+                                              .questionsFromCategory.length;
+                                    },
+                                  )
+                                : SizedBox(),
+                          ],
+                        ),
+            ),
           ],
         ),
       );
@@ -327,38 +311,47 @@ class _CardQuestionState extends State<CardQuestion> {
 // }
 //
 // class _AnswerState extends State<Answer> {
+//   Rx<int> currentA=Rx<int>();
+//   Rx<int> correctA=Rx<int>();
 //
 //   @override
 //   Widget build(BuildContext context) {
-//     return Obx(() {
-//       return Container(
-//         decoration: BoxDecoration(
-//           borderRadius: BorderRadius.circular(10),
-//           border: Border.all(
-//             color: widget.question.isCorrectA.value == widget.options.indexOf(widget.answer)
-//                 ? widget.question.isCorrectA.value == widget.question.correctAnswer - 1
-//                         ? AppColors.green
-//                         : AppColors.red
-//                 : AppColors.transparent,
+//     return GestureDetector(
+//       child: Obx(() {
+//         return Container(
+//           decoration: BoxDecoration(
+//             borderRadius: BorderRadius.circular(10),
+//             border: Border.all(
+//               color: currentA.value == widget.options.indexOf(widget.answer)
+//                   ? currentA.value == widget.question.correctAnswer - 1?correctA.value==widget.options.indexOf(widget.answer)?AppColors.green
+//                   : AppColors.green
+//                   : AppColors.red
+//                   : AppColors.transparent,
+//             ),
 //           ),
-//         ),
-//         child: ListTile(
-//           title: AppText(
-//             text: widget.answer,
+//           child: ListTile(
+//             title: AppText(
+//               text: widget.answer,
+//             ),
+//             trailing: currentA.value == widget.options.indexOf(widget.answer)
+//                 ? currentA.value == widget.question.correctAnswer - 1
+//                 ? Icon(
+//               Icons.check,
+//               color: Colors.green,
+//             )
+//                 : Icon(
+//               Icons.clear,
+//               color: Colors.red,
+//             )
+//                 : SizedBox(),
 //           ),
-//           trailing: widget.question.isCorrectA.value == widget.options.indexOf(widget.answer)
-//               ? widget.question.isCorrectA.value == widget.question.correctAnswer - 1
-//                   ? Icon(
-//                       Icons.check,
-//                       color: Colors.green,
-//                     )
-//                   : Icon(
-//                       Icons.clear,
-//                       color: Colors.red,
-//                     )
-//               : SizedBox(),
-//         ),
-//       );
-//     });
+//         );
+//       }),
+//       onTap: () {
+//
+//         currentA.value=widget.options.indexOf(widget.answer);
+//         correctA.value=widget.question.correctAnswer-1;
+//       },
+//     );
 //   }
 // }
