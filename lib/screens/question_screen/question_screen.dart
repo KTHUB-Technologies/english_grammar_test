@@ -1,15 +1,14 @@
-import 'dart:ui';
-
+import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:the_enest_english_grammar_test/assets/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
-import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/check_answer/check_answer_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
@@ -27,7 +26,7 @@ class QuestionScreen extends StatefulWidget {
 
 class _QuestionScreenState extends State<QuestionScreen> {
   final LevelController levelController = Get.find();
-  final player = AudioPlayer();
+  final player = AudioCache();
   Rx<int> countTrue = Rx<int>();
 
   List<Widget> get listQuestion => levelController.questionsFromCategory
@@ -56,19 +55,21 @@ class _QuestionScreenState extends State<QuestionScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios),
           onPressed: () {
-            showCupertinoDialog(context: context,builder: (context){
-              return IOSDialog(
-                title: 'WARNING',
-                content: "If you exit now, your results will be cancel!!!",
-                cancel: (){
-                  Get.back();
-                },
-                confirm: (){
-                  Get.back();
-                  Get.back();
-                },
-              );
-            });
+            showCupertinoDialog(
+                context: context,
+                builder: (context) {
+                  return IOSDialog(
+                    title: 'WARNING',
+                    content: "If you exit now, your results will be cancel!!!",
+                    cancel: () {
+                      Get.back();
+                    },
+                    confirm: () {
+                      Get.back();
+                      Get.back();
+                    },
+                  );
+                });
           },
         ),
       ),
@@ -126,7 +127,7 @@ class CardQuestion extends StatefulWidget {
     this.countTrue,
   }) : super(key: key);
 
-  final AudioPlayer player;
+  final AudioCache player;
   final Question question;
   final Rx<int> countTrue;
 

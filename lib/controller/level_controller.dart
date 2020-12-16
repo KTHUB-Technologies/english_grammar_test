@@ -16,7 +16,7 @@ class LevelController extends GetxController{
 
   Future loadJson() async{
     isShowLoading.value=true;
-    var data = await rootBundle.loadString('lib/res/strings/question.json');
+    var data = await rootBundle.loadString('lib/res/strings/Question_Data.json');
     var result = jsonDecode(data);
     listQuestions = result.map<Question>((e)=>Question.fromJson(e)).toList();
     isShowLoading.value=false;

@@ -1,12 +1,12 @@
+import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:the_enest_english_grammar_test/assets/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
-import 'package:the_enest_english_grammar_test/model/question_model.dart';
-import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/question_screen/question_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
@@ -21,7 +21,7 @@ class LevelScreen extends StatefulWidget {
 
 class _LevelScreenState extends State<LevelScreen> {
   final LevelController levelController = Get.find();
-  final player=AudioPlayer();
+  final player = AudioCache();
 
   @override
   void initState() {
@@ -56,7 +56,7 @@ class _LevelScreenState extends State<LevelScreen> {
                       text: 'TOPIC',
                     ),
                     Tab(
-                      text: 'GENERAL',
+                      text: 'MIXED',
                     ),
                   ],
                 ),
@@ -64,12 +64,21 @@ class _LevelScreenState extends State<LevelScreen> {
                 Expanded(
                   child: TabBarView(children: [
                     ListView(children: <Widget>[
-                      buildListCategories(context, 1, 'Number 1', () async{
-                        await levelController.loadQuestionFromLevelAndCategory(widget.level,1);
+                      buildListCategories(context, 1, 'Cate 1', () async {
+                        await levelController.loadQuestionFromLevelAndCategory(
+                            widget.level, 1);
                         Get.to(QuestionScreen(level: widget.level));
                       }),
-                      buildListCategories(context, 2, '', () {}),
-                      buildListCategories(context, 3, '', () {}),
+                      buildListCategories(context, 2, 'Cate 2', () async{
+                        await levelController.loadQuestionFromLevelAndCategory(
+                            widget.level, 2);
+                        Get.to(QuestionScreen(level: widget.level));
+                      }),
+                      buildListCategories(context, 3, 'Cate 3', () async{
+                        await levelController.loadQuestionFromLevelAndCategory(
+                            widget.level, 3);
+                        Get.to(QuestionScreen(level: widget.level));
+                      }),
                       buildListCategories(context, 4, '', () {}),
                       buildListCategories(context, 5, '', () {}),
                       buildListCategories(context, 6, '', () {}),
