@@ -2,31 +2,63 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:quiver/iterables.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 
-class LevelController extends GetxController{
-
+class LevelController extends GetxController {
   ///JSON DATA
-  RxList<Question> questions=RxList<Question>([]);
-  RxList<Question> questionsFromCategory=RxList<Question>([]);
+  RxList<Question> questions = RxList<Question>([]);
+
+  List<int> categories = List<int>();
+  List<int> distinctCategory = List<int>();
+
+  List<int> levels=List<int>();
+  List<int> distinctLevel = List<int>();
+
+  RxList<Question> questionsFromCategory = RxList<Question>([]);
+  RxList<List<Question>> listChunkQuestions = RxList<List<Question>>([]);
   List<Question> listQuestions;
   Rx<int> index = Rx<int>(0);
-  Rx<bool> isShowLoading=Rx<bool>(false);
-  RxList<Widget>  answers=RxList<Widget>([]);
+  Rx<bool> isShowLoading = Rx<bool>(false);
+  RxList<Widget> answers = RxList<Widget>([]);
+  RxList<dynamic> questionsFromHive = RxList<dynamic>([]);
 
-  Future loadJson() async{
-    isShowLoading.value=true;
-    var data = await rootBundle.loadString('lib/res/strings/Question_Data.json');
+  Future loadJson() async {
+    isShowLoading.value = true;
+    var data =
+        await rootBundle.loadString('lib/res/strings/Question_Data.json');
     var result = jsonDecode(data);
-    listQuestions = result.map<Question>((e)=>Question.fromJson(e)).toList();
-    isShowLoading.value=false;
+    listQuestions = result.map<Question>((e) => Question.fromJson(e)).toList();
+
+    levels=listQuestions.map((e) => e.level).toList();
+    distinctLevel=levels.toSet().toList();
+    distinctLevel.sort();
+
+    isShowLoading.value = false;
   }
 
-  Future loadQuestionFromLevelAndCategory(int level,int categoryId)async{
+  Future loadQuestionFromLevel(int level) async{
     await loadJson();
-    questions = RxList<Question>(listQuestions.where((f) => f.level==level).toList());
-    questionsFromCategory= RxList<Question>(questions.where((c) => c.categoryId==categoryId).toList());
-    print(questionsFromCategory.length);
+    questions =
+        RxList<Question>(listQuestions.where((f) => f.level == level).toList());
+  }
+
+  Future loadQuestionFromLevelAndCategory(int level, int categoryId) async {
+
+    await loadQuestionFromLevel(level);
+
+    questionsFromCategory = RxList<Question>(
+        questions.where((c) => c.categoryId == categoryId).toList());
+    questionsFromCategory.sort((a, b) => a.id.compareTo(b.id));
+    listChunkQuestions.clear();
+
+    for (var i = 0; i < questionsFromCategory.length; i += 20) {
+      listChunkQuestions.add(questionsFromCategory.sublist(
+          i,
+          i + 20 > questionsFromCategory.length
+              ? questionsFromCategory.length
+              : i + 20));
+    }
   }
 
   // RxList<Widget>  answers=RxList<Widget>([]);

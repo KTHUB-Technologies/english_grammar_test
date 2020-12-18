@@ -6,15 +6,18 @@ import 'package:the_enest_english_grammar_test/assets/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
+import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
+import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/screens/question_screen/question_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 class LevelScreen extends StatefulWidget {
   final int level;
+  final List<int> categoryId;
 
-  const LevelScreen({Key key, this.level}) : super(key: key);
+  const LevelScreen({Key key, this.level, this.categoryId}) : super(key: key);
   @override
   _LevelScreenState createState() => _LevelScreenState();
 }
@@ -26,6 +29,12 @@ class _LevelScreenState extends State<LevelScreen> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    levelController.onClose();
+    super.dispose();
   }
 
   @override
@@ -63,48 +72,23 @@ class _LevelScreenState extends State<LevelScreen> {
                 Dimens.height10,
                 Expanded(
                   child: TabBarView(children: [
-                    ListView(children: <Widget>[
-                      buildListCategories(context, 1, 'Cate 1', () async {
-                        await levelController.loadQuestionFromLevelAndCategory(
-                            widget.level, 1);
-                        Get.to(QuestionScreen(level: widget.level));
-                      }),
-                      buildListCategories(context, 2, 'Cate 2', () async{
-                        await levelController.loadQuestionFromLevelAndCategory(
-                            widget.level, 2);
-                        Get.to(QuestionScreen(level: widget.level));
-                      }),
-                      buildListCategories(context, 3, 'Cate 3', () async{
-                        await levelController.loadQuestionFromLevelAndCategory(
-                            widget.level, 3);
-                        Get.to(QuestionScreen(level: widget.level));
-                      }),
-                      buildListCategories(context, 4, '', () {}),
-                      buildListCategories(context, 5, '', () {}),
-                      buildListCategories(context, 6, '', () {}),
-                      buildListCategories(context, 7, '', () {}),
-                      buildListCategories(context, 8, '', () {}),
-                      buildListCategories(context, 9, '', () {}),
-                      buildListCategories(context, 10, '', () {}),
-                      buildListCategories(context, 11, '', () {}),
-                      buildListCategories(context, 12, '', () {}),
-                      buildListCategories(context, 13, '', () {}),
-                      buildListCategories(context, 14, '', () {}),
-                      buildListCategories(context, 15, '', () {}),
-                      buildListCategories(context, 16, '', () {}),
-                      buildListCategories(context, 17, '', () {}),
-                      buildListCategories(context, 18, '', () {}),
-                      buildListCategories(context, 19, '', () {}),
-                      buildListCategories(context, 20, '', () {}),
-                      buildListCategories(context, 21, '', () {}),
-                      buildListCategories(context, 22, '', () {}),
-                      buildListCategories(context, 23, '', () {}),
-                      buildListCategories(context, 24, '', () {}),
-                      buildListCategories(context, 25, '', () {}),
-                      buildListCategories(context, 26, '', () {}),
-                      buildListCategories(context, 27, '', () {}),
-                      buildListCategories(context, 28, '', () {}),
-                    ]),
+                    Container(
+                      child: ListView(
+                        children: levelController.distinctCategory.map((e) {
+                          return buildListCategories(
+                            context,
+                            e,
+                            '',
+                            () async {
+                              await levelController
+                                  .loadQuestionFromLevelAndCategory(
+                                      widget.level, e);
+                              modalBottomSheet('', widget.level, e);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
                     AppText(text: 'Test'),
                   ]),
                 ),
@@ -144,5 +128,84 @@ class _LevelScreenState extends State<LevelScreen> {
         onTap();
       },
     );
+  }
+
+  modalBottomSheet(String cateName, int level, int categoryId) async {
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (context) {
+          return ModalBottomSheet(
+            categoryName: cateName,
+            level: level,
+            categoryId: categoryId,
+          );
+        });
+  }
+}
+
+class ModalBottomSheet extends StatefulWidget {
+  final int level;
+  final int categoryId;
+  final String categoryName;
+
+  const ModalBottomSheet(
+      {Key key, this.level, this.categoryId, this.categoryName})
+      : super(key: key);
+  @override
+  _ModalBottomSheetState createState() => _ModalBottomSheetState();
+}
+
+class _ModalBottomSheetState extends State<ModalBottomSheet> {
+  final LevelController levelController = Get.find();
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          AppText(
+            text: widget.categoryName,
+            color: AppColors.blue,
+            fontWeight: FontWeight.bold,
+            textSize: Dimens.paragraphHeaderTextSize,
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: levelController.listChunkQuestions
+                .map((e) => GestureDetector(
+                      child: ListTile(
+                        title: AppText(
+                          text:
+                              'Test ${levelController.listChunkQuestions.indexOf(e) + 1}',
+                        ),
+                      ),
+                      onTap: () async{
+                        Get.back();
+                        await checkExistTable(levelController.listChunkQuestions.indexOf(e) + 1);
+                        Get.to(QuestionScreen(
+                          level: widget.level,
+                          categoryId: widget.categoryId,
+                          question: RxList<Question>(e),
+                          testNumber: levelController.listChunkQuestions.indexOf(e) + 1,
+                        ));
+                      },
+                    ))
+                .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  checkExistTable(int testNumber) async{
+    bool exist=await HiveHelper.isExists(boxName: 'Table_${widget.level}_${widget.categoryId}_$testNumber');
+    if(exist){
+      levelController.questionsFromHive.clear();
+      levelController.questionsFromHive=RxList<dynamic>(await HiveHelper.getBoxes('Table_${widget.level}_${widget.categoryId}_$testNumber'));
+    }else{
+      levelController.questionsFromHive.clear();
+    }
   }
 }
