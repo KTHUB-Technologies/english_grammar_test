@@ -41,15 +41,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
           ))
       .toList();
 
-  List<Widget> get listQuestionFromHive => levelController.questionsFromHive
-      .map((question) => CardQuestion(
-            player: player,
-            question: Question.fromJson(question),
-            countTrue: countTrue,
-            listQuestions: levelController.questionsFromHive,
-          ))
-      .toList();
-
   @override
   void initState() {
     levelController.index.value = 0;
@@ -58,7 +49,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
   @override
   void dispose() {
-    levelController.onClose();
     super.dispose();
   }
 
@@ -136,9 +126,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                               text: 'No Question...',
                             ),
                           )
-                    : levelController.questionsFromHive.isNullOrBlank
-                        ? listQuestion[levelController.index.value]
-                        : listQuestionFromHive[levelController.index.value],
+                    : listQuestion[levelController.index.value],
               ),
             ],
           ),
@@ -160,7 +148,7 @@ class CardQuestion extends StatefulWidget {
   final AudioCache player;
   final Question question;
   final Rx<int> countTrue;
-  final RxList<dynamic> listQuestions;
+  final RxList<Question> listQuestions;
 
   @override
   _CardQuestionState createState() => _CardQuestionState();

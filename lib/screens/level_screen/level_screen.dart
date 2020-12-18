@@ -33,7 +33,6 @@ class _LevelScreenState extends State<LevelScreen> {
 
   @override
   void dispose() {
-    levelController.onClose();
     super.dispose();
   }
 
@@ -187,7 +186,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                         Get.to(QuestionScreen(
                           level: widget.level,
                           categoryId: widget.categoryId,
-                          question: RxList<Question>(e),
+                          question: levelController.questionsFromHive.isNullOrBlank?RxList<Question>(e):levelController.questionsFromHive,
                           testNumber: levelController.listChunkQuestions.indexOf(e) + 1,
                         ));
                       },
@@ -202,8 +201,9 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
   checkExistTable(int testNumber) async{
     bool exist=await HiveHelper.isExists(boxName: 'Table_${widget.level}_${widget.categoryId}_$testNumber');
     if(exist){
-      levelController.questionsFromHive.clear();
-      levelController.questionsFromHive=RxList<dynamic>(await HiveHelper.getBoxes('Table_${widget.level}_${widget.categoryId}_$testNumber'));
+      print('-----------------------------------------');
+      levelController.questionsFromHive=RxList<Question>(await HiveHelper.getBoxes('Table_${widget.level}_${widget.categoryId}_$testNumber'));
+      print(levelController.questionsFromHive);
     }else{
       levelController.questionsFromHive.clear();
     }

@@ -1,5 +1,6 @@
 
 import 'package:hive/hive.dart';
+import 'package:the_enest_english_grammar_test/model/question_model.dart';
 
 class HiveHelper{
 
@@ -11,7 +12,7 @@ class HiveHelper{
       return false;
   }
 
-  static addBoxes<Question>(List<Question> items, String boxName) async {
+  static addBoxes(List<Map<dynamic,dynamic>> items, String boxName) async {
     print("adding boxes");
     final openBox = await Hive.openBox(boxName);
     openBox.clear();
@@ -20,7 +21,7 @@ class HiveHelper{
     }
   }
 
-  static getBoxes<Question>(String boxName) async {
+  static getBoxes(String boxName) async {
     List<Question> boxList = List<Question>();
 
     final openBox = await Hive.openBox(boxName);
@@ -28,7 +29,7 @@ class HiveHelper{
     int length = openBox.length;
 
     for (int i = 0; i < length; i++) {
-      boxList.add(openBox.getAt(i));
+      boxList.add(Question.fromJson(openBox.getAt(i)));
     }
 
     return boxList;
