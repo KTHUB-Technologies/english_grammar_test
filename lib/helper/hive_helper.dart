@@ -4,9 +4,11 @@ import 'package:hive/hive.dart';
 class HiveHelper{
 
   static isExists({String boxName}) async {
-    final openBox = await Hive.openBox(boxName);
-    int length = openBox.length;
-    return length != 0;
+    bool exists=await Hive.boxExists(boxName);
+    if(exists)
+      return true;
+    else
+      return false;
   }
 
   static addBoxes<Question>(List<Question> items, String boxName) async {

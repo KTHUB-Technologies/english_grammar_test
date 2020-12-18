@@ -120,8 +120,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                         boxName:
                                             'Table_${widget.level}_${widget.categoryId}_${widget.testNumber}');
                                     if (!exist) {
-                                      var listQuestions = levelController
-                                          .questionsFromCategory
+                                      var listQuestions = widget.question
                                           .map((e) => e.toJson())
                                           .toList();
                                       await HiveHelper.addBoxes(listQuestions,
