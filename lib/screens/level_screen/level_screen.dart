@@ -161,20 +161,16 @@ class _LevelScreenState extends State<LevelScreen> {
         });
   }
 
-  choiceAction(String choice) async{
+  choiceAction(String choice) async {
     if (choice == 'Favorite') {
-      List<Question> questionsFavorite= [];
-      bool exist = await HiveHelper.isExists(
-          boxName: 'Table_Favorite');
+      bool exist = await HiveHelper.isExists(boxName: 'Table_Favorite');
       if (exist) {
         print('-----------------------------------------');
-        questionsFavorite = RxList<Question>(
-            await HiveHelper.getBoxes(
-                'Table_Favorite'));
-    }
+        levelController.questionsHiveFavorite =
+            RxList<Question>(await HiveHelper.getBoxes('Table_Favorite'));
+      }
       Get.to(QuestionScreen(
-        question:
-        RxList<Question>(questionsFavorite),
+        question: levelController.questionsHiveFavorite,
         isFavorite: true,
       ));
     }
@@ -221,6 +217,9 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                         ),
                         onTap: () async {
                           Get.back();
+                          levelController.questionsHiveFavorite =
+                              RxList<Question>(
+                                  await HiveHelper.getBoxes('Table_Favorite'));
                           await checkExistTable(
                               levelController.listChunkQuestions.indexOf(e) +
                                   1);

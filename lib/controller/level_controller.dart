@@ -22,6 +22,7 @@ class LevelController extends GetxController {
   Rx<bool> isShowLoading = Rx<bool>(false);
   RxList<Widget> answers = RxList<Widget>([]);
   RxList<Question> questionsFromHive = RxList<Question>([]);
+  RxList<Question> questionsHiveFavorite = RxList<Question>([]);
 
   Future loadJson() async {
     isShowLoading.value = true;

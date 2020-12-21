@@ -186,30 +186,35 @@ class _CardQuestionState extends State<CardQuestion> {
   Widget build(BuildContext context) {
     List<String> options = [];
     options = widget.question.options.split('///');
+    var contain = levelController.questionsHiveFavorite
+        .where((e) => e.id == widget.question.id);
     return Obx(() {
       return Container(
         padding: const EdgeInsets.all(15),
         child: Column(
           children: <Widget>[
             IconButton(
-                icon: widget.isFavorite == false
-                    ? Icon(Icons.favorite_border)
-                    : Icon(
+                icon: contain.isNotEmpty
+                    ? Icon(
                         Icons.favorite,
                         color: AppColors.red,
-                      ),
+                      )
+                    : Icon(Icons.favorite_border),
                 onPressed: () async {
-                  if (widget.isFavorite == false) {
+                  if (contain.isEmpty) {
                     List<Question> question = [];
                     question.add(widget.question);
                     var questions = question.map((e) => e.toJson()).toList();
                     await HiveHelper.addBoxes(questions, 'Table_Favorite');
                   } else {
                     final openBox = await Hive.openBox('Table_Favorite');
-                    openBox.deleteAt(
-                        widget.listQuestions.indexOf(widget.question));
-                    widget.listQuestions.removeAt(
-                        widget.listQuestions.indexOf(widget.question));
+                    if (widget.isFavorite == true){
+                      openBox.deleteAt(widget.listQuestions.indexOf(widget.question));
+                      widget.listQuestions.removeWhere((element) => element.id==widget.question.id);
+                    }
+                    else{
+                      openBox.deleteAt(levelController.questionsHiveFavorite.indexWhere((e) => e.id==widget.question.id));
+                    }
                   }
                 }),
             AppText(
@@ -219,8 +224,9 @@ class _CardQuestionState extends State<CardQuestion> {
             Dimens.height10,
             Column(
               children: options.map((e) {
-                if(widget.isFavorite==true){
-                  widget.question.currentChecked.value=widget.question.correctAnswer-1;
+                if (widget.isFavorite == true) {
+                  widget.question.currentChecked.value =
+                      widget.question.correctAnswer - 1;
                 }
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -236,12 +242,12 @@ class _CardQuestionState extends State<CardQuestion> {
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                             color: widget.question.currentChecked.value ==
-                                        options.indexOf(e)
-                                    ? widget.question.currentChecked.value ==
-                                            widget.question.correctAnswer - 1
-                                        ? AppColors.green
-                                        : AppColors.red
-                                    : AppColors.transparent,
+                                    options.indexOf(e)
+                                ? widget.question.currentChecked.value ==
+                                        widget.question.correctAnswer - 1
+                                    ? AppColors.green
+                                    : AppColors.red
+                                : AppColors.transparent,
                           ),
                         ),
                         child: ListTile(
@@ -316,18 +322,25 @@ class _CardQuestionState extends State<CardQuestion> {
                                   )
                                 : AppButton(
                                     'SUBMIT',
-                                    onTap: () {
-                                      widget.countTrue.value = 0;
-                                      widget.player.play(Sounds.touch);
-                                      for (var checkTrue
-                                          in widget.listQuestions) {
-                                        if (checkTrue.currentChecked.value ==
-                                            checkTrue.correctAnswer - 1)
-                                          widget.countTrue.value++;
-                                      }
-                                      levelController.index.value =
-                                          widget.listQuestions.length;
-                                    },
+                                    onTap: widget.isFavorite == false
+                                        ? () {
+                                            widget.countTrue.value = 0;
+                                            widget.player.play(Sounds.touch);
+                                            for (var checkTrue
+                                                in widget.listQuestions) {
+                                              if (checkTrue
+                                                      .currentChecked.value ==
+                                                  checkTrue.correctAnswer - 1)
+                                                widget.countTrue.value++;
+                                            }
+                                            levelController.index.value =
+                                                widget.listQuestions.length;
+                                          }
+                                        : () {
+                                            Get.to(CheckAnswerScreen(
+                                              question: widget.listQuestions,
+                                            ));
+                                          },
                                   )
                             : SizedBox(),
                       ],
