@@ -1,18 +1,34 @@
 
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+part 'question_model.g.dart';
 
-class Question{
+@HiveType(typeId: 0)
+class Question extends HiveObject{
+  @HiveField(0)
   final int categoryId;
+  @HiveField(1)
   final String categoryName;
+  @HiveField(2)
   final int correctAnswer;
+  @HiveField(3)
   final String explanation;
+  @HiveField(4)
   final String explanationVi;
+  @HiveField(5)
   final String groupId;
+  @HiveField(6)
   final int id;
+  @HiveField(7)
   final int level;
+  @HiveField(8)
   final String options;
+  @HiveField(9)
   final String task;
+  @HiveField(10)
   final Rx<int> currentChecked;
+
+  Question({this.categoryId,this.categoryName,this.correctAnswer,this.explanation,this.explanationVi,this.groupId,this.id,this.level,this.options,this.task,this.currentChecked});
 
   Question.fromJson(Map<dynamic,dynamic>json):
         categoryId=json['categoryId'],
@@ -26,6 +42,20 @@ class Question{
         options=json['options'],
         task=json['task'],
         currentChecked=Rx<int>(json['currentChecked']);
+
+  Map<dynamic, dynamic> toJson()=>{
+    'categoryId':categoryId,
+    'categoryName':categoryName,
+    'correctAnswer':correctAnswer,
+    'explanation':explanation,
+    'explanationVi':explanationVi,
+    'groupId':groupId,
+    'id':id,
+    'level':level,
+    'options':options,
+    'task':task,
+    'currentChecked':int.tryParse(currentChecked.toString())
+  };
 }
 
 // abstract class Model{
