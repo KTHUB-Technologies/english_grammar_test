@@ -80,7 +80,7 @@ class _MainScreenState extends State<MainScreen> {
 
   AppButton buildAppButtonLevel(int level, Function onTap) {
     return AppButton(
-      '$level',
+      getLevel(level),
       onTap: () {
         player.play(Sounds.touch);
         onTap();

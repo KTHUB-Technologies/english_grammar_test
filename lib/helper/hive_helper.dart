@@ -1,4 +1,5 @@
 
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 
@@ -15,10 +16,10 @@ class HiveHelper{
   static addBoxes(List<Map<dynamic,dynamic>> items, String boxName) async {
     print("adding boxes");
     final openBox = await Hive.openBox(boxName);
-    openBox.clear();
     for (var item in items) {
-      openBox.add(item);
+      await openBox.add(item);
     }
+    openBox.close();
   }
 
   static getBoxes(String boxName) async {
@@ -26,11 +27,7 @@ class HiveHelper{
 
     final openBox = await Hive.openBox(boxName);
 
-    int length = openBox.length;
-
-    for (int i = 0; i < length; i++) {
-      boxList.add(Question.fromJson(openBox.getAt(i)));
-    }
+    boxList=openBox.values.map((e) => Question.fromJson(e)).toList();
 
     return boxList;
   }

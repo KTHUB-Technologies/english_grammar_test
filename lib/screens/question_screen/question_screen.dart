@@ -2,14 +2,17 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/assets/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
+import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/screens/check_answer/check_answer_screen.dart';
+import 'package:the_enest_english_grammar_test/screens/splash/splash_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
@@ -18,9 +21,15 @@ class QuestionScreen extends StatefulWidget {
   final int categoryId;
   final int testNumber;
   final RxList<Question> question;
+  final bool isFavorite;
 
   const QuestionScreen(
-      {Key key, this.level, this.categoryId, this.question, this.testNumber})
+      {Key key,
+      this.level,
+      this.categoryId,
+      this.question,
+      this.testNumber,
+      this.isFavorite})
       : super(key: key);
 
   @override
@@ -38,6 +47,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
             question: question,
             countTrue: countTrue,
             listQuestions: widget.question,
+            isFavorite: widget.isFavorite,
           ))
       .toList();
 
@@ -57,7 +67,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: AppText(
-          text: '${widget.level}',
+          text: widget.isFavorite == true
+              ? "Favorite"
+              : getCategory(widget.categoryId),
           textSize: Dimens.paragraphHeaderTextSize,
           color: AppColors.white,
         ),
@@ -126,7 +138,14 @@ class _QuestionScreenState extends State<QuestionScreen> {
                               text: 'No Question...',
                             ),
                           )
-                    : listQuestion[levelController.index.value],
+                    : Column(
+                        children: <Widget>[
+                          AppText(
+                              text:
+                                  '${levelController.index.value + 1}/${listQuestion.length}'),
+                          listQuestion[levelController.index.value],
+                        ],
+                      ),
               ),
             ],
           ),
@@ -137,18 +156,20 @@ class _QuestionScreenState extends State<QuestionScreen> {
 }
 
 class CardQuestion extends StatefulWidget {
-  const CardQuestion({
-    Key key,
-    this.player,
-    this.question,
-    this.countTrue,
-    this.listQuestions,
-  }) : super(key: key);
+  const CardQuestion(
+      {Key key,
+      this.player,
+      this.question,
+      this.countTrue,
+      this.listQuestions,
+      this.isFavorite})
+      : super(key: key);
 
   final AudioCache player;
   final Question question;
   final Rx<int> countTrue;
   final RxList<Question> listQuestions;
+  final bool isFavorite;
 
   @override
   _CardQuestionState createState() => _CardQuestionState();
@@ -170,6 +191,27 @@ class _CardQuestionState extends State<CardQuestion> {
         padding: const EdgeInsets.all(15),
         child: Column(
           children: <Widget>[
+            IconButton(
+                icon: widget.isFavorite == false
+                    ? Icon(Icons.favorite_border)
+                    : Icon(
+                        Icons.favorite,
+                        color: AppColors.red,
+                      ),
+                onPressed: () async {
+                  if (widget.isFavorite == false) {
+                    List<Question> question = [];
+                    question.add(widget.question);
+                    var questions = question.map((e) => e.toJson()).toList();
+                    await HiveHelper.addBoxes(questions, 'Table_Favorite');
+                  } else {
+                    final openBox = await Hive.openBox('Table_Favorite');
+                    openBox.deleteAt(
+                        widget.listQuestions.indexOf(widget.question));
+                    widget.listQuestions.removeAt(
+                        widget.listQuestions.indexOf(widget.question));
+                  }
+                }),
             AppText(
               text: widget.question.task,
               textSize: Dimens.paragraphHeaderTextSize,
@@ -177,6 +219,9 @@ class _CardQuestionState extends State<CardQuestion> {
             Dimens.height10,
             Column(
               children: options.map((e) {
+                if(widget.isFavorite==true){
+                  widget.question.currentChecked.value=widget.question.correctAnswer-1;
+                }
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: AbsorbPointer(
@@ -191,12 +236,12 @@ class _CardQuestionState extends State<CardQuestion> {
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                             color: widget.question.currentChecked.value ==
-                                    options.indexOf(e)
-                                ? widget.question.currentChecked.value ==
-                                        widget.question.correctAnswer - 1
-                                    ? AppColors.green
-                                    : AppColors.red
-                                : AppColors.transparent,
+                                        options.indexOf(e)
+                                    ? widget.question.currentChecked.value ==
+                                            widget.question.correctAnswer - 1
+                                        ? AppColors.green
+                                        : AppColors.red
+                                    : AppColors.transparent,
                           ),
                         ),
                         child: ListTile(
@@ -247,29 +292,29 @@ class _CardQuestionState extends State<CardQuestion> {
             Container(
               child: levelController.index.value == widget.listQuestions.length
                   ? SizedBox()
-                  : widget.listQuestions.length >
-                          (levelController.index.value + 1)
-                      ? widget.question.currentChecked.value != null
-                          ? AppButton(
-                              'NEXT',
-                              onTap: () {
-                                widget.player.play(Sounds.touch);
-                                levelController.index.value++;
-                              },
-                            )
-                          : SizedBox()
-                      : Column(
-                          children: <Widget>[
-                            AppButton(
-                              'PREVIOUS',
-                              onTap: () {
-                                widget.player.play(Sounds.touch);
-                                levelController.index.value--;
-                              },
-                            ),
-                            Dimens.height10,
-                            widget.question.currentChecked.value != null
+                  : Column(
+                      children: <Widget>[
+                        levelController.index.value + 1 > 1
+                            ? AppButton(
+                                'PREVIOUS',
+                                onTap: () {
+                                  widget.player.play(Sounds.touch);
+                                  levelController.index.value--;
+                                },
+                              )
+                            : SizedBox(),
+                        Dimens.height10,
+                        widget.question.currentChecked.value != null
+                            ? widget.listQuestions.length >
+                                    (levelController.index.value + 1)
                                 ? AppButton(
+                                    'NEXT',
+                                    onTap: () {
+                                      widget.player.play(Sounds.touch);
+                                      levelController.index.value++;
+                                    },
+                                  )
+                                : AppButton(
                                     'SUBMIT',
                                     onTap: () {
                                       widget.countTrue.value = 0;
@@ -284,9 +329,9 @@ class _CardQuestionState extends State<CardQuestion> {
                                           widget.listQuestions.length;
                                     },
                                   )
-                                : SizedBox(),
-                          ],
-                        ),
+                            : SizedBox(),
+                      ],
+                    ),
             ),
           ],
         ),

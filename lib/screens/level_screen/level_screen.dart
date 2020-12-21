@@ -2,14 +2,17 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/assets/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
+import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/screens/question_screen/question_screen.dart';
+import 'package:the_enest_english_grammar_test/screens/splash/splash_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
@@ -41,10 +44,26 @@ class _LevelScreenState extends State<LevelScreen> {
     return Scaffold(
       appBar: AppBar(
         title: AppText(
-          text: '${widget.level}',
+          text: getLevel(widget.level),
           textSize: Dimens.paragraphHeaderTextSize,
           color: AppColors.white,
         ),
+        actions: <Widget>[
+          PopupMenuButton(
+              onSelected: choiceAction,
+              itemBuilder: (context) {
+                return Constants.choices.map((e) {
+                  return PopupMenuItem(
+                    value: e,
+                    child: ListTile(
+                      title: AppText(
+                        text: e,
+                      ),
+                    ),
+                  );
+                }).toList();
+              }),
+        ],
       ),
       body: Obx(() {
         return LoadingContainer(
@@ -110,7 +129,7 @@ class _LevelScreenState extends State<LevelScreen> {
             children: <Widget>[
               Dimens.width20,
               AppText(
-                text: '$index',
+                text: getCategory(index),
                 color: AppColors.clickableText,
               ),
               Dimens.width20,
@@ -141,6 +160,25 @@ class _LevelScreenState extends State<LevelScreen> {
           );
         });
   }
+
+  choiceAction(String choice) async{
+    if (choice == 'Favorite') {
+      List<Question> questionsFavorite= [];
+      bool exist = await HiveHelper.isExists(
+          boxName: 'Table_Favorite');
+      if (exist) {
+        print('-----------------------------------------');
+        questionsFavorite = RxList<Question>(
+            await HiveHelper.getBoxes(
+                'Table_Favorite'));
+    }
+      Get.to(QuestionScreen(
+        question:
+        RxList<Question>(questionsFavorite),
+        isFavorite: true,
+      ));
+    }
+  }
 }
 
 class ModalBottomSheet extends StatefulWidget {
@@ -159,52 +197,64 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
   final LevelController levelController = Get.find();
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          AppText(
-            text: widget.categoryName,
-            color: AppColors.blue,
-            fontWeight: FontWeight.bold,
-            textSize: Dimens.paragraphHeaderTextSize,
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: levelController.listChunkQuestions
-                .map((e) => GestureDetector(
-                      child: ListTile(
-                        title: AppText(
-                          text:
-                              'Test ${levelController.listChunkQuestions.indexOf(e) + 1}',
+    return Obx(() {
+      return Container(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            AppText(
+              text: widget.categoryName,
+              color: AppColors.blue,
+              fontWeight: FontWeight.bold,
+              textSize: Dimens.paragraphHeaderTextSize,
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: levelController.listChunkQuestions
+                  .map((e) => GestureDetector(
+                        child: ListTile(
+                          title: AppText(
+                            text:
+                                'Test ${levelController.listChunkQuestions.indexOf(e) + 1}',
+                          ),
                         ),
-                      ),
-                      onTap: () async{
-                        Get.back();
-                        await checkExistTable(levelController.listChunkQuestions.indexOf(e) + 1);
-                        Get.to(QuestionScreen(
-                          level: widget.level,
-                          categoryId: widget.categoryId,
-                          question: levelController.questionsFromHive.isNullOrBlank?RxList<Question>(e):levelController.questionsFromHive,
-                          testNumber: levelController.listChunkQuestions.indexOf(e) + 1,
-                        ));
-                      },
-                    ))
-                .toList(),
-          ),
-        ],
-      ),
-    );
+                        onTap: () async {
+                          Get.back();
+                          await checkExistTable(
+                              levelController.listChunkQuestions.indexOf(e) +
+                                  1);
+                          Get.to(QuestionScreen(
+                            level: widget.level,
+                            categoryId: widget.categoryId,
+                            question:
+                                levelController.questionsFromHive.isNullOrBlank
+                                    ? RxList<Question>(e)
+                                    : levelController.questionsFromHive,
+                            testNumber:
+                                levelController.listChunkQuestions.indexOf(e) +
+                                    1,
+                            isFavorite: false,
+                          ));
+                        },
+                      ))
+                  .toList(),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
-  checkExistTable(int testNumber) async{
-    bool exist=await HiveHelper.isExists(boxName: 'Table_${widget.level}_${widget.categoryId}_$testNumber');
-    if(exist){
+  checkExistTable(int testNumber) async {
+    bool exist = await HiveHelper.isExists(
+        boxName: 'Table_${widget.level}_${widget.categoryId}_$testNumber');
+    if (exist) {
       print('-----------------------------------------');
-      levelController.questionsFromHive=RxList<Question>(await HiveHelper.getBoxes('Table_${widget.level}_${widget.categoryId}_$testNumber'));
-      print(levelController.questionsFromHive);
-    }else{
+      levelController.questionsFromHive = RxList<Question>(
+          await HiveHelper.getBoxes(
+              'Table_${widget.level}_${widget.categoryId}_$testNumber'));
+    } else {
       levelController.questionsFromHive.clear();
     }
   }
