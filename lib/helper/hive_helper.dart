@@ -19,7 +19,7 @@ class HiveHelper{
     for (var item in items) {
       await openBox.add(item);
     }
-    openBox.close();
+    await openBox.close();
   }
 
   static getBoxes(String boxName) async {

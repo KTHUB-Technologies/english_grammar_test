@@ -25,8 +25,8 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
-    levelController.categories=[];
-    levelController.distinctCategory=[];
+    levelController.categories = [];
+    levelController.distinctCategory = [];
     super.initState();
   }
 
@@ -40,7 +40,6 @@ class _MainScreenState extends State<MainScreen> {
         padding: EdgeInsets.only(top: Dimens.getLogoSize(context)),
         child: Column(
           children: <Widget>[
-            Dimens.height30,
             Image.asset(
               Images.logo,
               width: logoSize,
@@ -55,17 +54,19 @@ class _MainScreenState extends State<MainScreen> {
             Dimens.quarterHeight(context),
             Expanded(
               child: Column(
-                children: levelController.distinctLevel.map((e){
+                children: levelController.distinctLevel.map((e) {
                   return Container(
                     padding: EdgeInsets.only(bottom: Dimens.formPadding),
-                    child: buildAppButtonLevel(e, () async{
+                    child: buildAppButtonLevel(e, () async {
                       await levelController.loadQuestionFromLevel(e);
-                      levelController.categories=levelController.questions.map((e) => e.categoryId).toList();
-                      levelController.distinctCategory=levelController.categories.toSet().toList();
+                      levelController.categories = levelController.questions
+                          .map((e) => e.categoryId)
+                          .toList();
+                      levelController.distinctCategory =
+                          levelController.categories.toSet().toList();
                       levelController.distinctCategory.sort();
                       Get.to(LevelScreen(
                         level: e,
-                        categoryId: levelController.distinctCategory,
                       ));
                     }),
                   );

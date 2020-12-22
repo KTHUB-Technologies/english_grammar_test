@@ -15,6 +15,8 @@ class LevelController extends GetxController {
   List<int> levels = List<int>();
   List<int> distinctLevel = List<int>();
 
+  RxList<Question> containFromFavorite=RxList<Question>([]);
+
   RxList<Question> questionsFromCategory = RxList<Question>([]);
   RxList<List<Question>> listChunkQuestions = RxList<List<Question>>([]);
   List<Question> listQuestions;

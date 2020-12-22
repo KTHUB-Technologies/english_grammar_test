@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:the_enest_english_grammar_test/assets/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
@@ -12,7 +13,6 @@ import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/screens/check_answer/check_answer_screen.dart';
-import 'package:the_enest_english_grammar_test/screens/splash/splash_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
@@ -75,79 +75,120 @@ class _QuestionScreenState extends State<QuestionScreen> {
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            showCupertinoDialog(
-                context: context,
-                builder: (context) {
-                  return IOSDialog(
-                    title: 'WARNING',
-                    content: "If you exit now, your results will be cancel!!!",
-                    cancel: () {
-                      Get.back();
-                    },
-                    confirm: () {
-                      Get.back();
-                      Get.back();
-                    },
-                  );
-                });
-          },
+          onPressed: levelController.questionsFromHive.isNullOrBlank
+              ? () {
+                  showCupertinoDialog(
+                      context: context,
+                      builder: (context) {
+                        return IOSDialog(
+                          title: 'WARNING',
+                          content:
+                              "If you exit now, your results will be cancel!!!",
+                          cancel: () {
+                            Get.back();
+                          },
+                          confirm: () {
+                            Get.back();
+                            Get.back();
+                          },
+                        );
+                      });
+                }
+              : () {
+                  Get.back();
+                },
         ),
       ),
       body: Obx(() {
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 5),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Center(
-                child: widget.question.length == levelController.index.value
+        return SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 5),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                widget.question.length == levelController.index.value
                     ? widget.question.length != 0
-                        ? Center(
+                        ? widget.isFavorite == false
+                            ? Center(
+                                child: Column(
+                                  children: <Widget>[
+                                    Dimens.quarterHeight(context),
+                                    CircularPercentIndicator(
+                                      radius: 120.0,
+                                      lineWidth: 10.0,
+                                      animation: true,
+                                      animationDuration: 1200,
+                                      percent: (countTrue.value /
+                                          widget.question.length),
+                                      header: AppText(
+                                        text: 'Processing',
+                                      ),
+                                      center: Icon(
+                                        Icons.person_pin,
+                                        size: 50.0,
+                                        color: Colors.blue,
+                                      ),
+                                      circularStrokeCap: CircularStrokeCap.butt,
+                                      backgroundColor: Colors.grey,
+                                      progressColor: Colors.green,
+                                    ),
+                                    AppText(
+                                      text:
+                                          'Score: ${countTrue.value}/${widget.question.length}',
+                                    ),
+                                    Dimens.height20,
+                                    AppButton(
+                                      'Check Answer',
+                                      onTap: () async {
+                                        player.play(Sounds.touch);
+                                        Get.to(CheckAnswerScreen(
+                                          question: widget.question,
+                                        ));
+                                        bool exist = await HiveHelper.isExists(
+                                            boxName:
+                                                'Table_${widget.level}_${widget.categoryId}_${widget.testNumber}');
+                                        if (!exist) {
+                                          var listQuestions = widget.question
+                                              .map((e) => e.toJson())
+                                              .toList();
+                                          await HiveHelper.addBoxes(
+                                              listQuestions,
+                                              'Table_${widget.level}_${widget.categoryId}_${widget.testNumber}');
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : Center(
+                                child: Column(
+                                  children: <Widget>[
+                                    Dimens.quarterHeight(context),
+                                    AppButton(
+                                      'Check Answer',
+                                      onTap: () async {
+                                        player.play(Sounds.touch);
+                                        Get.to(CheckAnswerScreen(
+                                          question: widget.question,
+                                        ));
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              )
+                        : Center(
                             child: Column(
                               children: <Widget>[
+                                Dimens.quarterHeight(context),
                                 AppText(
-                                  text:
-                                      'Score: ${countTrue.value}/${widget.question.length}',
-                                ),
-                                Dimens.height20,
-                                AppButton(
-                                  'Check Answer',
-                                  onTap: () async {
-                                    player.play(Sounds.touch);
-                                    Get.to(CheckAnswerScreen(
-                                      question: widget.question,
-                                    ));
-                                    bool exist = await HiveHelper.isExists(
-                                        boxName:
-                                            'Table_${widget.level}_${widget.categoryId}_${widget.testNumber}');
-                                    if (!exist) {
-                                      var listQuestions = widget.question
-                                          .map((e) => e.toJson())
-                                          .toList();
-                                      await HiveHelper.addBoxes(listQuestions,
-                                          'Table_${widget.level}_${widget.categoryId}_${widget.testNumber}');
-                                    }
-                                  },
+                                  text: 'No Question...',
                                 ),
                               ],
                             ),
                           )
-                        : Center(
-                            child: AppText(
-                              text: 'No Question...',
-                            ),
-                          )
-                    : Column(
-                        children: <Widget>[
-                          AppText(
-                              text:
-                                  '${levelController.index.value + 1}/${listQuestion.length}'),
-                          listQuestion[levelController.index.value],
-                        ],
-                      ),
-              ),
-            ],
+                    : listQuestion[levelController.index.value],
+              ],
+            ),
           ),
         );
       }),
@@ -177,6 +218,7 @@ class CardQuestion extends StatefulWidget {
 
 class _CardQuestionState extends State<CardQuestion> {
   final LevelController levelController = Get.find();
+
   @override
   void initState() {
     super.initState();
@@ -186,37 +228,60 @@ class _CardQuestionState extends State<CardQuestion> {
   Widget build(BuildContext context) {
     List<String> options = [];
     options = widget.question.options.split('///');
-    var contain = levelController.questionsHiveFavorite
-        .where((e) => e.id == widget.question.id);
     return Obx(() {
+      levelController.containFromFavorite = RxList<Question>(levelController
+          .questionsHiveFavorite
+          .where((e) => e.id == widget.question.id)
+          .toList());
       return Container(
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.all(10),
         child: Column(
           children: <Widget>[
-            IconButton(
-                icon: contain.isNotEmpty
-                    ? Icon(
-                        Icons.favorite,
-                        color: AppColors.red,
-                      )
-                    : Icon(Icons.favorite_border),
-                onPressed: () async {
-                  if (contain.isEmpty) {
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                AppText(
+                    text:
+                        '${levelController.index.value + 1}/${widget.listQuestions.length}'),
+                IconButton(icon: Obx(() {
+                  return levelController.containFromFavorite.isNotEmpty
+                      ? Icon(
+                          Icons.favorite,
+                          color: AppColors.red,
+                        )
+                      : Icon(Icons.favorite_border);
+                }), onPressed: () async {
+                  if (levelController.containFromFavorite.isEmpty) {
                     List<Question> question = [];
                     question.add(widget.question);
                     var questions = question.map((e) => e.toJson()).toList();
                     await HiveHelper.addBoxes(questions, 'Table_Favorite');
+                    levelController.questionsHiveFavorite.add(widget.question);
+                    levelController.containFromFavorite = RxList<Question>(
+                        levelController.questionsHiveFavorite
+                            .where((e) => e.id == widget.question.id)
+                            .toList());
                   } else {
                     final openBox = await Hive.openBox('Table_Favorite');
-                    if (widget.isFavorite == true){
-                      openBox.deleteAt(widget.listQuestions.indexOf(widget.question));
-                      widget.listQuestions.removeWhere((element) => element.id==widget.question.id);
-                    }
-                    else{
-                      openBox.deleteAt(levelController.questionsHiveFavorite.indexWhere((e) => e.id==widget.question.id));
+                    if (widget.isFavorite == true) {
+                      openBox.deleteAt(
+                          widget.listQuestions.indexOf(widget.question));
+                      widget.listQuestions.removeWhere(
+                          (element) => element.id == widget.question.id);
+                    } else {
+                      openBox.deleteAt(levelController.questionsHiveFavorite
+                          .indexWhere((e) => e.id == widget.question.id));
+                      levelController.questionsHiveFavorite
+                          .removeWhere((e) => e.id == widget.question.id);
+                      levelController.containFromFavorite = RxList<Question>(
+                          levelController.questionsHiveFavorite
+                              .where((e) => e.id == widget.question.id)
+                              .toList());
                     }
                   }
                 }),
+              ],
+            ),
             AppText(
               text: widget.question.task,
               textSize: Dimens.paragraphHeaderTextSize,
@@ -229,7 +294,7 @@ class _CardQuestionState extends State<CardQuestion> {
                       widget.question.correctAnswer - 1;
                 }
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  padding: const EdgeInsets.only(bottom: 5.0),
                   child: AbsorbPointer(
                     ignoringSemantics: true,
                     absorbing:
@@ -320,28 +385,34 @@ class _CardQuestionState extends State<CardQuestion> {
                                       levelController.index.value++;
                                     },
                                   )
-                                : AppButton(
-                                    'SUBMIT',
-                                    onTap: widget.isFavorite == false
-                                        ? () {
-                                            widget.countTrue.value = 0;
-                                            widget.player.play(Sounds.touch);
-                                            for (var checkTrue
-                                                in widget.listQuestions) {
-                                              if (checkTrue
-                                                      .currentChecked.value ==
-                                                  checkTrue.correctAnswer - 1)
-                                                widget.countTrue.value++;
-                                            }
-                                            levelController.index.value =
-                                                widget.listQuestions.length;
-                                          }
-                                        : () {
-                                            Get.to(CheckAnswerScreen(
-                                              question: widget.listQuestions,
-                                            ));
-                                          },
-                                  )
+                                : levelController
+                                        .questionsFromHive.isNullOrBlank
+                                    ? AppButton(
+                                        'SUBMIT',
+                                        onTap: widget.isFavorite == false
+                                            ? () {
+                                                widget.countTrue.value = 0;
+                                                widget.player
+                                                    .play(Sounds.touch);
+                                                for (var checkTrue
+                                                    in widget.listQuestions) {
+                                                  if (checkTrue.currentChecked
+                                                          .value ==
+                                                      checkTrue.correctAnswer -
+                                                          1)
+                                                    widget.countTrue.value++;
+                                                }
+                                                levelController.index.value =
+                                                    widget.listQuestions.length;
+                                              }
+                                            : () {
+                                                Get.to(CheckAnswerScreen(
+                                                  question:
+                                                      widget.listQuestions,
+                                                ));
+                                              },
+                                      )
+                                    : SizedBox()
                             : SizedBox(),
                       ],
                     ),

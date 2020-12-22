@@ -18,9 +18,8 @@ import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 class LevelScreen extends StatefulWidget {
   final int level;
-  final List<int> categoryId;
 
-  const LevelScreen({Key key, this.level, this.categoryId}) : super(key: key);
+  const LevelScreen({Key key, this.level}) : super(key: key);
   @override
   _LevelScreenState createState() => _LevelScreenState();
 }
@@ -101,7 +100,7 @@ class _LevelScreenState extends State<LevelScreen> {
                               await levelController
                                   .loadQuestionFromLevelAndCategory(
                                       widget.level, e);
-                              modalBottomSheet('', widget.level, e);
+                              modalBottomSheet(getCategory(e), widget.level, e);
                             },
                           );
                         }).toList(),
@@ -208,35 +207,38 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
             Column(
               mainAxisSize: MainAxisSize.min,
               children: levelController.listChunkQuestions
-                  .map((e) => GestureDetector(
-                        child: ListTile(
-                          title: AppText(
-                            text:
-                                'Test ${levelController.listChunkQuestions.indexOf(e) + 1}',
-                          ),
+                  .map((e){
+                    return GestureDetector(
+                      child: ListTile(
+                        title: AppText(
+                          text:
+                          'Test ${levelController.listChunkQuestions.indexOf(e) + 1}',
                         ),
-                        onTap: () async {
-                          Get.back();
-                          levelController.questionsHiveFavorite =
-                              RxList<Question>(
-                                  await HiveHelper.getBoxes('Table_Favorite'));
-                          await checkExistTable(
-                              levelController.listChunkQuestions.indexOf(e) +
-                                  1);
-                          Get.to(QuestionScreen(
-                            level: widget.level,
-                            categoryId: widget.categoryId,
-                            question:
-                                levelController.questionsFromHive.isNullOrBlank
-                                    ? RxList<Question>(e)
-                                    : levelController.questionsFromHive,
-                            testNumber:
-                                levelController.listChunkQuestions.indexOf(e) +
-                                    1,
-                            isFavorite: false,
-                          ));
-                        },
-                      ))
+                        trailing: AppText(text: 'Score: ...'),
+                      ),
+                      onTap: () async {
+                        Get.back();
+                        levelController.questionsHiveFavorite =
+                            RxList<Question>(
+                                await HiveHelper.getBoxes('Table_Favorite'));
+                        await checkExistTable(
+                            levelController.listChunkQuestions.indexOf(e) +
+                                1);
+                        Get.to(QuestionScreen(
+                          level: widget.level,
+                          categoryId: widget.categoryId,
+                          question:
+                          levelController.questionsFromHive.isNullOrBlank
+                              ? RxList<Question>(e)
+                              : levelController.questionsFromHive,
+                          testNumber:
+                          levelController.listChunkQuestions.indexOf(e) +
+                              1,
+                          isFavorite: false,
+                        ));
+                      },
+                    );
+              })
                   .toList(),
             ),
           ],

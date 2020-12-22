@@ -34,7 +34,6 @@ dependencies:
   audioplayers: ^0.17.0
   hive: ^1.4.4+1
   hive_flutter: ^0.3.1
-  quiver: ^2.1.5
 dev_dependencies:
   flutter_test:
     sdk: flutter
