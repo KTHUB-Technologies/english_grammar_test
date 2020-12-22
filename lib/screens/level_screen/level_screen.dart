@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -190,6 +192,12 @@ class ModalBottomSheet extends StatefulWidget {
 
 class _ModalBottomSheetState extends State<ModalBottomSheet> {
   final LevelController levelController = Get.find();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -204,17 +212,20 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
               fontWeight: FontWeight.bold,
               textSize: Dimens.paragraphHeaderTextSize,
             ),
+            Dimens.height10,
             Column(
               mainAxisSize: MainAxisSize.min,
               children: levelController.listChunkQuestions
-                  .map((e){
+                  .map((e) {
                     return GestureDetector(
-                      child: ListTile(
-                        title: AppText(
-                          text:
-                          'Test ${levelController.listChunkQuestions.indexOf(e) + 1}',
+                      child: Card(
+                        child: ListTile(
+                          title: AppText(
+                            text:
+                            'Test ${levelController.listChunkQuestions.indexOf(e) + 1}',
+                          ),
+                          trailing: AppText(text: 'Score: ...'),
                         ),
-                        trailing: AppText(text: 'Score: ...'),
                       ),
                       onTap: () async {
                         Get.back();
@@ -235,6 +246,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                           levelController.listChunkQuestions.indexOf(e) +
                               1,
                           isFavorite: false,
+                          questionTemp: RxList<Question>(e),
                         ));
                       },
                     );

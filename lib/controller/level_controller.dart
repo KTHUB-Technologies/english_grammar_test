@@ -36,17 +36,19 @@ class LevelController extends GetxController {
     levels = listQuestions.map((e) => e.level).toList();
     distinctLevel = levels.toSet().toList();
     distinctLevel.sort();
-
-    isShowLoading.value = false;
+    isShowLoading.value=false;
   }
 
   Future loadQuestionFromLevel(int level) async {
+    isShowLoading.value = true;
     await loadJson();
     questions =
         RxList<Question>(listQuestions.where((f) => f.level == level).toList());
+    isShowLoading.value=false;
   }
 
   Future loadQuestionFromLevelAndCategory(int level, int categoryId) async {
+    isShowLoading.value = true;
     await loadQuestionFromLevel(level);
 
     questionsFromCategory = RxList<Question>(
@@ -61,6 +63,7 @@ class LevelController extends GetxController {
               ? questionsFromCategory.length
               : i + 20));
     }
+    isShowLoading.value = false;
   }
 
   // RxList<Widget> answers = RxList<Widget>([]);
