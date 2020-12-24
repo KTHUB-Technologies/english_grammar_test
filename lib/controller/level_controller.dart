@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:quiver/iterables.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 
 class LevelController extends GetxController {
@@ -25,6 +24,8 @@ class LevelController extends GetxController {
   RxList<Widget> answers = RxList<Widget>([]);
   RxList<Question> questionsFromHive = RxList<Question>([]);
   RxList<Question> questionsHiveFavorite = RxList<Question>([]);
+
+  Rx<Map> score=Rx<Map>({});
 
   Future loadJson() async {
     isShowLoading.value = true;

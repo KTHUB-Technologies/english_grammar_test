@@ -103,7 +103,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
           ),
           actions: <Widget>[
             levelController.questionsFromHive.isNotEmpty
-                ? IconButton(
+                ? widget.isFavorite==false?IconButton(
                     icon: Icon(Icons.rotate_left),
                     onPressed: () async {
                       showCupertinoDialog(
@@ -129,11 +129,14 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                   testNumber: widget.testNumber,
                                   isFavorite: false,
                                 ));
+                                final openBoxScore=await Hive.openBox('Table_Score');
+                                // openBoxScore.deleteAt();
+                                openBoxScore.close();
                               },
                             );
                           });
                     })
-                : SizedBox(),
+                : SizedBox():SizedBox(),
           ],
         ),
         body: Obx(() {
@@ -180,13 +183,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                           question: widget.question,
                                         ));
 
-                                        // final openBox =
-                                        //     await Hive.openBox('Table_Score');
-                                        // await openBox.put(
-                                        //     '${widget.level}_${widget.categoryId}_${widget.testNumber}',
-                                        //     '${countTrue.value}/${widget.question.length}');
-                                        // openBox.close();
-
                                         bool exist = await HiveHelper.isExists(
                                             boxName:
                                                 'Table_${widget.level}_${widget.categoryId}_${widget.testNumber}');
@@ -197,6 +193,10 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                           await HiveHelper.addBoxes(
                                               listQuestions,
                                               'Table_${widget.level}_${widget.categoryId}_${widget.testNumber}');
+
+                                          final openBox=await Hive.openBox('Table_Score');
+                                          openBox.add({'${widget.level}_${widget.categoryId}_${widget.testNumber}': '${countTrue.value}_${widget.question.length}'});
+                                          openBox.close();
                                         }
                                       },
                                     ),

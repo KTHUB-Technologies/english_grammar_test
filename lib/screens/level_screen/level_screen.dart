@@ -32,7 +32,16 @@ class _LevelScreenState extends State<LevelScreen> {
 
   @override
   void initState() {
+    loadScore();
     super.initState();
+  }
+
+  loadScore() async{
+    final openBox=await Hive.openBox('Table_Score');
+    int length = openBox.length;
+    for (int i = 0; i < length; i++) {
+      levelController.score.value.addAll(openBox.getAt(i));
+    }
   }
 
   @override
@@ -192,6 +201,7 @@ class ModalBottomSheet extends StatefulWidget {
 
 class _ModalBottomSheetState extends State<ModalBottomSheet> {
   final LevelController levelController = Get.find();
+  Box<dynamic> openBox;
 
   @override
   void initState() {
@@ -217,6 +227,9 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
               mainAxisSize: MainAxisSize.min,
               children: levelController.listChunkQuestions
                   .map((e) {
+                    String score ='${levelController.score.value['${widget.level}_${widget.categoryId}_${levelController.listChunkQuestions.indexOf(e) + 1}']??''}';
+                    List<String> splitScore=score.split('_');
+                    print(splitScore);
                     return GestureDetector(
                       child: Card(
                         child: ListTile(
@@ -224,7 +237,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                             text:
                             'Test ${levelController.listChunkQuestions.indexOf(e) + 1}',
                           ),
-                          trailing: AppText(text: 'Score: ...'),
+                          trailing: AppText(text: 'Score: ${levelController.score.value['${widget.level}_${widget.categoryId}_${levelController.listChunkQuestions.indexOf(e) + 1}']??0}'),
                         ),
                       ),
                       onTap: () async {
