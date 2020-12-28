@@ -69,6 +69,7 @@ class _MainScreenState extends State<MainScreen> {
 
                       Get.to(LevelScreen(
                         level: e,
+                        isProgress: false,
                       ));
                     }),
                   );

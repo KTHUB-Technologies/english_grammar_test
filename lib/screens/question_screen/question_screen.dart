@@ -13,6 +13,7 @@ import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/screens/check_answer/check_answer_screen.dart';
+import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
@@ -79,7 +80,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios),
             onPressed: levelController.questionsFromHive.isNullOrBlank
-                ? () {
+                ? widget.isFavorite==false?() {
                     showCupertinoDialog(
                         context: context,
                         builder: (context) {
@@ -99,7 +100,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
                   }
                 : () {
                     Get.back();
-                  },
+                  }:() {
+              Get.back();
+            },
           ),
           actions: <Widget>[
             levelController.questionsFromHive.isNotEmpty
@@ -121,16 +124,20 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                 final openBox = await Hive.openBox(
                                     'Table_${widget.level}_${widget.categoryId}_${widget.testNumber}');
                                 await openBox.deleteFromDisk();
-                                Get.back();
-                                Get.to(QuestionScreen(
-                                  level: widget.level,
-                                  categoryId: widget.categoryId,
-                                  question: widget.questionTemp,
-                                  testNumber: widget.testNumber,
-                                  isFavorite: false,
-                                ));
+                                // Get.back();
+                                // Get.to(QuestionScreen(
+                                //   level: widget.level,
+                                //   categoryId: widget.categoryId,
+                                //   question: widget.questionTemp,
+                                //   testNumber: widget.testNumber,
+                                //   isFavorite: false,
+                                // ));
+
+                                Get.offAll(MainScreen());
+
                                 final openBoxScore=await Hive.openBox('Table_Score');
-                                // openBoxScore.deleteAt();
+                                await openBoxScore.put('${widget.level}_${widget.categoryId}', {'${widget.testNumber}':'0_0'});
+                                levelController.score.value.clear();
                                 openBoxScore.close();
                               },
                             );
@@ -195,7 +202,13 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                               'Table_${widget.level}_${widget.categoryId}_${widget.testNumber}');
 
                                           final openBox=await Hive.openBox('Table_Score');
-                                          openBox.add({'${widget.level}_${widget.categoryId}_${widget.testNumber}': '${countTrue.value}_${widget.question.length}'});
+                                          Map score=await openBox.get('${widget.level}_${widget.categoryId}');
+                                          if(score.isNullOrBlank){
+                                            score={'${widget.testNumber}':'${countTrue.value}_${widget.question.length}'};
+                                          }else{
+                                            score['${widget.testNumber}']='${countTrue.value}_${widget.question.length}';
+                                          }
+                                          await openBox.put('${widget.level}_${widget.categoryId}', score);
                                           openBox.close();
                                         }
                                       },

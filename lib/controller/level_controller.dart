@@ -27,6 +27,8 @@ class LevelController extends GetxController {
 
   Rx<Map> score=Rx<Map>({});
 
+  Rx<Map> scoreOfCate=Rx<Map>({});
+
   Future loadJson() async {
     isShowLoading.value = true;
     var data =
