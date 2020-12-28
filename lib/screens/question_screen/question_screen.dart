@@ -133,7 +133,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                   Get.offAll(MainScreen());
 
                                   final openBoxScore =
-                                      await Hive.openBox('Table_Score');
+                                      await Hive.openBox('Table_Score_${widget.level}');
                                   Map score=openBoxScore.get('${widget.level}_${widget.categoryId}');
                                   score['${widget.testNumber}']='0_0';
                                   await openBoxScore.put(
@@ -213,7 +213,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                       openBoxLevel.close();
 
                                       final openBox =
-                                          await Hive.openBox('Table_Score');
+                                          await Hive.openBox('Table_Score_${widget.level}');
                                       Map score = await openBox.get(
                                           '${widget.level}_${widget.categoryId}');
                                       if (score.isNullOrBlank) {
