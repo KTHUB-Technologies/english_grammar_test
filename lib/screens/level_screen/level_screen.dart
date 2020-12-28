@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:http/http.dart';
 import 'package:the_enest_english_grammar_test/assets/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
@@ -136,7 +137,8 @@ class _LevelScreenState extends State<LevelScreen> {
     );
   }
 
-  Widget buildListCategories(BuildContext context, int index, Function onTap, double score) {
+  Widget buildListCategories(
+      BuildContext context, int index, Function onTap, double score) {
     return GestureDetector(
       child: Card(
         child: Container(
@@ -167,7 +169,8 @@ class _LevelScreenState extends State<LevelScreen> {
                             builder: (context) {
                               return IOSDialog(
                                 title: 'WARNING',
-                                content: "Do you want to restart ${widget.level}_$index?",
+                                content:
+                                    "Do you want to restart ${widget.level}_$index?",
                                 cancel: () {
                                   Get.back();
                                 },
@@ -192,14 +195,18 @@ class _LevelScreenState extends State<LevelScreen> {
   getScoreOfCate(int index) async {
     double score = 0;
     Map scoreCate = new Map();
+    int length=0;
     final openBox = await Hive.openBox('Table_Score');
     if (openBox.get('${widget.level}_$index') != null) {
       scoreCate.addAll(openBox.get('${widget.level}_$index'));
       scoreCate.forEach((key, value) {
         List<String> split = value.toString().split('_');
-        score += (double.tryParse(split[0]) / double.tryParse(split[1])) * 100;
+        if((double.tryParse(split[0]) / double.tryParse(split[1])).toString()!='NaN'){
+          score += (double.tryParse(split[0]) / double.tryParse(split[1])) * 100;
+          length++;
+        }
       });
-      return score / scoreCate.length;
+      return score / length;
     }
   }
 
@@ -335,13 +342,18 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
   }
 
   checkExistTable(int testNumber) async {
-    bool exist = await HiveHelper.isExists(
-        boxName: 'Table_${widget.level}_${widget.categoryId}_$testNumber');
-    if (exist) {
-      print('-----------------------------------------');
-      levelController.questionsFromHive = RxList<Question>(
-          await HiveHelper.getBoxes(
-              'Table_${widget.level}_${widget.categoryId}_$testNumber'));
+    final openBox = await Hive.openBox('Table_${widget.level}');
+    if (openBox.containsKey('${widget.categoryId}')) {
+      Map getCate = openBox.get('${widget.categoryId}');
+      if (getCate != null) {
+        List<dynamic> questions = getCate['$testNumber'];
+        if (questions != null) {
+          levelController.questionsFromHive = RxList<Question>(
+              questions.map((e) => Question.fromJson(e)).toList());
+        } else {
+          levelController.questionsFromHive.clear();
+        }
+      }
     } else {
       levelController.questionsFromHive.clear();
     }

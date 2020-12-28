@@ -34,52 +34,54 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final logoSize = getScreenWidth(context) / 2;
-    return LoadingContainer(child: Scaffold(
-      body: Container(
-        color: AppColors.white,
-        width: getScreenWidth(context),
-        padding: EdgeInsets.only(top: Dimens.getLogoSize(context)),
-        child: Column(
-          children: <Widget>[
-            Image.asset(
-              Images.logo,
-              width: logoSize,
-              height: logoSize,
-            ),
-            AppText(
-              text: 'English Grammar Test',
-              color: AppColors.blue,
-              fontWeight: FontWeight.bold,
-              textSize: Dimens.paragraphHeaderTextSize,
-            ),
-            Dimens.quarterHeight(context),
-            Expanded(
-              child: Column(
-                children: levelController.distinctLevel.map((e) {
-                  return Container(
-                    padding: EdgeInsets.only(bottom: Dimens.formPadding),
-                    child: buildAppButtonLevel(e, () async {
-                      await levelController.loadQuestionFromLevel(e);
-                      levelController.categories = levelController.questions
-                          .map((e) => e.categoryId)
-                          .toList();
-                      levelController.distinctCategory =
-                          levelController.categories.toSet().toList();
-                      levelController.distinctCategory.sort();
-
-                      Get.to(LevelScreen(
-                        level: e,
-                        isProgress: false,
-                      ));
-                    }),
-                  );
-                }).toList(),
+    return Obx((){
+      return LoadingContainer(child: Scaffold(
+        body: Container(
+          color: AppColors.white,
+          width: getScreenWidth(context),
+          padding: EdgeInsets.only(top: Dimens.getLogoSize(context)),
+          child: Column(
+            children: <Widget>[
+              Image.asset(
+                Images.logo,
+                width: logoSize,
+                height: logoSize,
               ),
-            ),
-          ],
+              AppText(
+                text: 'English Grammar Test',
+                color: AppColors.blue,
+                fontWeight: FontWeight.bold,
+                textSize: Dimens.paragraphHeaderTextSize,
+              ),
+              Dimens.quarterHeight(context),
+              Expanded(
+                child: Column(
+                  children: levelController.distinctLevel.map((e) {
+                    return Container(
+                      padding: EdgeInsets.only(bottom: Dimens.formPadding),
+                      child: buildAppButtonLevel(e, () async {
+                        await levelController.loadQuestionFromLevel(e);
+                        levelController.categories = levelController.questions
+                            .map((e) => e.categoryId)
+                            .toList();
+                        levelController.distinctCategory =
+                            levelController.categories.toSet().toList();
+                        levelController.distinctCategory.sort();
+
+                        Get.to(LevelScreen(
+                          level: e,
+                          isProgress: false,
+                        ));
+                      }),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    ),isLoading: levelController.isShowLoading.value, isShowIndicator: true,);
+      ),isLoading: levelController.isShowLoading.value, isShowIndicator: true,);
+    });
   }
 
   AppButton buildAppButtonLevel(int level, Function onTap) {

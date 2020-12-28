@@ -67,178 +67,195 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      return Scaffold(
-        appBar: AppBar(
-          title: AppText(
-            text: widget.isFavorite == true
-                ? "Favorite"
-                : getCategory(widget.categoryId),
-            textSize: Dimens.paragraphHeaderTextSize,
-            color: AppColors.white,
-          ),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            onPressed: levelController.questionsFromHive.isNullOrBlank
-                ? widget.isFavorite==false?() {
-                    showCupertinoDialog(
-                        context: context,
-                        builder: (context) {
-                          return IOSDialog(
-                            title: 'WARNING',
-                            content:
-                                "If you exit now, your results will be cancel!!!",
-                            cancel: () {
-                              Get.back();
-                            },
-                            confirm: () {
-                              Get.back();
-                              Get.back();
-                            },
-                          );
-                        });
-                  }
-                : () {
-                    Get.back();
-                  }:() {
-              Get.back();
-            },
-          ),
-          actions: <Widget>[
-            levelController.questionsFromHive.isNotEmpty
-                ? widget.isFavorite==false?IconButton(
-                    icon: Icon(Icons.rotate_left),
-                    onPressed: () async {
+    return Scaffold(
+      appBar: AppBar(
+        title: AppText(
+          text: widget.isFavorite == true
+              ? "Favorite"
+              : getCategory(widget.categoryId),
+          textSize: Dimens.paragraphHeaderTextSize,
+          color: AppColors.white,
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: levelController.questionsFromHive.isNullOrBlank
+              ? widget.isFavorite == false
+                  ? () {
                       showCupertinoDialog(
                           context: context,
                           builder: (context) {
                             return IOSDialog(
                               title: 'WARNING',
-                              content: "Do you want to restart your results?",
+                              content:
+                                  "If you exit now, your results will be cancel!!!",
                               cancel: () {
                                 Get.back();
                               },
-                              confirm: () async {
+                              confirm: () {
                                 Get.back();
-                                levelController.questionsFromHive.clear();
-                                final openBox = await Hive.openBox(
-                                    'Table_${widget.level}_${widget.categoryId}_${widget.testNumber}');
-                                await openBox.deleteFromDisk();
-                                // Get.back();
-                                // Get.to(QuestionScreen(
-                                //   level: widget.level,
-                                //   categoryId: widget.categoryId,
-                                //   question: widget.questionTemp,
-                                //   testNumber: widget.testNumber,
-                                //   isFavorite: false,
-                                // ));
-
-                                Get.offAll(MainScreen());
-
-                                final openBoxScore=await Hive.openBox('Table_Score');
-                                await openBoxScore.put('${widget.level}_${widget.categoryId}', {'${widget.testNumber}':'0_0'});
-                                levelController.score.value.clear();
-                                openBoxScore.close();
+                                Get.back();
                               },
                             );
                           });
-                    })
-                : SizedBox():SizedBox(),
-          ],
+                    }
+                  : () {
+                      Get.back();
+                    }
+              : () {
+                  Get.back();
+                },
         ),
-        body: Obx(() {
-          return Container(
-            padding: EdgeInsets.symmetric(horizontal: 5),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                widget.question.length == levelController.index.value
-                    ? widget.question.length != 0
-                        ? widget.isFavorite == false
-                            ? Center(
-                                child: Column(
-                                  children: <Widget>[
-                                    CircularPercentIndicator(
-                                      radius: 120.0,
-                                      lineWidth: 10.0,
-                                      animation: true,
-                                      animationDuration: 1200,
-                                      percent: (countTrue.value /
-                                          widget.question.length),
-                                      header: AppText(
-                                        text: 'Processing',
-                                      ),
-                                      center: Icon(
-                                        Icons.person_pin,
-                                        size: 50.0,
-                                        color: Colors.blue,
-                                      ),
-                                      circularStrokeCap: CircularStrokeCap.butt,
-                                      backgroundColor: Colors.grey,
-                                      progressColor: Colors.green,
-                                    ),
-                                    AppText(
-                                      text:
-                                          'Score: ${countTrue.value}/${widget.question.length}',
-                                    ),
-                                    Dimens.height20,
-                                    AppButton(
-                                      'Check Answer',
-                                      onTap: () async {
-                                        player.play(Sounds.touch);
-                                        Get.to(CheckAnswerScreen(
-                                          question: widget.question,
-                                        ));
+        actions: <Widget>[
+          levelController.questionsFromHive.isNotEmpty
+              ? widget.isFavorite == false
+                  ? IconButton(
+                      icon: Icon(Icons.rotate_left),
+                      onPressed: () async {
+                        showCupertinoDialog(
+                            context: context,
+                            builder: (context) {
+                              return IOSDialog(
+                                title: 'WARNING',
+                                content: "Do you want to restart your results?",
+                                cancel: () {
+                                  Get.back();
+                                },
+                                confirm: () async {
+                                  Get.back();
+                                  levelController.questionsFromHive.clear();
+                                  final openBox = await Hive.openBox(
+                                      'Table_${widget.level}');
+                                  Map level = await openBox.get('${widget.categoryId}');
+                                  level['${widget.testNumber}'] =
+                                      null;
+                                  await openBox.put('${widget.categoryId}', level);
 
-                                        bool exist = await HiveHelper.isExists(
-                                            boxName:
-                                                'Table_${widget.level}_${widget.categoryId}_${widget.testNumber}');
-                                        if (!exist) {
-                                          var listQuestions = widget.question
-                                              .map((e) => e.toJson())
-                                              .toList();
-                                          await HiveHelper.addBoxes(
-                                              listQuestions,
-                                              'Table_${widget.level}_${widget.categoryId}_${widget.testNumber}');
+                                  Get.offAll(MainScreen());
 
-                                          final openBox=await Hive.openBox('Table_Score');
-                                          Map score=await openBox.get('${widget.level}_${widget.categoryId}');
-                                          if(score.isNullOrBlank){
-                                            score={'${widget.testNumber}':'${countTrue.value}_${widget.question.length}'};
-                                          }else{
-                                            score['${widget.testNumber}']='${countTrue.value}_${widget.question.length}';
-                                          }
-                                          await openBox.put('${widget.level}_${widget.categoryId}', score);
-                                          openBox.close();
-                                        }
-                                      },
+                                  final openBoxScore =
+                                      await Hive.openBox('Table_Score');
+                                  Map score=openBoxScore.get('${widget.level}_${widget.categoryId}');
+                                  score['${widget.testNumber}']='0_0';
+                                  await openBoxScore.put(
+                                      '${widget.level}_${widget.categoryId}',
+                                      score);
+                                  levelController.score.value.clear();
+                                  openBoxScore.close();
+                                },
+                              );
+                            });
+                      })
+                  : SizedBox()
+              : SizedBox(),
+        ],
+      ),
+      body: Obx(() {
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 5),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              widget.question.length == levelController.index.value
+                  ? widget.question.length != 0
+                      ? widget.isFavorite == false
+                          ? Center(
+                              child: Column(
+                                children: <Widget>[
+                                  CircularPercentIndicator(
+                                    radius: 120.0,
+                                    lineWidth: 10.0,
+                                    animation: true,
+                                    animationDuration: 1200,
+                                    percent: (countTrue.value /
+                                        widget.question.length),
+                                    header: AppText(
+                                      text: 'Processing',
                                     ),
-                                  ],
-                                ),
-                              )
-                            : Center(
-                                child: AppButton(
-                                  'Check Answer',
-                                  onTap: () async {
-                                    player.play(Sounds.touch);
-                                    Get.to(CheckAnswerScreen(
-                                      question: widget.question,
-                                    ));
-                                  },
-                                ),
-                              )
-                        : Center(
-                            child: AppText(
-                              text: 'No Question...',
-                            ),
-                          )
-                    : listQuestion[levelController.index.value],
-              ],
-            ),
-          );
-        }),
-      );
-    });
+                                    center: Icon(
+                                      Icons.person_pin,
+                                      size: 50.0,
+                                      color: Colors.blue,
+                                    ),
+                                    circularStrokeCap: CircularStrokeCap.butt,
+                                    backgroundColor: Colors.grey,
+                                    progressColor: Colors.green,
+                                  ),
+                                  AppText(
+                                    text:
+                                        'Score: ${countTrue.value}/${widget.question.length}',
+                                  ),
+                                  Dimens.height20,
+                                  AppButton(
+                                    'Check Answer',
+                                    onTap: () async {
+                                      player.play(Sounds.touch);
+                                      Get.to(CheckAnswerScreen(
+                                        question: widget.question,
+                                      ));
+
+                                      var listQuestions = widget.question
+                                          .map((e) => e.toJson())
+                                          .toList();
+                                      final openBoxLevel = await Hive.openBox(
+                                          'Table_${widget.level}');
+                                      Map level = await openBoxLevel
+                                          .get('${widget.categoryId}');
+                                      if (level.isNullOrBlank) {
+                                        level = {
+                                          '${widget.testNumber}': listQuestions
+                                        };
+                                      } else {
+                                        level['${widget.testNumber}'] =
+                                            listQuestions;
+                                      }
+                                      await openBoxLevel.put(
+                                          '${widget.categoryId}', level);
+                                      openBoxLevel.close();
+
+                                      final openBox =
+                                          await Hive.openBox('Table_Score');
+                                      Map score = await openBox.get(
+                                          '${widget.level}_${widget.categoryId}');
+                                      if (score.isNullOrBlank) {
+                                        score = {
+                                          '${widget.testNumber}':
+                                              '${countTrue.value}_${widget.question.length}'
+                                        };
+                                      } else {
+                                        score['${widget.testNumber}'] =
+                                            '${countTrue.value}_${widget.question.length}';
+                                      }
+                                      await openBox.put(
+                                          '${widget.level}_${widget.categoryId}',
+                                          score);
+                                      openBox.close();
+                                    },
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Center(
+                              child: AppButton(
+                                'Check Answer',
+                                onTap: () async {
+                                  player.play(Sounds.touch);
+                                  Get.to(CheckAnswerScreen(
+                                    question: widget.question,
+                                  ));
+                                },
+                              ),
+                            )
+                      : Center(
+                          child: AppText(
+                            text: 'No Question...',
+                          ),
+                        )
+                  : listQuestion[levelController.index.value],
+            ],
+          ),
+        );
+      }),
+    );
   }
 }
 
