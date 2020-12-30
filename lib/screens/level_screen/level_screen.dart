@@ -29,13 +29,9 @@ class LevelScreen extends StatefulWidget {
 class _LevelScreenState extends State<LevelScreen> {
   final LevelController levelController = Get.find();
   final player = AudioCache();
-  Box<dynamic> openBox;
-  Rx<double> average= Rx<double>(0);
-  int sumLength;
 
   @override
   void initState() {
-    sumLength=0;
     super.initState();
   }
 

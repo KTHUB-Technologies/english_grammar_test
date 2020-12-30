@@ -290,7 +290,28 @@ class _CardQuestionState extends State<CardQuestion> {
   @override
   Widget build(BuildContext context) {
     List<String> options = [];
+    RxList<Color> colorsI=RxList<Color>([]);
+    RxList<Icon>  iconsI=RxList<Icon>([]);
     options = widget.question.options.split('///');
+    for(var i=0; i<options.length; i++){
+      colorsI.add(AppColors.transparent);
+      iconsI.add(Icon(null));
+    }
+    if(widget.question.currentChecked.value!=null){
+      if (widget.question.currentChecked.value ==
+          widget.question.correctAnswer - 1) {
+        colorsI[widget.question.currentChecked.value]=AppColors.green;
+        iconsI[widget.question.currentChecked.value]=Icon(Icons.check,color: AppColors.green,);
+        widget.player.play(Sounds.correct);
+      } else {
+        colorsI[widget.question.currentChecked.value]=AppColors.red;
+        colorsI[widget.question.correctAnswer-1]=AppColors.green;
+
+        iconsI[widget.question.currentChecked.value]=Icon(Icons.clear,color: AppColors.red,);
+        iconsI[widget.question.correctAnswer-1]=Icon(Icons.check,color: AppColors.green,);
+        widget.player.play(Sounds.in_correct);
+      }
+    }
     return Obx(() {
       levelController.containFromFavorite = RxList<Question>(levelController
           .questionsHiveFavorite
@@ -368,6 +389,8 @@ class _CardQuestionState extends State<CardQuestion> {
                         if (widget.isFavorite == true) {
                           widget.question.currentChecked.value =
                               widget.question.correctAnswer - 1;
+                          colorsI[widget.question.currentChecked.value]=AppColors.green;
+                          iconsI[widget.question.currentChecked.value]=Icon(Icons.check,color: AppColors.green,);
                         }
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 5.0),
@@ -382,36 +405,14 @@ class _CardQuestionState extends State<CardQuestion> {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                    color: widget.question.currentChecked
-                                                .value ==
-                                            options.indexOf(e)
-                                        ? widget.question.currentChecked
-                                                    .value ==
-                                                widget.question.correctAnswer -
-                                                    1
-                                            ? AppColors.green
-                                            : AppColors.red
-                                        : AppColors.transparent,
+                                    color: colorsI[options.indexOf(e)],
                                   ),
                                 ),
                                 child: ListTile(
                                   title: AppText(
                                     text: e,
                                   ),
-                                  trailing: widget
-                                              .question.currentChecked.value ==
-                                          options.indexOf(e)
-                                      ? widget.question.currentChecked.value ==
-                                              widget.question.correctAnswer - 1
-                                          ? Icon(
-                                              Icons.check,
-                                              color: Colors.green,
-                                            )
-                                          : Icon(
-                                              Icons.clear,
-                                              color: Colors.red,
-                                            )
-                                      : SizedBox(),
+                                  trailing: iconsI[options.indexOf(e)],
                                 ),
                               ),
                               onTap: () {
@@ -419,8 +420,15 @@ class _CardQuestionState extends State<CardQuestion> {
                                     options.indexOf(e);
                                 if (widget.question.currentChecked.value ==
                                     widget.question.correctAnswer - 1) {
+                                  colorsI[widget.question.currentChecked.value]=AppColors.green;
+                                  iconsI[widget.question.currentChecked.value]=Icon(Icons.check,color: AppColors.green,);
                                   widget.player.play(Sounds.correct);
                                 } else {
+                                  colorsI[widget.question.currentChecked.value]=AppColors.red;
+                                  colorsI[widget.question.correctAnswer-1]=AppColors.green;
+
+                                  iconsI[widget.question.currentChecked.value]=Icon(Icons.clear,color: AppColors.red,);
+                                  iconsI[widget.question.correctAnswer-1]=Icon(Icons.check,color: AppColors.green,);
                                   widget.player.play(Sounds.in_correct);
                                 }
                               },

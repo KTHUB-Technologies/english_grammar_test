@@ -12,7 +12,6 @@ void onWidgetBuildDone(function) {
 double subTotal(List<double> prices) {
   var subTotal;
   if (prices.isNotEmpty) {
-    prices.removeWhere((element) => element.toString()=='NaN');
     subTotal = prices.reduce((a, b) => a + b);
     return subTotal/double.tryParse(prices.length.toString());
   } else
