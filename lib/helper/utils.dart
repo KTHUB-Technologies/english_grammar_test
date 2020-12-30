@@ -8,12 +8,26 @@ void onWidgetBuildDone(function) {
     function();
   });
 }
+
+double subTotal(List<double> prices) {
+  var subTotal;
+  if (prices.isNotEmpty) {
+    prices.removeWhere((element) => element.toString()=='NaN');
+    subTotal = prices.reduce((a, b) => a + b);
+    return subTotal/double.tryParse(prices.length.toString());
+  } else
+    subTotal = 0.0;
+  return subTotal==0.0?subTotal:subTotal/double.tryParse(prices.length.toString());
+}
+
 getScreenWidth(BuildContext context){
   return MediaQuery.of(context).size.width;
 }
+
 getScreenHeight(BuildContext context){
   return MediaQuery.of(context).size.height;
 }
+
 getLevel(num levelId){
   switch(levelId){
     case 1:
