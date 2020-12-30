@@ -3,6 +3,7 @@ class Constants {
       '^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*\$';
 
   static const List<String> choices =<String>[
-    'Favorite'
+    'Favorite',
+    'Progress'
   ];
 }

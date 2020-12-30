@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:quiver/iterables.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 
 class LevelController extends GetxController {
@@ -15,6 +14,8 @@ class LevelController extends GetxController {
   List<int> levels = List<int>();
   List<int> distinctLevel = List<int>();
 
+  RxList<Question> containFromFavorite=RxList<Question>([]);
+
   RxList<Question> questionsFromCategory = RxList<Question>([]);
   RxList<List<Question>> listChunkQuestions = RxList<List<Question>>([]);
   List<Question> listQuestions;
@@ -23,6 +24,10 @@ class LevelController extends GetxController {
   RxList<Widget> answers = RxList<Widget>([]);
   RxList<Question> questionsFromHive = RxList<Question>([]);
   RxList<Question> questionsHiveFavorite = RxList<Question>([]);
+
+  Rx<Map> score=Rx<Map>({});
+
+  Rx<Map> scoreOfCate=Rx<Map>({});
 
   Future loadJson() async {
     isShowLoading.value = true;
@@ -34,17 +39,19 @@ class LevelController extends GetxController {
     levels = listQuestions.map((e) => e.level).toList();
     distinctLevel = levels.toSet().toList();
     distinctLevel.sort();
-
-    isShowLoading.value = false;
+    isShowLoading.value=false;
   }
 
   Future loadQuestionFromLevel(int level) async {
+    isShowLoading.value = true;
     await loadJson();
     questions =
         RxList<Question>(listQuestions.where((f) => f.level == level).toList());
+    isShowLoading.value=false;
   }
 
   Future loadQuestionFromLevelAndCategory(int level, int categoryId) async {
+    isShowLoading.value = true;
     await loadQuestionFromLevel(level);
 
     questionsFromCategory = RxList<Question>(
@@ -59,6 +66,7 @@ class LevelController extends GetxController {
               ? questionsFromCategory.length
               : i + 20));
     }
+    isShowLoading.value = false;
   }
 
   // RxList<Widget> answers = RxList<Widget>([]);
