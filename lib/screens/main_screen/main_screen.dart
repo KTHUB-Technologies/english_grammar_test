@@ -7,7 +7,6 @@ import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
-import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/level_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
@@ -22,13 +21,15 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final LevelController levelController = Get.find();
-  final player = AudioCache();
+  AudioPlayer advancedPlayer;
+  AudioCache audioCache;
 
   @override
   void initState() {
     levelController.categories = [];
     levelController.distinctCategory = [];
     super.initState();
+    audioCache=new AudioCache();
   }
 
   @override
@@ -87,8 +88,8 @@ class _MainScreenState extends State<MainScreen> {
   AppButton buildAppButtonLevel(int level, Function onTap) {
     return AppButton(
       getLevel(level),
-      onTap: () {
-        player.play(Sounds.touch);
+      onTap: () async{
+        await audioCache.play(Sounds.touch);
         onTap();
       },
     );

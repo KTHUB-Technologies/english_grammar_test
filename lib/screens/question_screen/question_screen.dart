@@ -1,4 +1,5 @@
 import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -41,12 +42,12 @@ class QuestionScreen extends StatefulWidget {
 
 class _QuestionScreenState extends State<QuestionScreen> {
   final LevelController levelController = Get.find();
-  final player = AudioCache();
+  final audioCache = AudioCache();
   Rx<int> countTrue = Rx<int>();
 
   List<Widget> get listQuestion => widget.question
       .map((question) => CardQuestion(
-            player: player,
+            player: audioCache,
             question: question,
             countTrue: countTrue,
             listQuestions: widget.question,
@@ -125,17 +126,19 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                   levelController.questionsFromHive.clear();
                                   final openBox = await Hive.openBox(
                                       'Table_${widget.level}');
-                                  Map level = await openBox.get('${widget.categoryId}');
-                                  level['${widget.testNumber}'] =
-                                      null;
-                                  await openBox.put('${widget.categoryId}', level);
+                                  Map level =
+                                      await openBox.get('${widget.categoryId}');
+                                  level['${widget.testNumber}'] = null;
+                                  await openBox.put(
+                                      '${widget.categoryId}', level);
 
                                   Get.offAll(MainScreen());
 
-                                  final openBoxScore =
-                                      await Hive.openBox('Table_Score_${widget.level}');
-                                  Map score=openBoxScore.get('${widget.level}_${widget.categoryId}');
-                                  score['${widget.testNumber}']='0_0';
+                                  final openBoxScore = await Hive.openBox(
+                                      'Table_Score_${widget.level}');
+                                  Map score = openBoxScore.get(
+                                      '${widget.level}_${widget.categoryId}');
+                                  score['${widget.testNumber}'] = '0_0';
                                   await openBoxScore.put(
                                       '${widget.level}_${widget.categoryId}',
                                       score);
@@ -188,7 +191,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                   AppButton(
                                     'Check Answer',
                                     onTap: () async {
-                                      player.play(Sounds.touch);
+                                      await audioCache.play(Sounds.touch);
                                       Get.to(CheckAnswerScreen(
                                         question: widget.question,
                                       ));
@@ -212,8 +215,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                           '${widget.categoryId}', level);
                                       openBoxLevel.close();
 
-                                      final openBox =
-                                          await Hive.openBox('Table_Score_${widget.level}');
+                                      final openBox = await Hive.openBox(
+                                          'Table_Score_${widget.level}');
                                       Map score = await openBox.get(
                                           '${widget.level}_${widget.categoryId}');
                                       if (score.isNullOrBlank) {
@@ -238,7 +241,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                               child: AppButton(
                                 'Check Answer',
                                 onTap: () async {
-                                  player.play(Sounds.touch);
+                                  await audioCache.play(Sounds.touch);
                                   Get.to(CheckAnswerScreen(
                                     question: widget.question,
                                   ));
@@ -290,26 +293,33 @@ class _CardQuestionState extends State<CardQuestion> {
   @override
   Widget build(BuildContext context) {
     List<String> options = [];
-    RxList<Color> colorsI=RxList<Color>([]);
-    RxList<Icon>  iconsI=RxList<Icon>([]);
+    RxList<Color> colorsI = RxList<Color>([]);
+    RxList<Icon> iconsI = RxList<Icon>([]);
     options = widget.question.options.split('///');
-    for(var i=0; i<options.length; i++){
+    for (var i = 0; i < options.length; i++) {
       colorsI.add(AppColors.transparent);
       iconsI.add(Icon(null));
     }
-    if(widget.question.currentChecked.value!=null){
+    if (widget.question.currentChecked.value != null) {
       if (widget.question.currentChecked.value ==
           widget.question.correctAnswer - 1) {
-        colorsI[widget.question.currentChecked.value]=AppColors.green;
-        iconsI[widget.question.currentChecked.value]=Icon(Icons.check,color: AppColors.green,);
-        widget.player.play(Sounds.correct);
+        colorsI[widget.question.currentChecked.value] = AppColors.green;
+        iconsI[widget.question.currentChecked.value] = Icon(
+          Icons.check,
+          color: AppColors.green,
+        );
       } else {
-        colorsI[widget.question.currentChecked.value]=AppColors.red;
-        colorsI[widget.question.correctAnswer-1]=AppColors.green;
+        colorsI[widget.question.currentChecked.value] = AppColors.red;
+        colorsI[widget.question.correctAnswer - 1] = AppColors.green;
 
-        iconsI[widget.question.currentChecked.value]=Icon(Icons.clear,color: AppColors.red,);
-        iconsI[widget.question.correctAnswer-1]=Icon(Icons.check,color: AppColors.green,);
-        widget.player.play(Sounds.in_correct);
+        iconsI[widget.question.currentChecked.value] = Icon(
+          Icons.clear,
+          color: AppColors.red,
+        );
+        iconsI[widget.question.correctAnswer - 1] = Icon(
+          Icons.check,
+          color: AppColors.green,
+        );
       }
     }
     return Obx(() {
@@ -389,8 +399,12 @@ class _CardQuestionState extends State<CardQuestion> {
                         if (widget.isFavorite == true) {
                           widget.question.currentChecked.value =
                               widget.question.correctAnswer - 1;
-                          colorsI[widget.question.currentChecked.value]=AppColors.green;
-                          iconsI[widget.question.currentChecked.value]=Icon(Icons.check,color: AppColors.green,);
+                          colorsI[widget.question.currentChecked.value] =
+                              AppColors.green;
+                          iconsI[widget.question.currentChecked.value] = Icon(
+                            Icons.check,
+                            color: AppColors.green,
+                          );
                         }
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 5.0),
@@ -415,21 +429,36 @@ class _CardQuestionState extends State<CardQuestion> {
                                   trailing: iconsI[options.indexOf(e)],
                                 ),
                               ),
-                              onTap: () {
+                              onTap: () async{
                                 widget.question.currentChecked.value =
                                     options.indexOf(e);
                                 if (widget.question.currentChecked.value ==
                                     widget.question.correctAnswer - 1) {
-                                  colorsI[widget.question.currentChecked.value]=AppColors.green;
-                                  iconsI[widget.question.currentChecked.value]=Icon(Icons.check,color: AppColors.green,);
-                                  widget.player.play(Sounds.correct);
+                                  await widget.player.play(Sounds.correct);
+                                  colorsI[widget.question.currentChecked
+                                      .value] = AppColors.green;
+                                  iconsI[widget.question.currentChecked.value] =
+                                      Icon(
+                                    Icons.check,
+                                    color: AppColors.green,
+                                  );
                                 } else {
-                                  colorsI[widget.question.currentChecked.value]=AppColors.red;
-                                  colorsI[widget.question.correctAnswer-1]=AppColors.green;
+                                  await widget.player.play(Sounds.in_correct);
+                                  colorsI[widget.question.currentChecked
+                                      .value] = AppColors.red;
+                                  colorsI[widget.question.correctAnswer - 1] =
+                                      AppColors.green;
 
-                                  iconsI[widget.question.currentChecked.value]=Icon(Icons.clear,color: AppColors.red,);
-                                  iconsI[widget.question.correctAnswer-1]=Icon(Icons.check,color: AppColors.green,);
-                                  widget.player.play(Sounds.in_correct);
+                                  iconsI[widget.question.currentChecked.value] =
+                                      Icon(
+                                    Icons.clear,
+                                    color: AppColors.red,
+                                  );
+                                  iconsI[widget.question.correctAnswer - 1] =
+                                      Icon(
+                                    Icons.check,
+                                    color: AppColors.green,
+                                  );
                                 }
                               },
                             ),
@@ -460,8 +489,8 @@ class _CardQuestionState extends State<CardQuestion> {
                         levelController.index.value + 1 > 1
                             ? AppButton(
                                 'PREVIOUS',
-                                onTap: () {
-                                  widget.player.play(Sounds.touch);
+                                onTap: () async{
+                                  await widget.player.play(Sounds.touch);
                                   levelController.index.value--;
                                 },
                               )
@@ -472,8 +501,8 @@ class _CardQuestionState extends State<CardQuestion> {
                                     (levelController.index.value + 1)
                                 ? AppButton(
                                     'NEXT',
-                                    onTap: () {
-                                      widget.player.play(Sounds.touch);
+                                    onTap: () async{
+                                      await widget.player.play(Sounds.touch);
                                       levelController.index.value++;
                                     },
                                   )
@@ -483,9 +512,9 @@ class _CardQuestionState extends State<CardQuestion> {
                                         ? AppButton(
                                             'SUBMIT',
                                             onTap: widget.isFavorite == false
-                                                ? () {
+                                                ? () async{
                                                     widget.countTrue.value = 0;
-                                                    widget.player
+                                                    await widget.player
                                                         .play(Sounds.touch);
                                                     for (var checkTrue in widget
                                                         .listQuestions) {

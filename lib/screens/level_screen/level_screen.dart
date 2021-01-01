@@ -28,7 +28,7 @@ class LevelScreen extends StatefulWidget {
 
 class _LevelScreenState extends State<LevelScreen> {
   final LevelController levelController = Get.find();
-  final player = AudioCache();
+  final audioCache = AudioCache();
 
   @override
   void initState() {
@@ -154,18 +154,20 @@ class _LevelScreenState extends State<LevelScreen> {
                             child: ListView(
                               children:
                                   levelController.distinctCategory.map((e) {
-                                return buildListCategories(
-                                    context,
-                                    e,
-                                    widget.isProgress == false
-                                        ? () async {
-                                            await levelController
-                                                .loadQuestionFromLevelAndCategory(
-                                                    widget.level, e);
-                                            modalBottomSheet(getCategory(e),
-                                                widget.level, e);
-                                          }
-                                        : () {});
+                                return FutureBuilder(future: getScoreOfCate(e),builder: (context, snapshot){
+                                  return buildListCategories(
+                                      context,
+                                      e,
+                                      widget.isProgress == false
+                                          ? () async {
+                                        await levelController
+                                            .loadQuestionFromLevelAndCategory(
+                                            widget.level, e);
+                                        modalBottomSheet(getCategory(e),
+                                            widget.level, e);
+                                      }
+                                          : () {},Rx<double>(snapshot.data));
+                                });
                               }).toList(),
                             ),
                           ),
@@ -184,11 +186,7 @@ class _LevelScreenState extends State<LevelScreen> {
     );
   }
 
-  Widget buildListCategories(BuildContext context, int index, Function onTap) {
-    Rx<double> score = Rx<double>(0);
-    getScoreOfCate(index).then((value) {
-      score.value = value;
-    });
+  Widget buildListCategories(BuildContext context, int index, Function onTap, Rx<double> score) {
     return Obx(() {
       return GestureDetector(
         child: Card(
@@ -260,7 +258,7 @@ class _LevelScreenState extends State<LevelScreen> {
           ),
         ),
         onTap: () async {
-          player.play(Sounds.touch);
+          await audioCache.play(Sounds.touch);
           onTap();
         },
       );
