@@ -4,15 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:the_enest_english_grammar_test/assets/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
+import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
+import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/question_screen/question_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
@@ -28,7 +29,6 @@ class LevelScreen extends StatefulWidget {
 
 class _LevelScreenState extends State<LevelScreen> {
   final LevelController levelController = Get.find();
-  final audioCache = AudioCache();
 
   @override
   void initState() {
@@ -174,7 +174,7 @@ class _LevelScreenState extends State<LevelScreen> {
                         ],
                       ),
                     ),
-                    AppText(text: 'Test}'),
+                    Center(child: AppText(text: 'COMING SOON')),
                   ]),
                 ),
               ],
@@ -258,7 +258,7 @@ class _LevelScreenState extends State<LevelScreen> {
           ),
         ),
         onTap: () async {
-          await audioCache.play(Sounds.touch);
+          SoundsHelper.checkAudio(Sounds.touch);
           onTap();
         },
       );

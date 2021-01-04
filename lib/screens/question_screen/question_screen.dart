@@ -5,14 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:the_enest_english_grammar_test/assets/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
+import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
+import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/check_answer/check_answer_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
@@ -42,12 +43,10 @@ class QuestionScreen extends StatefulWidget {
 
 class _QuestionScreenState extends State<QuestionScreen> {
   final LevelController levelController = Get.find();
-  final audioCache = AudioCache();
   Rx<int> countTrue = Rx<int>();
 
   List<Widget> get listQuestion => widget.question
       .map((question) => CardQuestion(
-            player: audioCache,
             question: question,
             countTrue: countTrue,
             listQuestions: widget.question,
@@ -191,7 +190,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                   AppButton(
                                     'Check Answer',
                                     onTap: () async {
-                                      await audioCache.play(Sounds.touch);
+                                      SoundsHelper.checkAudio(Sounds.touch);
                                       Get.to(CheckAnswerScreen(
                                         question: widget.question,
                                       ));
@@ -238,16 +237,14 @@ class _QuestionScreenState extends State<QuestionScreen> {
                               ),
                             )
                           : Center(
-                              child: AppButton(
-                                'Check Answer',
+                            child: AppButton(
+                                'PREVIOUS',
                                 onTap: () async {
-                                  await audioCache.play(Sounds.touch);
-                                  Get.to(CheckAnswerScreen(
-                                    question: widget.question,
-                                  ));
+                                  SoundsHelper.checkAudio(Sounds.touch);
+                                  levelController.index.value--;
                                 },
                               ),
-                            )
+                          )
                       : Center(
                           child: AppText(
                             text: 'No Question...',
@@ -265,14 +262,12 @@ class _QuestionScreenState extends State<QuestionScreen> {
 class CardQuestion extends StatefulWidget {
   const CardQuestion(
       {Key key,
-      this.player,
       this.question,
       this.countTrue,
       this.listQuestions,
       this.isFavorite})
       : super(key: key);
 
-  final AudioCache player;
   final Question question;
   final Rx<int> countTrue;
   final RxList<Question> listQuestions;
@@ -300,28 +295,38 @@ class _CardQuestionState extends State<CardQuestion> {
       colorsI.add(AppColors.transparent);
       iconsI.add(Icon(null));
     }
-    if (widget.question.currentChecked.value != null) {
-      if (widget.question.currentChecked.value ==
-          widget.question.correctAnswer - 1) {
-        colorsI[widget.question.currentChecked.value] = AppColors.green;
-        iconsI[widget.question.currentChecked.value] = Icon(
-          Icons.check,
-          color: AppColors.green,
-        );
-      } else {
-        colorsI[widget.question.currentChecked.value] = AppColors.red;
-        colorsI[widget.question.correctAnswer - 1] = AppColors.green;
+    if (widget.isFavorite == true) {
+      widget.question.currentChecked.value = widget.question.correctAnswer - 1;
+      colorsI[widget.question.currentChecked.value] = AppColors.green;
+      iconsI[widget.question.currentChecked.value] = Icon(
+        Icons.check,
+        color: AppColors.green,
+      );
+    } else {
+      if (widget.question.currentChecked.value != null) {
+        if (widget.question.currentChecked.value ==
+            widget.question.correctAnswer - 1) {
+          colorsI[widget.question.currentChecked.value] = AppColors.green;
+          iconsI[widget.question.currentChecked.value] = Icon(
+            Icons.check,
+            color: AppColors.green,
+          );
+        } else {
+          colorsI[widget.question.currentChecked.value] = AppColors.red;
+          colorsI[widget.question.correctAnswer - 1] = AppColors.green;
 
-        iconsI[widget.question.currentChecked.value] = Icon(
-          Icons.clear,
-          color: AppColors.red,
-        );
-        iconsI[widget.question.correctAnswer - 1] = Icon(
-          Icons.check,
-          color: AppColors.green,
-        );
+          iconsI[widget.question.currentChecked.value] = Icon(
+            Icons.clear,
+            color: AppColors.red,
+          );
+          iconsI[widget.question.correctAnswer - 1] = Icon(
+            Icons.check,
+            color: AppColors.green,
+          );
+        }
       }
     }
+
     return Obx(() {
       levelController.containFromFavorite = RxList<Question>(levelController
           .questionsHiveFavorite
@@ -396,73 +401,65 @@ class _CardQuestionState extends State<CardQuestion> {
                     Dimens.height10,
                     Column(
                       children: options.map((e) {
-                        if (widget.isFavorite == true) {
-                          widget.question.currentChecked.value =
-                              widget.question.correctAnswer - 1;
-                          colorsI[widget.question.currentChecked.value] =
-                              AppColors.green;
-                          iconsI[widget.question.currentChecked.value] = Icon(
-                            Icons.check,
-                            color: AppColors.green,
-                          );
-                        }
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 5.0),
-                          child: AbsorbPointer(
-                            ignoringSemantics: true,
-                            absorbing: widget
-                                    .question.currentChecked.value.isNullOrBlank
-                                ? false
-                                : true,
-                            child: GestureDetector(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: colorsI[options.indexOf(e)],
+                          child: Obx(() {
+                            return AbsorbPointer(
+                              ignoringSemantics: true,
+                              absorbing: widget.question.currentChecked.value
+                                      .isNullOrBlank
+                                  ? false
+                                  : true,
+                              child: GestureDetector(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: colorsI[options.indexOf(e)],
+                                    ),
+                                  ),
+                                  child: ListTile(
+                                    title: AppText(
+                                      text: e,
+                                    ),
+                                    trailing: iconsI[options.indexOf(e)],
                                   ),
                                 ),
-                                child: ListTile(
-                                  title: AppText(
-                                    text: e,
-                                  ),
-                                  trailing: iconsI[options.indexOf(e)],
-                                ),
-                              ),
-                              onTap: () async{
-                                widget.question.currentChecked.value =
-                                    options.indexOf(e);
-                                if (widget.question.currentChecked.value ==
-                                    widget.question.correctAnswer - 1) {
-                                  await widget.player.play(Sounds.correct);
-                                  colorsI[widget.question.currentChecked
-                                      .value] = AppColors.green;
-                                  iconsI[widget.question.currentChecked.value] =
-                                      Icon(
-                                    Icons.check,
-                                    color: AppColors.green,
-                                  );
-                                } else {
-                                  await widget.player.play(Sounds.in_correct);
-                                  colorsI[widget.question.currentChecked
-                                      .value] = AppColors.red;
-                                  colorsI[widget.question.correctAnswer - 1] =
-                                      AppColors.green;
+                                onTap: () async {
+                                  widget.question.currentChecked.value =
+                                      options.indexOf(e);
+                                  if (widget.question.currentChecked.value ==
+                                      widget.question.correctAnswer - 1) {
+                                    SoundsHelper.checkAudio(Sounds.correct);
+                                    colorsI[widget.question.currentChecked
+                                        .value] = AppColors.green;
+                                    iconsI[widget
+                                        .question.currentChecked.value] = Icon(
+                                      Icons.check,
+                                      color: AppColors.green,
+                                    );
+                                  } else {
+                                    SoundsHelper.checkAudio(Sounds.in_correct);
+                                    colorsI[widget.question.currentChecked
+                                        .value] = AppColors.red;
+                                    colorsI[widget.question.correctAnswer - 1] =
+                                        AppColors.green;
 
-                                  iconsI[widget.question.currentChecked.value] =
-                                      Icon(
-                                    Icons.clear,
-                                    color: AppColors.red,
-                                  );
-                                  iconsI[widget.question.correctAnswer - 1] =
-                                      Icon(
-                                    Icons.check,
-                                    color: AppColors.green,
-                                  );
-                                }
-                              },
-                            ),
-                          ),
+                                    iconsI[widget
+                                        .question.currentChecked.value] = Icon(
+                                      Icons.clear,
+                                      color: AppColors.red,
+                                    );
+                                    iconsI[widget.question.correctAnswer - 1] =
+                                        Icon(
+                                      Icons.check,
+                                      color: AppColors.green,
+                                    );
+                                  }
+                                },
+                              ),
+                            );
+                          }),
                         );
                       }).toList(),
                     ),
@@ -489,8 +486,8 @@ class _CardQuestionState extends State<CardQuestion> {
                         levelController.index.value + 1 > 1
                             ? AppButton(
                                 'PREVIOUS',
-                                onTap: () async{
-                                  await widget.player.play(Sounds.touch);
+                                onTap: () async {
+                                  SoundsHelper.checkAudio(Sounds.touch);
                                   levelController.index.value--;
                                 },
                               )
@@ -501,8 +498,8 @@ class _CardQuestionState extends State<CardQuestion> {
                                     (levelController.index.value + 1)
                                 ? AppButton(
                                     'NEXT',
-                                    onTap: () async{
-                                      await widget.player.play(Sounds.touch);
+                                    onTap: () async {
+                                      SoundsHelper.checkAudio(Sounds.touch);
                                       levelController.index.value++;
                                     },
                                   )
@@ -512,10 +509,10 @@ class _CardQuestionState extends State<CardQuestion> {
                                         ? AppButton(
                                             'SUBMIT',
                                             onTap: widget.isFavorite == false
-                                                ? () async{
+                                                ? () async {
                                                     widget.countTrue.value = 0;
-                                                    await widget.player
-                                                        .play(Sounds.touch);
+                                                    SoundsHelper.checkAudio(
+                                                        Sounds.touch);
                                                     for (var checkTrue in widget
                                                         .listQuestions) {
                                                       if (checkTrue

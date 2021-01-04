@@ -2,11 +2,12 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:the_enest_english_grammar_test/assets/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
+import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
+import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/level_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
@@ -21,15 +22,12 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final LevelController levelController = Get.find();
-  AudioPlayer advancedPlayer;
-  AudioCache audioCache;
 
   @override
   void initState() {
     levelController.categories = [];
     levelController.distinctCategory = [];
     super.initState();
-    audioCache=new AudioCache();
   }
 
   @override
@@ -89,7 +87,7 @@ class _MainScreenState extends State<MainScreen> {
     return AppButton(
       getLevel(level),
       onTap: () async{
-        await audioCache.play(Sounds.touch);
+        SoundsHelper.checkAudio(Sounds.touch);
         onTap();
       },
     );

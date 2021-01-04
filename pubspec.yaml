@@ -63,6 +63,3 @@ flutter:
     - lib/res/strings/en.json
     - lib/res/strings/vi.json
     - lib/res/strings/Question_Data.json
-    - assets/sounds/sound_correct.mp3
-    - assets/sounds/sound_in_correct.mp3
-    - assets/sounds/sound_touch.mp3
