@@ -236,15 +236,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                 ],
                               ),
                             )
-                          : Center(
-                            child: AppButton(
-                                'PREVIOUS',
-                                onTap: () async {
-                                  SoundsHelper.checkAudio(Sounds.touch);
-                                  levelController.index.value--;
-                                },
-                              ),
-                          )
+                          : SizedBox()
                       : Center(
                           child: AppText(
                             text: 'No Question...',
@@ -377,6 +369,8 @@ class _CardQuestionState extends State<CardQuestion> {
                                   .indexOf(widget.question));
                               widget.listQuestions.removeWhere((element) =>
                                   element.id == widget.question.id);
+                              if(levelController.index.value>0)
+                                levelController.index.value--;
                             } else {
                               openBox.deleteAt(levelController
                                   .questionsHiveFavorite
