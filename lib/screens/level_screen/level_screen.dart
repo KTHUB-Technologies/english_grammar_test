@@ -1,6 +1,7 @@
 import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
@@ -29,6 +30,7 @@ class LevelScreen extends StatefulWidget {
 
 class _LevelScreenState extends State<LevelScreen> {
   final LevelController levelController = Get.find();
+  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
@@ -107,8 +109,9 @@ class _LevelScreenState extends State<LevelScreen> {
                                       child: Row(
                                         children: <Widget>[
                                           Expanded(
-                                              child:
-                                                  AppText(text: 'Delete All At This Level')),
+                                              child: AppText(
+                                                  text:
+                                                      'Delete All At This Level')),
                                           Dimens.width20,
                                           GestureDetector(
                                             child: Icon(Icons.delete),
@@ -154,20 +157,32 @@ class _LevelScreenState extends State<LevelScreen> {
                             child: ListView(
                               children:
                                   levelController.distinctCategory.map((e) {
-                                return FutureBuilder(future: getScoreOfCate(e),builder: (context, snapshot){
-                                  return buildListCategories(
-                                      context,
-                                      e,
-                                      widget.isProgress == false
-                                          ? () async {
-                                        await levelController
-                                            .loadQuestionFromLevelAndCategory(
-                                            widget.level, e);
-                                        modalBottomSheet(getCategory(e),
-                                            widget.level, e);
-                                      }
-                                          : () {},Rx<double>(snapshot.data));
-                                });
+                                return AnimationConfiguration.staggeredList(
+                                  position: levelController.distinctCategory.indexOf(e),
+                                    child: SlideAnimation(
+                                  verticalOffset: 100.0,
+                                  child: FadeInAnimation(
+                                    child: FutureBuilder(
+                                        future: getScoreOfCate(e),
+                                        builder: (context, snapshot) {
+                                          return buildListCategories(
+                                              context,
+                                              e,
+                                              widget.isProgress == false
+                                                  ? () async {
+                                                      await levelController
+                                                          .loadQuestionFromLevelAndCategory(
+                                                              widget.level, e);
+                                                      modalBottomSheet(
+                                                          getCategory(e),
+                                                          widget.level,
+                                                          e);
+                                                    }
+                                                  : () {},
+                                              Rx<double>(snapshot.data));
+                                        }),
+                                  ),
+                                ));
                               }).toList(),
                             ),
                           ),
@@ -186,7 +201,8 @@ class _LevelScreenState extends State<LevelScreen> {
     );
   }
 
-  Widget buildListCategories(BuildContext context, int index, Function onTap, Rx<double> score) {
+  Widget buildListCategories(
+      BuildContext context, int index, Function onTap, Rx<double> score) {
     return Obx(() {
       return GestureDetector(
         child: Card(
@@ -265,12 +281,12 @@ class _LevelScreenState extends State<LevelScreen> {
     });
   }
 
-  Future<double> getScoreOfCate(int index) async{
+  Future<double> getScoreOfCate(int index) async {
     double score = 0;
     Map scoreCate = new Map();
     int length = 0;
     final openBox = await Hive.openBox('Table_Score_${widget.level}');
-    if (openBox.get('${widget.level}_$index')!=null) {
+    if (openBox.get('${widget.level}_$index') != null) {
       scoreCate.addAll(openBox.get('${widget.level}_$index'));
       scoreCate.forEach((key, value) {
         List<String> split = value.toString().split('_');

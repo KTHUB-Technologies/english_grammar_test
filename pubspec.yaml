@@ -31,9 +31,10 @@ dependencies:
   flutter_rating_bar: ^3.2.0+1
   dio:
   google_fonts: ^1.1.1
-  audioplayers: ^0.17.0
+  audioplayers: ^0.17.1
   hive: ^1.4.4+1
   hive_flutter: ^0.3.1
+  flutter_staggered_animations: ^0.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
