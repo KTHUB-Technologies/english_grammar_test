@@ -1,3 +1,5 @@
+
+import 'package:animated_widgets/animated_widgets.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
@@ -46,12 +48,23 @@ class _QuestionScreenState extends State<QuestionScreen> {
   Rx<int> countTrue = Rx<int>();
 
   List<Widget> get listQuestion => widget.question
-      .map((question) => CardQuestion(
-            question: question,
-            countTrue: countTrue,
-            listQuestions: widget.question,
-            isFavorite: widget.isFavorite,
-          ))
+      .map((question) => TranslationAnimatedWidget.tween(
+        enabled: true,
+        duration: Duration(milliseconds: 1000),
+        translationDisabled: Offset(0,-400),
+        translationEnabled: Offset(0,0),
+        child: OpacityAnimatedWidget.tween(
+          enabled: true,
+          opacityDisabled: 0,
+          opacityEnabled: 1,
+          child: CardQuestion(
+                question: question,
+                countTrue: countTrue,
+                listQuestions: widget.question,
+                isFavorite: widget.isFavorite,
+              ),
+        ),
+      ))
       .toList();
 
   @override
@@ -318,7 +331,6 @@ class _CardQuestionState extends State<CardQuestion> {
         }
       }
     }
-
     return Obx(() {
       levelController.containFromFavorite = RxList<Question>(levelController
           .questionsHiveFavorite
@@ -405,7 +417,8 @@ class _CardQuestionState extends State<CardQuestion> {
                                   ? false
                                   : true,
                               child: GestureDetector(
-                                child: Container(
+                                child: AnimatedContainer(
+                                  duration: Duration(milliseconds: 300),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(

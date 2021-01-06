@@ -15,6 +15,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.41.1"
+  animated_widgets:
+    dependency: "direct main"
+    description:
+      name: animated_widgets
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.6"
   archive:
     dependency: transitive
     description:
@@ -284,13 +291,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.2.0+1"
-  flutter_staggered_animations:
-    dependency: "direct main"
-    description:
-      name: flutter_staggered_animations
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -462,13 +462,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.3+2"
-  page_transition:
-    dependency: "direct main"
-    description:
-      name: page_transition
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.7+5"
   path:
     dependency: transitive
     description:
@@ -581,13 +574,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.5"
-  rxdart:
-    dependency: "direct main"
-    description:
-      name: rxdart
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.25.0"
   shared_preferences:
     dependency: "direct main"
     description:

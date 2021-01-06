@@ -1,10 +1,11 @@
+
 import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:the_enest_english_grammar_test/commons/animted_list.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
@@ -153,39 +154,31 @@ class _LevelScreenState extends State<LevelScreen> {
                                     ),
                                   ],
                                 ),
-                          Expanded(
-                            child: ListView(
-                              children:
-                                  levelController.distinctCategory.map((e) {
-                                return AnimationConfiguration.staggeredList(
-                                  position: levelController.distinctCategory.indexOf(e),
-                                    child: SlideAnimation(
-                                  verticalOffset: 100.0,
-                                  child: FadeInAnimation(
-                                    child: FutureBuilder(
-                                        future: getScoreOfCate(e),
-                                        builder: (context, snapshot) {
-                                          return buildListCategories(
-                                              context,
-                                              e,
-                                              widget.isProgress == false
-                                                  ? () async {
-                                                      await levelController
-                                                          .loadQuestionFromLevelAndCategory(
-                                                              widget.level, e);
-                                                      modalBottomSheet(
-                                                          getCategory(e),
-                                                          widget.level,
-                                                          e);
-                                                    }
-                                                  : () {},
-                                              Rx<double>(snapshot.data));
-                                        }),
-                                  ),
-                                ));
-                              }).toList(),
-                            ),
-                          ),
+                          Expanded(child: ListView(
+                            children: levelController.distinctCategory.map((e) {
+                              return WidgetAnimator(
+                                FutureBuilder(
+                                    future: getScoreOfCate(e),
+                                    builder: (context, snapshot) {
+                                      return buildListCategories(
+                                          context,
+                                          e,
+                                          widget.isProgress == false
+                                              ? () async {
+                                            await levelController
+                                                .loadQuestionFromLevelAndCategory(
+                                                widget.level, e);
+                                            modalBottomSheet(
+                                                getCategory(e),
+                                                widget.level,
+                                                e);
+                                          }
+                                              : () {},
+                                          Rx<double>(snapshot.data));
+                                    }),
+                              );
+                            }).toList(),
+                          ),),
                         ],
                       ),
                     ),
@@ -338,13 +331,13 @@ class _LevelScreenState extends State<LevelScreen> {
       Get.to(QuestionScreen(
         question: levelController.questionsHiveFavorite,
         isFavorite: true,
-      ));
+      ),transition: Transition.fadeIn,duration: Duration(milliseconds: 500));
     } else if (choice == 'Progress') {
       Get.back();
       Get.to(LevelScreen(
         level: widget.level,
         isProgress: true,
-      ));
+      ),transition: Transition.rightToLeftWithFade,duration: Duration(milliseconds: 500));
     }
   }
 }
@@ -426,7 +419,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                           levelController.listChunkQuestions.indexOf(e) + 1,
                       isFavorite: false,
                       questionTemp: RxList<Question>(e),
-                    ));
+                    ),transition: Transition.fadeIn,duration: Duration(milliseconds: 500));
                   },
                 );
               }).toList(),

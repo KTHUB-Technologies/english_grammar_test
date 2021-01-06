@@ -2,6 +2,7 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
@@ -28,6 +29,13 @@ class _MainScreenState extends State<MainScreen> {
     levelController.categories = [];
     levelController.distinctCategory = [];
     super.initState();
+    checkFirst();
+  }
+
+  checkFirst() async{
+    final openBox=await Hive.openBox('First_Load');
+    await openBox.put('isFirst', 'checked');
+    openBox.close();
   }
 
   @override
@@ -70,7 +78,7 @@ class _MainScreenState extends State<MainScreen> {
                         Get.to(LevelScreen(
                           level: e,
                           isProgress: false,
-                        ));
+                        ),transition: Transition.rightToLeftWithFade,duration: Duration(milliseconds: 500));
                       }),
                     );
                   }).toList(),

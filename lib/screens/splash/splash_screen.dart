@@ -10,6 +10,7 @@ import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
+import 'package:the_enest_english_grammar_test/screens/about_screen/about_screen.dart';
 
 
 class SplashScreen extends StatefulWidget {
@@ -26,7 +27,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~///
   @override
   void initState() {
-
     super.initState();
     checkConnect();
     onWidgetBuildDone(onBuildDone);
@@ -77,8 +77,18 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     /// Delay 3 seconds, then navigate to Login screen
     timer=Timer.periodic(Duration(seconds: 2), (timer) async {
       await _loadUserData();
-        _navigateToMainScreen();
+      await checkFirstLoad();
     });
+  }
+
+  checkFirstLoad()async{
+    final openBox=await Hive.openBox('First_Load');
+    print(openBox.get('isFirst'));
+    if(openBox.get('isFirst')!=null)
+      _navigateToMainScreen();
+    else
+      Get.to(AboutScreen());
+    openBox.close();
   }
 
   _loadUserData() async {
