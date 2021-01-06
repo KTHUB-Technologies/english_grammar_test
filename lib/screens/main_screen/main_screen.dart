@@ -2,12 +2,12 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:the_enest_english_grammar_test/assets/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
-import 'package:the_enest_english_grammar_test/model/question_model.dart';
+import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
+import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/level_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
@@ -22,7 +22,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final LevelController levelController = Get.find();
-  final player = AudioCache();
 
   @override
   void initState() {
@@ -87,8 +86,8 @@ class _MainScreenState extends State<MainScreen> {
   AppButton buildAppButtonLevel(int level, Function onTap) {
     return AppButton(
       getLevel(level),
-      onTap: () {
-        player.play(Sounds.touch);
+      onTap: () async{
+        SoundsHelper.checkAudio(Sounds.touch);
         onTap();
       },
     );

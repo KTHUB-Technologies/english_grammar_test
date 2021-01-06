@@ -1,18 +1,20 @@
 import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:the_enest_english_grammar_test/assets/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
+import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
+import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/question_screen/question_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
@@ -28,14 +30,10 @@ class LevelScreen extends StatefulWidget {
 
 class _LevelScreenState extends State<LevelScreen> {
   final LevelController levelController = Get.find();
-  final player = AudioCache();
-  Box<dynamic> openBox;
-  Rx<double> average= Rx<double>(0);
-  int sumLength;
+  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
-    sumLength=0;
     super.initState();
   }
 
@@ -111,8 +109,9 @@ class _LevelScreenState extends State<LevelScreen> {
                                       child: Row(
                                         children: <Widget>[
                                           Expanded(
-                                              child:
-                                                  AppText(text: 'Delete All At This Level')),
+                                              child: AppText(
+                                                  text:
+                                                      'Delete All At This Level')),
                                           Dimens.width20,
                                           GestureDetector(
                                             child: Icon(Icons.delete),
@@ -158,25 +157,39 @@ class _LevelScreenState extends State<LevelScreen> {
                             child: ListView(
                               children:
                                   levelController.distinctCategory.map((e) {
-                                return buildListCategories(
-                                    context,
-                                    e,
-                                    widget.isProgress == false
-                                        ? () async {
-                                            await levelController
-                                                .loadQuestionFromLevelAndCategory(
-                                                    widget.level, e);
-                                            modalBottomSheet(getCategory(e),
-                                                widget.level, e);
-                                          }
-                                        : () {});
+                                return AnimationConfiguration.staggeredList(
+                                  position: levelController.distinctCategory.indexOf(e),
+                                    child: SlideAnimation(
+                                  verticalOffset: 100.0,
+                                  child: FadeInAnimation(
+                                    child: FutureBuilder(
+                                        future: getScoreOfCate(e),
+                                        builder: (context, snapshot) {
+                                          return buildListCategories(
+                                              context,
+                                              e,
+                                              widget.isProgress == false
+                                                  ? () async {
+                                                      await levelController
+                                                          .loadQuestionFromLevelAndCategory(
+                                                              widget.level, e);
+                                                      modalBottomSheet(
+                                                          getCategory(e),
+                                                          widget.level,
+                                                          e);
+                                                    }
+                                                  : () {},
+                                              Rx<double>(snapshot.data));
+                                        }),
+                                  ),
+                                ));
                               }).toList(),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    AppText(text: 'Test}'),
+                    Center(child: AppText(text: 'COMING SOON')),
                   ]),
                 ),
               ],
@@ -188,11 +201,8 @@ class _LevelScreenState extends State<LevelScreen> {
     );
   }
 
-  Widget buildListCategories(BuildContext context, int index, Function onTap) {
-    Rx<double> score = Rx<double>(0);
-    getScoreOfCate(index).then((value) {
-      score.value = value;
-    });
+  Widget buildListCategories(
+      BuildContext context, int index, Function onTap, Rx<double> score) {
     return Obx(() {
       return GestureDetector(
         child: Card(
@@ -264,19 +274,19 @@ class _LevelScreenState extends State<LevelScreen> {
           ),
         ),
         onTap: () async {
-          player.play(Sounds.touch);
+          SoundsHelper.checkAudio(Sounds.touch);
           onTap();
         },
       );
     });
   }
 
-  Future<double> getScoreOfCate(int index) async{
+  Future<double> getScoreOfCate(int index) async {
     double score = 0;
     Map scoreCate = new Map();
     int length = 0;
     final openBox = await Hive.openBox('Table_Score_${widget.level}');
-    if (openBox.get('${widget.level}_$index')!=null) {
+    if (openBox.get('${widget.level}_$index') != null) {
       scoreCate.addAll(openBox.get('${widget.level}_$index'));
       scoreCate.forEach((key, value) {
         List<String> split = value.toString().split('_');
