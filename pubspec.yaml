@@ -15,27 +15,23 @@ dependencies:
   flutter_cupertino_localizations: ^1.0.1
   fluro: 1.6.3
   validate: ^1.7.0
-  image_picker: ^0.6.1+4
   url_launcher: ^5.4.2
   shared_preferences: ^0.5.2
   percent_indicator: ^2.1.1+1
-  cached_network_image: ^2.0.0-rc
   intl: ^0.16.0
   connectivity: ^0.4.8+1
   cupertino_icons: ^0.1.2
   package_info: ^0.4.0+17
   get: ^3.15.0
-  google_sign_in: ^4.5.6
-  flutter_facebook_login: ^3.0.0
   http: ^0.12.2
   flutter_rating_bar: ^3.2.0+1
-  dio:
   google_fonts: ^1.1.1
   audioplayers: 0.17.0
   hive: ^1.4.4+1
   hive_flutter: ^0.3.1
   flutter_staggered_animations: ^0.1.2
   page_transition: ^1.1.7+5
+  rxdart: ^0.25.0
   path_provider: ^1.6.24
 dev_dependencies:
   flutter_test:
