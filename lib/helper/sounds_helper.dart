@@ -7,12 +7,11 @@ class SoundsHelper{
   static AudioPlayer audioPlayer;
 
   static Future<void> load()async{
-    audioCache.clearCache();
     List<String> listAssetSounds=[Sounds.touch,Sounds.in_correct,Sounds.correct];
-    await audioCache.loadAll(listAssetSounds);
-    // for(String audio in listAssetSounds){
-    //   audioPlayer= await audioCache.play(audio,duckAudio: true, volume: 0, mode: PlayerMode.LOW_LATENCY);
-    // }
+    // await audioCache.loadAll(listAssetSounds);
+    for(String audio in listAssetSounds){
+      audioPlayer= await audioCache.play(audio,duckAudio: true, volume: 0, mode: PlayerMode.LOW_LATENCY);
+    }
   }
 
   static Future<void> play(String audio) async{
