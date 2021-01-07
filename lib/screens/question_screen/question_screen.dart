@@ -1,7 +1,5 @@
 
 import 'package:animated_widgets/animated_widgets.dart';
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -91,6 +89,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios),
+          // ignore: deprecated_member_use
           onPressed: levelController.questionsFromHive.isNullOrBlank
               ? widget.isFavorite == false
                   ? () {
@@ -215,6 +214,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                           'Table_${widget.level}');
                                       Map level = await openBoxLevel
                                           .get('${widget.categoryId}');
+                                      // ignore: deprecated_member_use
                                       if (level.isNullOrBlank) {
                                         level = {
                                           '${widget.testNumber}': listQuestions
@@ -231,6 +231,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                           'Table_Score_${widget.level}');
                                       Map score = await openBox.get(
                                           '${widget.level}_${widget.categoryId}');
+                                      // ignore: deprecated_member_use
                                       if (score.isNullOrBlank) {
                                         score = {
                                           '${widget.testNumber}':
@@ -413,6 +414,7 @@ class _CardQuestionState extends State<CardQuestion> {
                             return AbsorbPointer(
                               ignoringSemantics: true,
                               absorbing: widget.question.currentChecked.value
+                                      // ignore: deprecated_member_use
                                       .isNullOrBlank
                                   ? false
                                   : true,
@@ -471,6 +473,7 @@ class _CardQuestionState extends State<CardQuestion> {
                       }).toList(),
                     ),
                     Dimens.height10,
+                    // ignore: deprecated_member_use
                     widget.question.currentChecked.value.isNullOrBlank
                         ? SizedBox()
                         : Card(
@@ -511,6 +514,7 @@ class _CardQuestionState extends State<CardQuestion> {
                                     },
                                   )
                                 : levelController
+                                        // ignore: deprecated_member_use
                                         .questionsFromHive.isNullOrBlank
                                     ? widget.isFavorite == false
                                         ? AppButton(

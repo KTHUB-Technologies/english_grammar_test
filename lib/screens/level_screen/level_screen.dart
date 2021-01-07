@@ -1,10 +1,8 @@
 
-import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:intl/intl.dart';
 import 'package:the_enest_english_grammar_test/commons/animted_list.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
@@ -45,152 +43,147 @@ class _LevelScreenState extends State<LevelScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: AppText(
-          text:
-              widget.isProgress == false ? getLevel(widget.level) : 'PROGRESS',
-          textSize: Dimens.paragraphHeaderTextSize,
-          color: AppColors.white,
-        ),
-        actions: <Widget>[
-          PopupMenuButton(
-              onSelected: choiceAction,
-              itemBuilder: (context) {
-                return Constants.choices.map((e) {
-                  return PopupMenuItem(
-                    value: e,
-                    child: ListTile(
-                      title: AppText(
-                        text: e,
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: AppText(
+            text:
+                widget.isProgress == false ? getLevel(widget.level) : 'PROGRESS',
+            textSize: Dimens.paragraphHeaderTextSize,
+            color: AppColors.white,
+          ),
+          actions: <Widget>[
+            PopupMenuButton(
+                onSelected: choiceAction,
+                itemBuilder: (context) {
+                  return Constants.choices.map((e) {
+                    return PopupMenuItem(
+                      value: e,
+                      child: ListTile(
+                        title: AppText(
+                          text: e,
+                        ),
                       ),
-                    ),
-                  );
-                }).toList();
-              }),
-        ],
-      ),
-      body: Obx(() {
-        return LoadingContainer(
-          child: DefaultTabController(
-            length: 2,
-            child: Column(
-              children: <Widget>[
-                TabBar(
-                  labelColor: AppColors.black,
-                  indicator: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(width: 3.0, color: AppColors.blue),
-                    ),
-                  ),
-                  tabs: [
-                    Tab(
-                      text: 'TOPIC',
-                    ),
-                    Tab(
-                      text: 'MIXED',
-                    ),
-                  ],
-                ),
-                Dimens.height10,
-                Expanded(
-                  child: TabBarView(children: [
-                    Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          widget.isProgress == false
-                              ? SizedBox()
-                              : Column(
+                    );
+                  }).toList();
+                }),
+          ],
+          bottom: TabBar(
+            labelColor: AppColors.blue,
+            unselectedLabelColor: Colors.white,
+            indicatorSize: TabBarIndicatorSize.tab,
+            indicator: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15)),
+                color: Colors.white),
+            tabs: [
+              Tab(
+                text: 'TOPIC',
+              ),
+              Tab(
+                text: 'MIXED',
+              ),
+            ],
+          ),
+        ),
+        body: Obx(() {
+          return LoadingContainer(
+            child: TabBarView(children: [
+              Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    widget.isProgress == false
+                        ? SizedBox()
+                        : Column(
+                            children: <Widget>[
+                              AppText(text: getLevel(widget.level)),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: Dimens.formPadding),
+                                child: Row(
                                   children: <Widget>[
-                                    AppText(text: getLevel(widget.level)),
-                                    Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: Dimens.formPadding),
-                                      child: Row(
-                                        children: <Widget>[
-                                          Expanded(
-                                              child: AppText(
-                                                  text:
-                                                      'Delete All At This Level')),
-                                          Dimens.width20,
-                                          GestureDetector(
-                                            child: Icon(Icons.delete),
-                                            onTap: () {
-                                              showCupertinoDialog(
-                                                  context: context,
-                                                  builder: (context) {
-                                                    return IOSDialog(
-                                                      title: 'WARNING',
-                                                      content:
-                                                          "Do you want to reset all question in this level?",
-                                                      cancel: () {
-                                                        Get.back();
-                                                      },
-                                                      confirm: () async {
-                                                        Get.offAll(
-                                                            MainScreen());
+                                    Expanded(
+                                        child: AppText(
+                                            text:
+                                                'Delete All At This Level')),
+                                    Dimens.width20,
+                                    GestureDetector(
+                                      child: Icon(Icons.delete),
+                                      onTap: () {
+                                        showCupertinoDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return IOSDialog(
+                                                title: 'WARNING',
+                                                content:
+                                                    "Do you want to reset all question in this level?",
+                                                cancel: () {
+                                                  Get.back();
+                                                },
+                                                confirm: () async {
+                                                  Get.offAll(
+                                                      MainScreen());
 
-                                                        final openBox =
-                                                            await Hive.openBox(
-                                                                'Table_${widget.level}');
-                                                        openBox
-                                                            .deleteFromDisk();
-                                                        openBox.close();
+                                                  final openBox =
+                                                      await Hive.openBox(
+                                                          'Table_${widget.level}');
+                                                  openBox
+                                                      .deleteFromDisk();
+                                                  openBox.close();
 
-                                                        final openBoxScore =
-                                                            await Hive.openBox(
-                                                                'Table_Score_${widget.level}');
-                                                        openBoxScore
-                                                            .deleteFromDisk();
-                                                        openBoxScore.close();
-                                                      },
-                                                    );
-                                                  });
-                                            },
-                                          ),
-                                        ],
-                                      ),
+                                                  final openBoxScore =
+                                                      await Hive.openBox(
+                                                          'Table_Score_${widget.level}');
+                                                  openBoxScore
+                                                      .deleteFromDisk();
+                                                  openBoxScore.close();
+                                                },
+                                              );
+                                            });
+                                      },
                                     ),
                                   ],
                                 ),
-                          Expanded(child: ListView(
-                            children: levelController.distinctCategory.map((e) {
-                              return WidgetAnimator(
-                                FutureBuilder(
-                                    future: getScoreOfCate(e),
-                                    builder: (context, snapshot) {
-                                      return buildListCategories(
-                                          context,
-                                          e,
-                                          widget.isProgress == false
-                                              ? () async {
-                                            await levelController
-                                                .loadQuestionFromLevelAndCategory(
-                                                widget.level, e);
-                                            modalBottomSheet(
-                                                getCategory(e),
-                                                widget.level,
-                                                e);
-                                          }
-                                              : () {},
-                                          Rx<double>(snapshot.data));
-                                    }),
-                              );
-                            }).toList(),
-                          ),),
-                        ],
-                      ),
-                    ),
-                    Center(child: AppText(text: 'COMING SOON')),
-                  ]),
+                              ),
+                            ],
+                          ),
+                    Expanded(child: ListView(
+                      children: levelController.distinctCategory.map((e) {
+                        return WidgetAnimator(
+                          FutureBuilder(
+                              future: getScoreOfCate(e),
+                              builder: (context, snapshot) {
+                                return buildListCategories(
+                                    context,
+                                    e,
+                                    widget.isProgress == false
+                                        ? () async {
+                                      await levelController
+                                          .loadQuestionFromLevelAndCategory(
+                                          widget.level, e);
+                                      modalBottomSheet(
+                                          getCategory(e),
+                                          widget.level,
+                                          e);
+                                    }
+                                        : () {},
+                                    Rx<double>(snapshot.data));
+                              }),
+                        );
+                      }).toList(),
+                    ),),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          isLoading: levelController.isShowLoading.value,
-        );
-      }),
+              ),
+              Center(child: AppText(text: 'COMING SOON')),
+            ]),
+            isLoading: levelController.isShowLoading.value,
+          );
+        }),
+      ),
     );
   }
 
@@ -412,6 +405,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                     Get.to(QuestionScreen(
                       level: widget.level,
                       categoryId: widget.categoryId,
+                      // ignore: deprecated_member_use
                       question: levelController.questionsFromHive.isNullOrBlank
                           ? RxList<Question>(e)
                           : levelController.questionsFromHive,

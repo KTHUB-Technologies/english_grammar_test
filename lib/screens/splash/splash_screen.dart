@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/fade_container.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
-import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
@@ -18,7 +17,7 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin{
+class _SplashScreenState extends State<SplashScreen>{
   final LevelController levelController=Get.find();
   Timer timer;
 
@@ -83,7 +82,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   checkFirstLoad()async{
     final openBox=await Hive.openBox('First_Load');
-    print(openBox.get('isFirst'));
     if(openBox.get('isFirst')!=null)
       _navigateToMainScreen();
     else
