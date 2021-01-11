@@ -1,10 +1,12 @@
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 import 'package:the_enest_english_grammar_test/theme/fonts.dart';
 
-class AppText extends StatelessWidget {
+class AppText extends StatefulWidget {
   final String text;
   final double textSize;
   final Color color;
@@ -27,16 +29,25 @@ class AppText extends StatelessWidget {
       this.textOverflow});
 
   @override
+  _AppTextState createState() => _AppTextState();
+}
+
+class _AppTextState extends State<AppText> {
+  final AppController appController=Get.find();
+
+  @override
   Widget build(BuildContext context) {
-    return Text(text ?? '',
-        overflow: textOverflow,
-        textAlign: textAlign,
-        maxLines: maxLines,
-        style: TextStyle(
-            fontStyle: fontStyle,
-            fontSize: textSize == null ? Dimens.descriptionTextSize : textSize,
-            fontFamily: font == null ? Fonts.Lato : font,
-            color: color == null ? AppColors.paragraphText : color,
-            fontWeight: fontWeight));
+    return Obx((){
+      return Text(widget.text ?? '',
+          overflow: widget.textOverflow,
+          textAlign: widget.textAlign,
+          maxLines: widget.maxLines,
+          style: TextStyle(
+              fontStyle: widget.fontStyle,
+              fontSize: widget.textSize == null ? Dimens.descriptionTextSize : widget.textSize,
+              fontFamily: widget.font == null ? Fonts.Lato : widget.font,
+              color:  appController.isDark.value==true?AppColors.white:widget.color,
+              fontWeight: widget.fontWeight));
+    });
   }
 }

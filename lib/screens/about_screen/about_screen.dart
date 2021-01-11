@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:the_enest_english_grammar_test/commons/app_button.dart';
@@ -39,53 +41,49 @@ class _AboutScreenState extends State<AboutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: Column(
-          children: <Widget>[
-            Dimens.quarterHeight(context),
-            Expanded(
-              flex: 2,
-              child: PageView.builder(
-                controller: _controller,
-                physics: NeverScrollableScrollPhysics(),
-                onPageChanged: (value) {
-                  currentPage.value = value;
-                },
-                itemCount: data.length,
-                itemBuilder: (context, index) => Content(
-                  image: data[index]["image"],
-                  text: data[index]['text'],
-                ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            height: getScreenHeight(context)/1.5,
+            width: getScreenWidth(context),
+            child: PageView.builder(
+              controller: _controller,
+              physics: NeverScrollableScrollPhysics(),
+              onPageChanged: (value) {
+                currentPage.value = value;
+              },
+              itemCount: data.length,
+              itemBuilder: (context, index) => Content(
+                image: data[index]["image"],
+                text: data[index]['text'],
               ),
             ),
-            Expanded(
-              flex: 1,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: 10),
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        data.length,
-                            (index) => buildDot(index: index),
-                      ),
-                    ),
-                    Dimens.height30,
-                    Obx((){
-                      return AppButton(currentPage.value==data.length-1?'Get Started':'Continue',onTap: currentPage.value==data.length-1?(){
-                        Get.offNamedUntil('/MainScreen', (route) => false);
-                      }:(){
-                        _controller.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeIn);
-                      },);
-                    }),
-                  ],
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: 10),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    data.length,
+                        (index) => buildDot(index: index),
+                  ),
                 ),
-              ),
+                Dimens.height30,
+                Obx((){
+                  return AppButton(currentPage.value==data.length-1?'Get Started':'Continue',onTap: currentPage.value==data.length-1?(){
+                    Get.offNamedUntil('/MainScreen', (route) => false);
+                  }:(){
+                    _controller.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeIn);
+                  },);
+                }),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

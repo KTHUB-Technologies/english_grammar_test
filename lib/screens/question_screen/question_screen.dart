@@ -48,7 +48,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
   List<Widget> get listQuestion => widget.question
       .map((question) => TranslationAnimatedWidget.tween(
         enabled: true,
-        duration: Duration(milliseconds: 1000),
+        duration: Duration(milliseconds: 500),
         translationDisabled: Offset(0,-400),
         translationEnabled: Offset(0,0),
         child: OpacityAnimatedWidget.tween(
@@ -254,6 +254,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                       : Center(
                           child: AppText(
                             text: 'No Question...',
+                            color: AppColors.blue,
                           ),
                         )
                   : listQuestion[levelController.index.value],
@@ -420,7 +421,7 @@ class _CardQuestionState extends State<CardQuestion> {
                                   : true,
                               child: GestureDetector(
                                 child: AnimatedContainer(
-                                  duration: Duration(milliseconds: 300),
+                                  duration: Duration(milliseconds: 100),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(

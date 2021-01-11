@@ -7,6 +7,7 @@ import 'package:the_enest_english_grammar_test/controller/level_controller.dart'
 import 'package:the_enest_english_grammar_test/localization/flutter_localizations_delegate.dart';
 import 'package:the_enest_english_grammar_test/routes/routes.dart';
 import 'package:the_enest_english_grammar_test/screens/splash/splash_screen.dart';
+import 'package:the_enest_english_grammar_test/theme/colors.dart';
 
 
 class EnglishGrammarTestApp extends StatefulWidget {
@@ -16,7 +17,7 @@ class EnglishGrammarTestApp extends StatefulWidget {
 
 class _EnglishGrammarTestAppState extends State<EnglishGrammarTestApp> {
   final GlobalKey<NavigatorState> nav = GlobalKey<NavigatorState>();
-  final AppController appStore= Get.put(AppController());
+  final AppController appController= Get.put(AppController());
   StreamSubscription connectivitySubscription;
 
   @override
@@ -32,7 +33,7 @@ class _EnglishGrammarTestAppState extends State<EnglishGrammarTestApp> {
 
   @override
   Widget build(BuildContext context) {
-    appStore.getDefaultLanguage();
+    appController.getDefaultLanguage();
     return Obx((){
         return GetMaterialApp(
             navigatorKey: nav,
@@ -46,17 +47,18 @@ class _EnglishGrammarTestAppState extends State<EnglishGrammarTestApp> {
               Locale('vi', 'VN'),
               Locale('en', 'US'),
             ],
-            locale: appStore.locale.value,
+            locale: appController.locale.value,
             localizationsDelegates: [
               FlutterLocalizationsDelegate(),
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            theme: ThemeData(
-               // primaryColor: AppColors.primary,
-             //   accentColor: AppColors.primary,
-                primaryIconTheme: IconThemeData(color: Colors.white)),
+            theme: appController.isDark.value==true?ThemeData(brightness: Brightness.dark):ThemeData.light(),
+            // theme: ThemeData(
+            //    // primaryColor: AppColors.primary,
+            //  //   accentColor: AppColors.primary,
+            //     primaryIconTheme: IconThemeData(color: Colors.white)),
             home: SplashScreen());
       },
     );

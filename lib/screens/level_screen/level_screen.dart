@@ -8,6 +8,7 @@ import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/constants/constants.dart';
+import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
@@ -16,6 +17,7 @@ import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/question_screen/question_screen.dart';
+import 'package:the_enest_english_grammar_test/screens/setting_screen/setting_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
@@ -29,6 +31,7 @@ class LevelScreen extends StatefulWidget {
 
 class _LevelScreenState extends State<LevelScreen> {
   final LevelController levelController = Get.find();
+  final AppController appController= Get.put(AppController());
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
 
   @override
@@ -45,145 +48,151 @@ class _LevelScreenState extends State<LevelScreen> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: AppText(
-            text:
-                widget.isProgress == false ? getLevel(widget.level) : 'PROGRESS',
-            textSize: Dimens.paragraphHeaderTextSize,
-            color: AppColors.white,
-          ),
-          actions: <Widget>[
-            PopupMenuButton(
-                onSelected: choiceAction,
-                itemBuilder: (context) {
-                  return Constants.choices.map((e) {
-                    return PopupMenuItem(
-                      value: e,
-                      child: ListTile(
-                        title: AppText(
-                          text: e,
-                        ),
-                      ),
-                    );
-                  }).toList();
-                }),
-          ],
-          bottom: TabBar(
-            labelColor: AppColors.blue,
-            unselectedLabelColor: Colors.white,
-            indicatorSize: TabBarIndicatorSize.tab,
-            indicator: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15)),
-                color: Colors.white),
-            tabs: [
-              Tab(
-                text: 'TOPIC',
-              ),
-              Tab(
-                text: 'MIXED',
-              ),
-            ],
-          ),
-        ),
-        body: Obx(() {
-          return LoadingContainer(
-            child: TabBarView(children: [
-              Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    widget.isProgress == false
-                        ? SizedBox()
-                        : Column(
-                            children: <Widget>[
-                              AppText(text: getLevel(widget.level)),
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: Dimens.formPadding),
-                                child: Row(
-                                  children: <Widget>[
-                                    Expanded(
-                                        child: AppText(
-                                            text:
-                                                'Delete All At This Level')),
-                                    Dimens.width20,
-                                    GestureDetector(
-                                      child: Icon(Icons.delete),
-                                      onTap: () {
-                                        showCupertinoDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return IOSDialog(
-                                                title: 'WARNING',
-                                                content:
-                                                    "Do you want to reset all question in this level?",
-                                                cancel: () {
-                                                  Get.back();
-                                                },
-                                                confirm: () async {
-                                                  Get.offAll(
-                                                      MainScreen());
-
-                                                  final openBox =
-                                                      await Hive.openBox(
-                                                          'Table_${widget.level}');
-                                                  openBox
-                                                      .deleteFromDisk();
-                                                  openBox.close();
-
-                                                  final openBoxScore =
-                                                      await Hive.openBox(
-                                                          'Table_Score_${widget.level}');
-                                                  openBoxScore
-                                                      .deleteFromDisk();
-                                                  openBoxScore.close();
-                                                },
-                                              );
-                                            });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+      child: Obx((){
+        return Scaffold(
+          appBar: AppBar(
+            title: AppText(
+              text:
+              widget.isProgress == false ? getLevel(widget.level) : 'PROGRESS',
+              textSize: Dimens.paragraphHeaderTextSize,
+              color: AppColors.white,
+            ),
+            actions: <Widget>[
+              PopupMenuButton(
+                  onSelected: choiceAction,
+                  itemBuilder: (context) {
+                    return Constants.choices.map((e) {
+                      return PopupMenuItem(
+                        value: e,
+                        child: ListTile(
+                          title: AppText(
+                            text: e,
+                            color: AppColors.blue,
                           ),
-                    Expanded(child: ListView(
-                      children: levelController.distinctCategory.map((e) {
-                        return WidgetAnimator(
-                          FutureBuilder(
-                              future: getScoreOfCate(e),
-                              builder: (context, snapshot) {
-                                return buildListCategories(
-                                    context,
-                                    e,
-                                    widget.isProgress == false
-                                        ? () async {
-                                      await levelController
-                                          .loadQuestionFromLevelAndCategory(
-                                          widget.level, e);
-                                      modalBottomSheet(
-                                          getCategory(e),
-                                          widget.level,
-                                          e);
-                                    }
-                                        : () {},
-                                    Rx<double>(snapshot.data));
-                              }),
-                        );
-                      }).toList(),
-                    ),),
-                  ],
+                        ),
+                      );
+                    }).toList();
+                  }),
+            ],
+            bottom: TabBar(
+              labelColor: AppColors.blue,
+              unselectedLabelColor: Colors.white,
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicator: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15)),
+                  color: appController.isDark.value==false?AppColors.white:AppColors.divider),
+              tabs: [
+                Tab(
+                  text: 'TOPIC',
                 ),
-              ),
-              Center(child: AppText(text: 'COMING SOON')),
-            ]),
-            isLoading: levelController.isShowLoading.value,
-          );
-        }),
-      ),
+                Tab(
+                  text: 'MIXED',
+                ),
+              ],
+            ),
+          ),
+          body: Obx(() {
+            return LoadingContainer(
+              child: TabBarView(children: [
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      widget.isProgress == false
+                          ? SizedBox()
+                          : Column(
+                        children: <Widget>[
+                          Container(child: AppText(text: getLevel(widget.level),fontWeight: FontWeight.bold,),padding: EdgeInsets.symmetric(vertical: 15),),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: Dimens.formPadding,vertical: 10),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text(
+                                    'Delete All At This Level',
+                                    style: TextStyle(
+                                      color: AppColors.red,
+                                      fontSize: Dimens.paragraphHeaderTextSize,
+                                    ),
+                                  ),),
+                                GestureDetector(
+                                  child: Icon(Icons.delete,color: AppColors.red,),
+                                  onTap: () {
+                                    showCupertinoDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return IOSDialog(
+                                            title: 'WARNING',
+                                            content:
+                                            "Do you want to reset all question in this level?",
+                                            cancel: () {
+                                              Get.back();
+                                            },
+                                            confirm: () async {
+                                              Get.offAll(
+                                                  MainScreen());
+
+                                              final openBox =
+                                              await Hive.openBox(
+                                                  'Table_${widget.level}');
+                                              openBox
+                                                  .deleteFromDisk();
+                                              openBox.close();
+
+                                              final openBoxScore =
+                                              await Hive.openBox(
+                                                  'Table_Score_${widget.level}');
+                                              openBoxScore
+                                                  .deleteFromDisk();
+                                              openBoxScore.close();
+                                            },
+                                          );
+                                        });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      Expanded(child: ListView(
+                        children: levelController.distinctCategory.map((e) {
+                          return WidgetAnimator(
+                            FutureBuilder(
+                                future: getScoreOfCate(e),
+                                builder: (context, snapshot) {
+                                  return buildListCategories(
+                                      context,
+                                      e,
+                                      widget.isProgress == false
+                                          ? () async {
+                                        await levelController
+                                            .loadQuestionFromLevelAndCategory(
+                                            widget.level, e);
+                                        modalBottomSheet(
+                                            getCategory(e),
+                                            widget.level,
+                                            e);
+                                      }
+                                          : () {},
+                                      Rx<double>(snapshot.data));
+                                }),
+                          );
+                        }).toList(),
+                      ),),
+                    ],
+                  ),
+                ),
+                Center(child: AppText(text: 'COMING SOON',color: AppColors.blue,)),
+              ]),
+              isLoading: levelController.isShowLoading.value,
+            );
+          }),
+        );
+      }),
     );
   }
 
@@ -200,14 +209,14 @@ class _LevelScreenState extends State<LevelScreen> {
                 Expanded(
                   child: AppText(
                     text: getCategory(index),
-                    color: AppColors.clickableText,
+                    color: AppColors.blue,
                   ),
                 ),
                 Dimens.width20,
                 AppText(
                   text:
                       'Score: ${score.value == null || score.value.toString() == 'NaN' ? 0 : score.value.round()}%',
-                  color: AppColors.clickableText,
+                  color: AppColors.blue,
                 ),
                 Dimens.width20,
                 widget.isProgress == false
@@ -331,7 +340,9 @@ class _LevelScreenState extends State<LevelScreen> {
         level: widget.level,
         isProgress: true,
       ),transition: Transition.rightToLeftWithFade,duration: Duration(milliseconds: 500));
-    }
+    } else if(choice=='Settings')setState(() {
+      Get.to(SettingScreen(),transition: Transition.rightToLeftWithFade,duration: Duration(milliseconds: 500));
+    });
   }
 }
 
