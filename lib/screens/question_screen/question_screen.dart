@@ -1,4 +1,3 @@
-
 import 'package:animated_widgets/animated_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -47,22 +46,22 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
   List<Widget> get listQuestion => widget.question
       .map((question) => TranslationAnimatedWidget.tween(
-        enabled: true,
-        duration: Duration(milliseconds: 500),
-        translationDisabled: Offset(0,-400),
-        translationEnabled: Offset(0,0),
-        child: OpacityAnimatedWidget.tween(
-          enabled: true,
-          opacityDisabled: 0,
-          opacityEnabled: 1,
-          child: CardQuestion(
+            enabled: true,
+            duration: Duration(milliseconds: 500),
+            translationDisabled: Offset(0, -400),
+            translationEnabled: Offset(0, 0),
+            child: OpacityAnimatedWidget.tween(
+              enabled: true,
+              opacityDisabled: 0,
+              opacityEnabled: 1,
+              child: CardQuestion(
                 question: question,
                 countTrue: countTrue,
                 listQuestions: widget.question,
                 isFavorite: widget.isFavorite,
               ),
-        ),
-      ))
+            ),
+          ))
       .toList();
 
   @override
@@ -383,7 +382,7 @@ class _CardQuestionState extends State<CardQuestion> {
                                   .indexOf(widget.question));
                               widget.listQuestions.removeWhere((element) =>
                                   element.id == widget.question.id);
-                              if(levelController.index.value>0)
+                              if (levelController.index.value > 0)
                                 levelController.index.value--;
                             } else {
                               openBox.deleteAt(levelController
@@ -414,7 +413,10 @@ class _CardQuestionState extends State<CardQuestion> {
                           child: Obx(() {
                             return AbsorbPointer(
                               ignoringSemantics: true,
-                              absorbing: widget.question.currentChecked.value
+                              absorbing: widget
+                                      .question
+                                      .currentChecked
+                                      .value
                                       // ignore: deprecated_member_use
                                       .isNullOrBlank
                                   ? false
@@ -474,16 +476,22 @@ class _CardQuestionState extends State<CardQuestion> {
                       }).toList(),
                     ),
                     Dimens.height10,
-                    // ignore: deprecated_member_use
-                    widget.question.currentChecked.value.isNullOrBlank
-                        ? SizedBox()
-                        : Card(
-                            child: ListTile(
-                              title: AppText(
-                                text: widget.question.explanation,
-                              ),
-                            ),
+                    AnimatedOpacity(
+                      // ignore: deprecated_member_use
+                      opacity: widget.question.currentChecked.value.isNullOrBlank
+                          ? 0.0
+                          : 1.0,
+                      // ignore: deprecated_member_use
+                      duration: Duration(milliseconds: widget.question.currentChecked.value.isNullOrBlank?0:500),
+                      curve: Curves.easeInOut,
+                      child: Card(
+                        child: ListTile(
+                          title: AppText(
+                            text: widget.question.explanation,
                           ),
+                        ),
+                      ),
+                    ),
                     Dimens.height10,
                   ],
                 ),
@@ -516,7 +524,8 @@ class _CardQuestionState extends State<CardQuestion> {
                                   )
                                 : levelController
                                         // ignore: deprecated_member_use
-                                        .questionsFromHive.isNullOrBlank
+                                        .questionsFromHive
+                                        .isNullOrBlank
                                     ? widget.isFavorite == false
                                         ? AppButton(
                                             'SUBMIT',
