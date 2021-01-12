@@ -524,8 +524,8 @@ class _CardQuestionState extends State<CardQuestion> {
                                     },
                                   )
                                 : levelController
-                                        // ignore: deprecated_member_use
                                         .questionsFromHive
+                                        // ignore: deprecated_member_use
                                         .isNullOrBlank
                                     ? widget.isFavorite == false
                                         ? AppButton(
