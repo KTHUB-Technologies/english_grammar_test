@@ -423,7 +423,8 @@ class _CardQuestionState extends State<CardQuestion> {
                                   : true,
                               child: GestureDetector(
                                 child: AnimatedContainer(
-                                  duration: Duration(milliseconds: 100),
+                                  // ignore: deprecated_member_use
+                                  duration: Duration(milliseconds: widget.question.currentChecked.value.isNullOrBlank?0:200),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
