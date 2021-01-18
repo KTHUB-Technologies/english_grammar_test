@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "287962441689",
+    "project_id": "english-grammar-test-49e7b",
+    "storage_bucket": "english-grammar-test-49e7b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:287962441689:android:07e7a8ddfc0d800c641bc8",
+        "android_client_info": {
+          "package_name": "com.example.the_enest_english_grammar_test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "287962441689-fadtkgqhhjbap3rapq40unun5granvbm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJgpQQ9yTzxk_56jssb45Pk9aNUZmrnxM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "287962441689-fadtkgqhhjbap3rapq40unun5granvbm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "287962441689-443bk2436db0teccrnpt7bbmnncgj7rd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.theEnestEnglishGrammarTest"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

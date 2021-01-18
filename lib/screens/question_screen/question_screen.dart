@@ -256,7 +256,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                             color: AppColors.blue,
                           ),
                         )
-                  : listQuestion[levelController.index.value],
+                  : Expanded(child: listQuestion[levelController.index.value]),
             ],
           ),
         );
@@ -338,7 +338,6 @@ class _CardQuestionState extends State<CardQuestion> {
           .where((e) => e.id == widget.question.id)
           .toList());
       return Container(
-        height: getScreenHeight(context) / 1.132,
         padding: const EdgeInsets.all(10),
         child: Column(
           children: <Widget>[
