@@ -8,8 +8,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:the_enest_english_grammar_test/main.dart';
-
 import '../lib/app/app.dart';
 
 void main() {

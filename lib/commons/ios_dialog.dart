@@ -48,10 +48,10 @@ class _IOSDialogState extends State<IOSDialog> {
                 ? Expanded(
                     child: FlatButton(
                         onPressed: widget.cancel,
-                        child: AppText(
-                          text: FlutterLocalizations.of(context)
+                        child: Text(
+                          FlutterLocalizations.of(context)
                               .getString(context, 'cancel'),
-                          color: AppColors.red,
+                          style: TextStyle(color: AppColors.red),
                         )))
                 : SizedBox(),
             widget.confirm != null
@@ -65,10 +65,10 @@ class _IOSDialogState extends State<IOSDialog> {
                             enable = false;
                           });
                         },
-                        child: AppText(
-                          text: FlutterLocalizations.of(context)
+                        child: Text(
+                          FlutterLocalizations.of(context)
                               .getString(context, 'confirm'),
-                          color: AppColors.clickableText,
+                          style: TextStyle(color: AppColors.clickableText),
                         )))
                 : SizedBox()
           ],

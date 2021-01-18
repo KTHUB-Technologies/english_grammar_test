@@ -4,6 +4,7 @@ class Constants {
 
   static const List<String> choices =<String>[
     'Favorite',
-    'Progress'
+    'Progress',
+    'Settings'
   ];
 }
