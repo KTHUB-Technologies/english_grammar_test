@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/app_button.dart';
+import 'package:the_enest_english_grammar_test/commons/app_logo.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
+import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/level_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
-
-import '../../helper/utils.dart';
-import '../../res/images/images.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -40,55 +39,74 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final logoSize = getScreenWidth(context) / 2;
     return Obx(() {
       return LoadingContainer(
         child: Scaffold(
           body: Container(
-            width: getScreenWidth(context),
-            padding: EdgeInsets.only(top: Dimens.getLogoSize(context)),
-            child: Column(
-              children: <Widget>[
-                Image.asset(
-                  Images.logo,
-                  width: logoSize,
-                  height: logoSize,
-                ),
-                Text(
-                  'English Grammar Test',
-                  style: TextStyle(
-                    color: AppColors.blue,
-                    fontWeight: FontWeight.bold,
-                    fontSize: Dimens.paragraphHeaderTextSize,
-                  ),
-                ),
-                Dimens.quarterHeight(context),
+           // width: getScreenWidth(context),
+            child: Row(
+              children: [
+                _buildLevelNavigationRail(),
                 Expanded(
                   child: Column(
-                    children: levelController.distinctLevel.map((e) {
-                      return Container(
-                        padding: EdgeInsets.only(bottom: Dimens.formPadding),
-                        child: buildAppButtonLevel(e, () async {
-                          await levelController.loadQuestionFromLevel(e);
-                          levelController.categories = levelController.questions
-                              .map((e) => e.categoryId)
-                              .toList();
-                          levelController.distinctCategory =
-                              levelController.categories.toSet().toList();
-                          levelController.distinctCategory.sort();
-
-                          Get.to(
-                              LevelScreen(
-                                level: e,
-                                isProgress: false,
-                              ),
-                              transition: Transition.rightToLeftWithFade,
-                              duration: Duration(milliseconds: 500));
-                        }),
-                      );
-                    }).toList(),
+                    children: [
+                      Stack(
+                        children: [
+                          Container(
+                            color: AppColors.primary,
+                            height: getScreenHeight(context) / 2,
+                          ),
+                          Container(
+                              decoration: BoxDecoration(
+                                  color: AppColors.white,
+                                  borderRadius: BorderRadius.only(
+                                      bottomRight: Radius.circular(70))),
+                              height: getScreenHeight(context) / 2,
+                              child: Center(
+                                child: AppLogo(),
+                              )),
+                        ],
+                      ),
+                      Stack(
+                        children: [
+                          Container(
+                            color: AppColors.white,
+                            height: getScreenHeight(context) / 2,
+                          ),
+                          Container(
+                            height: getScreenHeight(context) / 2,
+                            decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(70))),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: AppText(
+                                    text: getLevelDescription(
+                                        levelController.levelSelected.value +
+                                            1),
+                                    textAlign: TextAlign.center,
+                                    color: AppColors.white,
+                                  ),
+                                ),
+                                Dimens.height10,
+                                Container(
+                                  child: Center(
+                                      child: _buildSelectedContent(
+                                          levelController.levelSelected.value +
+                                              1)),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
                   ),
-                ),
+                )
               ],
             ),
           ),
@@ -99,12 +117,69 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  AppButton buildAppButtonLevel(int level, Function onTap) {
+  _buildLevelNavigationRail() {
+    return NavigationRail(
+
+        backgroundColor: AppColors.primary,
+        minWidth: 55.0,
+        groupAlignment: 0.0,
+        selectedLabelTextStyle: TextStyle(
+          color: Colors.orangeAccent,
+          fontSize: 14,
+          letterSpacing: 1,
+          decorationThickness: 2.0,
+        ),
+        unselectedLabelTextStyle: TextStyle(
+          color: AppColors.white,
+          fontSize: 13,
+          letterSpacing: 0.8,
+        ),
+        selectedIndex: levelController.levelSelected.value,
+        onDestinationSelected: (int index) {
+          levelController.levelSelected.value = index;
+        },
+        labelType: NavigationRailLabelType.all,
+
+        destinations: levelController.distinctLevel
+            .map(
+              (e) => NavigationRailDestination(
+                  icon: SizedBox.shrink(),
+                  label: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: RotatedBox(
+                      quarterTurns: -1,
+                      child: Text(getLevel(e)),
+                    ),
+                  )),
+            )
+            .toList());
+  }
+
+  _buildSelectedContent(int level) {
+    return Column(
+      children: [buildAppButtonLevel(level)],
+    );
+  }
+
+  AppButton buildAppButtonLevel(int level) {
     return AppButton(
-      getLevel(level),
+      "Let's Start",
       onTap: () async {
         SoundsHelper.checkAudio(Sounds.touch);
-        onTap();
+        await levelController.loadQuestionFromLevel(level);
+        levelController.categories =
+            levelController.questions.map((e) => e.categoryId).toList();
+        levelController.distinctCategory =
+            levelController.categories.toSet().toList();
+        levelController.distinctCategory.sort();
+
+        Get.to(
+            LevelScreen(
+              level: level,
+              isProgress: false,
+            ),
+            transition: Transition.rightToLeftWithFade,
+            duration: Duration(milliseconds: 500));
       },
     );
   }
