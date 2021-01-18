@@ -20,13 +20,12 @@ class _LoginScreenState extends State<LoginScreen> {
   static final Config config = new Config(
       tenant: "f8cdef31-a31e-4b4a-93e4-5f571e91255a",
       clientId: "7d031982-91e9-4080-86f6-49f1cf7e57c7",
-      resource: "https://graph.microsoft.com/",
-      scope: "https://graph.microsoft.com/user.read/offline_access",
-      // redirectUri: "https://login.microsoftonline.com/common/oauth2/v2.0/authorize"
+      scope: "https://graph.microsoft.com/offline_access",
       redirectUri: "msauth.com.example.theEnestEnglishGrammarTest://auth"
   );
 
   final AadOAuth oauth = new AadOAuth(config);
+
   @override
   Widget build(BuildContext context) {
     final logoSize = getScreenWidth(context) / 2;
@@ -59,6 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
               'Continue with out Sign In',
               onTap: () async{
                 await oauth.logout();
+                await FirebaseAuth.instance.signOut();
                 // Get.offAll(MainScreen());
               },
             ),
