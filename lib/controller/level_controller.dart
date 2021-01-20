@@ -29,13 +29,12 @@ class LevelController extends GetxController {
 
   Rx<Map> scoreOfCate=Rx<Map>({});
 
-  Future loadJson() async {
+  Future loadJson(String accessToken) async {
     isShowLoading.value = true;
     var data =
         await rootBundle.loadString('lib/res/strings/Question_Data.json');
     var result = jsonDecode(data);
-    listQuestions = result.map<Question>((e) => Question.fromJson(e)).toList();
-
+    listQuestions= result.map<Question>((e) => Question.fromJson(e)).toList();
     levels = listQuestions.map((e) => e.level).toList();
     distinctLevel = levels.toSet().toList();
     distinctLevel.sort();
@@ -44,7 +43,6 @@ class LevelController extends GetxController {
 
   Future loadQuestionFromLevel(int level) async {
     isShowLoading.value = true;
-    await loadJson();
     questions =
         RxList<Question>(listQuestions.where((f) => f.level == level).toList());
     isShowLoading.value=false;

@@ -74,7 +74,6 @@ class _SplashScreenState extends State<SplashScreen>{
   ///             OTHER METHODS            ///
   ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~///
   onBuildDone() async {
-    await levelController.loadJson();
     await SoundsHelper.load();
     await checkDarkMode();
     /// Delay 3 seconds, then navigate to Login screen

@@ -61,7 +61,7 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget buildSignOutButton(BuildContext context) {
     return AppButton(
       // ignore: deprecated_member_use
-      appController.accessToken.isNullOrBlank ? 'Sign In' : 'Sign Out',
+      appController.accessToken.value.isNullOrBlank ? 'Sign In' : 'Sign Out',
       widthButton: getScreenWidth(context) / 3,
       // ignore: deprecated_member_use
       onTap: appController.accessToken.isNullOrBlank
@@ -70,7 +70,7 @@ class _SettingScreenState extends State<SettingScreen> {
       }
           : () async {
         await ConfigMicrosoft.oauth.logout();
-        appController.accessToken.value = null;
+        appController.accessToken.value=null;
         Get.offAll(LoginScreen());
       },
     );

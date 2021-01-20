@@ -7,6 +7,7 @@ import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
+import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 import 'package:http/http.dart' as http;
 
@@ -58,6 +59,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   Map profile=jsonDecode(response.body);
                   print(profile['mail']);
+
+                  Get.offAll(MainScreen());
                 } catch (e) {
                   print("-----------------> $e");
                 }
@@ -66,10 +69,8 @@ class _LoginScreenState extends State<LoginScreen> {
             Dimens.height30,
             AppButton(
               'Continue with out Sign In',
-              onTap: () async{
-                await ConfigMicrosoft.oauth.logout();
-                appController.accessToken.value=null;
-                // Get.offAll(MainScreen());
+              onTap: () {
+                Get.offAll(MainScreen());
               },
             ),
           ],

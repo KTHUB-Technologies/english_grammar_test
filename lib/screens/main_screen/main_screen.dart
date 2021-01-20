@@ -26,6 +26,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
+    levelController.loadJson(appController.accessToken.value);
     levelController.categories = [];
     levelController.distinctCategory = [];
     super.initState();
@@ -92,13 +93,34 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  AppButton buildAppButtonLevel(int level, Function onTap) {
-    return AppButton(
-      getLevel(level),
-      onTap: () async {
-        SoundsHelper.checkAudio(Sounds.touch);
-        onTap();
-      },
+  Widget buildAppButtonLevel(int level, Function onTap) {
+    return Stack(
+      children: <Widget>[
+        AppButton(
+          getLevel(level),
+          onTap: () async {
+            SoundsHelper.checkAudio(Sounds.touch);
+            onTap();
+          },
+        ),
+        // ignore: deprecated_member_use
+        appController.accessToken.value.isNullOrBlank
+            ? level != 1
+                ? Container(
+                    height: getScreenWidth(context) / 8,
+                    width: getScreenWidth(context) / 1.8,
+                    decoration: BoxDecoration(
+                      color: AppColors.black.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.lock_outline,
+                      color: AppColors.white,
+                    ),
+                  )
+                : SizedBox()
+            : SizedBox(),
+      ],
     );
   }
 }

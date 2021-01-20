@@ -12,7 +12,7 @@ class AppController extends GetxController{
 
   Rx<Locale> locale=Rx<Locale>();
 
-  Rx<String> accessToken=Rx<String>('');
+  Rx<String> accessToken=Rx<String>(null);
 
   void reset() {
     value = 0;
