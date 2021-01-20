@@ -118,7 +118,7 @@ class _MainScreenState extends State<MainScreen> {
 
   _buildLevelNavigationRail() {
     return NavigationRail(
-        backgroundColor: AppColors.black,
+        backgroundColor: AppColors.white,
         minWidth: 55.0,
         groupAlignment: 0.0,
         selectedLabelTextStyle: TextStyle(
@@ -128,7 +128,7 @@ class _MainScreenState extends State<MainScreen> {
           decorationThickness: 2.0,
         ),
         unselectedLabelTextStyle: TextStyle(
-          color: AppColors.white,
+          color: AppColors.black,
           fontSize: 13,
           letterSpacing: 0.8,
         ),
