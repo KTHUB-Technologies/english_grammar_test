@@ -113,7 +113,7 @@ class _MainScreenState extends State<MainScreen> {
 
 
   _buildLevelNavigationRail() {
-    return NavigationRail(
+    return levelController.distinctLevel.isEmpty?SizedBox():NavigationRail(
 
         backgroundColor: AppColors.primary,
         minWidth: 55.0,
