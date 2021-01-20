@@ -93,3 +93,15 @@ getCategory(num categoryId){
       return 'Noun-Noun Phrase';
   }
 }
+getLevelDescription(int level){
+  switch(level){
+    case 1 :
+      return 'beginning content-beginning content-beginning content-beginning content-beginning content-beginning content-beginning content';
+    case 2 :
+      return 'intermediate content-intermediate content-intermediate content-intermediate content-intermediate content-intermediate content';
+    case 3 :
+      return 'advanced content-advanced content-advanced content-advanced content-advanced content-advanced content-advanced content';
+    default:
+      return'';
+  }
+}
