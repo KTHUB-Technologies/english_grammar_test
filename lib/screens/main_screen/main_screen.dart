@@ -29,13 +29,6 @@ class _MainScreenState extends State<MainScreen> {
     levelController.categories = [];
     levelController.distinctCategory = [];
     super.initState();
-    checkFirst();
-  }
-
-  checkFirst() async {
-    final openBox = await Hive.openBox('First_Load');
-    await openBox.put('isFirst', 'checked');
-    openBox.close();
   }
 
   @override

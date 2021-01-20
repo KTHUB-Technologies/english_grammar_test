@@ -1,14 +1,14 @@
-
-import 'package:aad_oauth/aad_oauth.dart';
-import 'package:aad_oauth/model/config.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/app_button.dart';
+import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
+import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
-import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -16,15 +16,19 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final AppController appController=Get.find();
 
-  static final Config config = new Config(
-      tenant: "f8cdef31-a31e-4b4a-93e4-5f571e91255a",
-      clientId: "7d031982-91e9-4080-86f6-49f1cf7e57c7",
-      scope: "https://graph.microsoft.com/offline_access",
-      redirectUri: "msauth.com.example.theEnestEnglishGrammarTest://auth"
-  );
+  @override
+  void initState() {
+    super.initState();
+    checkFirst();
+  }
 
-  final AadOAuth oauth = new AadOAuth(config);
+  checkFirst() async {
+    final openBox = await Hive.openBox('First_Load');
+    await openBox.put('isFirst', 'checked');
+    openBox.close();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +49,15 @@ class _LoginScreenState extends State<LoginScreen> {
               'Sign I with MICROSOFT account',
               onTap: ()async{
                 try {
-                  await oauth.login();
-                  var accessToken = await oauth.getAccessToken();
-                  print('Logged in successfully, your access token: $accessToken');
+                  await ConfigMicrosoft.oauth.login();
+                  appController.accessToken.value = await ConfigMicrosoft.oauth.getAccessToken();
+                  print('Logged in successfully, your access token: ${appController.accessToken.value}');
+
+                  final response = await http.get(ConfigMicrosoft.userProfileBaseUrl,headers: {ConfigMicrosoft.authorization: ConfigMicrosoft.bearer + appController.accessToken.value});
+                  print(response.body);
+
+                  Map profile=jsonDecode(response.body);
+                  print(profile['mail']);
                 } catch (e) {
                   print("-----------------> $e");
                 }
@@ -57,8 +67,8 @@ class _LoginScreenState extends State<LoginScreen> {
             AppButton(
               'Continue with out Sign In',
               onTap: () async{
-                await oauth.logout();
-                await FirebaseAuth.instance.signOut();
+                await ConfigMicrosoft.oauth.logout();
+                appController.accessToken.value=null;
                 // Get.offAll(MainScreen());
               },
             ),
