@@ -43,7 +43,6 @@ class _MainScreenState extends State<MainScreen> {
       return LoadingContainer(
         child: Scaffold(
           body: Container(
-           // width: getScreenWidth(context),
             child: Row(
               children: [
                 _buildLevelNavigationRail(),
@@ -53,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
                       Stack(
                         children: [
                           Container(
-                            color: AppColors.primary,
+                            decoration: BoxDecoration(gradient: LinearGradient(colors: AppColors.gradientColorPrimary)),
                             height: getScreenHeight(context) / 2,
                           ),
                           Container(
@@ -76,7 +75,7 @@ class _MainScreenState extends State<MainScreen> {
                           Container(
                             height: getScreenHeight(context) / 2,
                             decoration: BoxDecoration(
-                                color: AppColors.primary,
+                               gradient: LinearGradient(colors: AppColors.gradientColorPrimary),
                                 borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(70))),
                             child: Column(
@@ -119,8 +118,7 @@ class _MainScreenState extends State<MainScreen> {
 
   _buildLevelNavigationRail() {
     return NavigationRail(
-
-        backgroundColor: AppColors.primary,
+        backgroundColor: AppColors.black,
         minWidth: 55.0,
         groupAlignment: 0.0,
         selectedLabelTextStyle: TextStyle(
@@ -139,7 +137,6 @@ class _MainScreenState extends State<MainScreen> {
           levelController.levelSelected.value = index;
         },
         labelType: NavigationRailLabelType.all,
-
         destinations: levelController.distinctLevel
             .map(
               (e) => NavigationRailDestination(
@@ -159,6 +156,9 @@ class _MainScreenState extends State<MainScreen> {
     return Column(
       children: [buildAppButtonLevel(level)],
     );
+  }
+  _buildBottomNavigationBar(){
+
   }
 
   AppButton buildAppButtonLevel(int level) {

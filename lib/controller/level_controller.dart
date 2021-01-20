@@ -5,6 +5,11 @@ import 'package:get/get.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 
 class LevelController extends GetxController {
+  ///SECTION
+  List<int> sections = [1,2];
+  List<bool> selected = [true,false];
+  Rx<int> sectionSelected = Rx<int>(0);
+
   ///JSON DATA
   RxList<Question> questions = RxList<Question>([]);
 

@@ -1,8 +1,8 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:the_enest_english_grammar_test/commons/animted_list.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
@@ -24,14 +24,16 @@ import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 class LevelScreen extends StatefulWidget {
   final int level;
   final bool isProgress;
+
   const LevelScreen({Key key, this.level, this.isProgress}) : super(key: key);
+
   @override
   _LevelScreenState createState() => _LevelScreenState();
 }
 
 class _LevelScreenState extends State<LevelScreen> {
   final LevelController levelController = Get.find();
-  final AppController appController= Get.put(AppController());
+  final AppController appController = Get.put(AppController());
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
 
   @override
@@ -46,154 +48,261 @@ class _LevelScreenState extends State<LevelScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Obx((){
-        return Scaffold(
-          appBar: AppBar(
-            title: AppText(
-              text:
-              widget.isProgress == false ? getLevel(widget.level) : 'PROGRESS',
-              textSize: Dimens.paragraphHeaderTextSize,
-              color: AppColors.white,
-            ),
-            actions: <Widget>[
-              PopupMenuButton(
-                  onSelected: choiceAction,
-                  itemBuilder: (context) {
-                    return Constants.choices.map((e) {
-                      return PopupMenuItem(
-                        value: e,
-                        child: ListTile(
-                          title: AppText(
-                            text: e,
-                            color: AppColors.blue,
-                          ),
-                        ),
-                      );
-                    }).toList();
-                  }),
-            ],
-            bottom: TabBar(
-              labelColor: AppColors.blue,
-              unselectedLabelColor: Colors.white,
-              indicatorSize: TabBarIndicatorSize.tab,
-              indicator: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(15),
-                      topRight: Radius.circular(15)),
-                  color: appController.isDark.value==false?AppColors.white:AppColors.divider),
-              tabs: [
-                Tab(
-                  text: 'TOPIC',
-                ),
-                Tab(
-                  text: 'MIXED',
-                ),
-              ],
-            ),
-          ),
-          body: Obx(() {
-            return LoadingContainer(
-              child: TabBarView(children: [
-                Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      widget.isProgress == false
-                          ? SizedBox()
-                          : Column(
-                        children: <Widget>[
-                          Container(child: AppText(text: getLevel(widget.level),fontWeight: FontWeight.bold,),padding: EdgeInsets.symmetric(vertical: 15),),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: Dimens.formPadding,vertical: 10),
-                            child: Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: Text(
-                                    'Delete All At This Level',
-                                    style: TextStyle(
-                                      color: AppColors.red,
-                                      fontSize: Dimens.paragraphHeaderTextSize,
-                                    ),
-                                  ),),
-                                GestureDetector(
-                                  child: Icon(Icons.delete,color: AppColors.red,),
-                                  onTap: () {
-                                    showCupertinoDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return IOSDialog(
-                                            title: 'WARNING',
-                                            content:
-                                            "Do you want to reset all question in this level?",
-                                            cancel: () {
-                                              Get.back();
-                                            },
-                                            confirm: () async {
-                                              Get.offAll(
-                                                  MainScreen());
-
-                                              final openBox =
-                                              await Hive.openBox(
-                                                  'Table_${widget.level}');
-                                              openBox
-                                                  .deleteFromDisk();
-                                              openBox.close();
-
-                                              final openBoxScore =
-                                              await Hive.openBox(
-                                                  'Table_Score_${widget.level}');
-                                              openBoxScore
-                                                  .deleteFromDisk();
-                                              openBoxScore.close();
-                                            },
-                                          );
-                                        });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+    return Scaffold(
+      body: Obx(() {
+        return LoadingContainer(
+          child: Column(
+            children: [
+              _buildHeader(),
+              Expanded(
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            colors: AppColors.gradientColorPrimary),
+                        border: Border.all(width: 0, color: Colors.transparent),
                       ),
-                      Expanded(child: ListView(
-                        children: levelController.distinctCategory.map((e) {
-                          return WidgetAnimator(
-                            FutureBuilder(
-                                future: getScoreOfCate(e),
-                                builder: (context, snapshot) {
-                                  return buildListCategories(
-                                      context,
-                                      e,
-                                      widget.isProgress == false
-                                          ? () async {
-                                        await levelController
-                                            .loadQuestionFromLevelAndCategory(
-                                            widget.level, e);
-                                        modalBottomSheet(
-                                            getCategory(e),
-                                            widget.level,
-                                            e);
-                                      }
-                                          : () {},
-                                      Rx<double>(snapshot.data));
-                                }),
-                          );
-                        }).toList(),
-                      ),),
-                    ],
-                  ),
+                    ),
+                    _buildCategoryContent(levelController.sectionSelected.value)
+                  ],
                 ),
-                Center(child: AppText(text: 'COMING SOON',color: AppColors.blue,)),
-              ]),
-              isLoading: levelController.isShowLoading.value,
-            );
-          }),
+              )
+            ],
+          ),
+          isLoading: levelController.isShowLoading.value,
         );
       }),
     );
+  }
+
+  _buildHeader() {
+    return Stack(
+      children: [
+        Container(
+          color: AppColors.white,
+          height: getScreenHeight(context) / 4,
+        ),
+        Container(
+          height: getScreenHeight(context) / 4,
+          decoration: BoxDecoration(
+              border: Border.all(width: 0, color: Colors.transparent),
+              gradient: LinearGradient(colors: AppColors.gradientColorPrimary),
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(70))),
+          child: Column(
+            children: [
+              Dimens.height10,
+              ListTile(
+                leading: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back_ios,
+                    color: AppColors.white,
+                  ),
+                  onPressed: () {
+                    if (!widget.isProgress) {
+                      Navigator.pop(context);
+                    } else {
+                      Get.back();
+                      Get.to(
+                          LevelScreen(
+                            level: widget.level,
+                            isProgress: false,
+                          ),
+                          transition: Transition.rightToLeftWithFade,
+                          duration: Duration(milliseconds: 500));
+                    }
+                  },
+                ),
+                title: AppText(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.bold,
+                  textSize: Dimens.paragraphHeaderTextSize,
+                  text: getLevel(widget.level),
+                ),
+                trailing: PopupMenuButton(
+                    onSelected: choiceAction,
+                    itemBuilder: (context) {
+                      return Constants.choices.map((e) {
+                        return PopupMenuItem(
+                          value: e,
+                          child: ListTile(
+                            title: AppText(
+                              text: e,
+                              color: AppColors.blue,
+                            ),
+                          ),
+                        );
+                      }).toList();
+                    }),
+              ),
+              _buildSectionTitle()
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  _buildSectionTitle() {
+    return ToggleButtons(
+      children: levelController.sections
+          .map((e) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: AppText(
+                  text: getSection(e),
+                  color: AppColors.white,
+                ),
+              ))
+          .toList(),
+      borderRadius: BorderRadius.circular(15),
+      onPressed: (int index) {
+        setState(() {
+          for (int buttonIndex = 0;
+              buttonIndex < levelController.selected.length;
+              buttonIndex++) {
+            if (buttonIndex == index) {
+              levelController.selected[buttonIndex] = true;
+            } else {
+              levelController.selected[buttonIndex] = false;
+            }
+          }
+          levelController.sectionSelected.value = index;
+        });
+      },
+      isSelected: levelController.selected,
+    );
+  }
+
+  _buildCategoryContent(int sectionSelected) {
+    switch (sectionSelected) {
+      case 0:
+        return Container(
+          decoration: BoxDecoration(
+              border: Border.all(width: 0, color: Colors.transparent),
+              color: AppColors.white,
+              borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
+          child: Column(
+            children: [
+              SizedBox(
+                child: _buildProgress(),
+                height: 45,
+              ),
+              Expanded(
+                child: ListView(
+                  children: levelController.distinctCategory.map((e) {
+                    return WidgetAnimator(
+                      FutureBuilder(
+                          future: getScoreOfCate(e),
+                          builder: (context, snapshot) {
+                            return buildListCategories(
+                                context,
+                                e,
+                                widget.isProgress == false
+                                    ? () async {
+                                        await levelController
+                                            .loadQuestionFromLevelAndCategory(
+                                                widget.level, e);
+                                        modalBottomSheet(
+                                            getCategory(e), widget.level, e);
+                                      }
+                                    : () {},
+                                Rx<double>(snapshot.data));
+                          }),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+        );
+      case 1:
+        return Container(
+          height: getScreenHeight(context),
+          width: getScreenWidth(context),
+          decoration: BoxDecoration(
+              border: Border.all(width: 0, color: Colors.transparent),
+              color: AppColors.white,
+              borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
+          child: Center(
+            child: AppText(
+              text: "COMING SOON",
+            ),
+          ),
+        );
+      default:
+        return Container(
+          height: getScreenHeight(context),
+          width: getScreenWidth(context),
+          decoration: BoxDecoration(
+              border: Border.all(width: 0, color: Colors.transparent),
+              color: AppColors.white,
+              borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
+          child: Center(
+            child: AppText(
+              text: "Something wrong",
+            ),
+          ),
+        );
+    }
+  }
+
+  _buildProgress() {
+    return widget.isProgress == false
+        ? SizedBox()
+        : Column(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.symmetric(
+                    horizontal: Dimens.formPadding, vertical: 10),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        'Delete All At This Level',
+                        style: TextStyle(
+                          color: AppColors.red,
+                          fontSize: Dimens.paragraphHeaderTextSize,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      child: Icon(
+                        Icons.delete,
+                        color: AppColors.red,
+                      ),
+                      onTap: () {
+                        showCupertinoDialog(
+                            context: context,
+                            builder: (context) {
+                              return IOSDialog(
+                                title: 'WARNING',
+                                content:
+                                    "Do you want to reset all question in this level?",
+                                cancel: () {
+                                  Get.back();
+                                },
+                                confirm: () async {
+                                  Get.offAll(MainScreen());
+
+                                  final openBox = await Hive.openBox(
+                                      'Table_${widget.level}');
+                                  openBox.deleteFromDisk();
+                                  openBox.close();
+
+                                  final openBoxScore = await Hive.openBox(
+                                      'Table_Score_${widget.level}');
+                                  openBoxScore.deleteFromDisk();
+                                  openBoxScore.close();
+                                },
+                              );
+                            });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
   }
 
   Widget buildListCategories(
@@ -213,10 +322,18 @@ class _LevelScreenState extends State<LevelScreen> {
                   ),
                 ),
                 Dimens.width20,
-                AppText(
-                  text:
-                      'Score: ${score.value == null || score.value.toString() == 'NaN' ? 0 : score.value.round()}%',
-                  color: AppColors.blue,
+                CircularPercentIndicator(
+                  radius: 35.0,
+                  lineWidth: 2.0,
+                  animation: true,
+                  percent: score.value == null || score.value.toString() == 'NaN' ? 0 : score.value/100.round(),
+                  center: new Text(
+                    '${score.value == null || score.value.toString() == 'NaN' ? 0 : score.value.round()}%',
+                    style:
+                    new TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
+                  ),
+                  circularStrokeCap: CircularStrokeCap.round,
+                  progressColor: Colors.purple,
                 ),
                 Dimens.width20,
                 widget.isProgress == false
@@ -311,6 +428,7 @@ class _LevelScreenState extends State<LevelScreen> {
       levelController.score.value.clear();
     }
     showModalBottomSheet(
+        backgroundColor: AppColors.transparent,
         isScrollControlled: true,
         context: context,
         builder: (context) {
@@ -330,19 +448,30 @@ class _LevelScreenState extends State<LevelScreen> {
         levelController.questionsHiveFavorite =
             RxList<Question>(await HiveHelper.getBoxes('Table_Favorite'));
       }
-      Get.to(QuestionScreen(
-        question: levelController.questionsHiveFavorite,
-        isFavorite: true,
-      ),transition: Transition.fadeIn,duration: Duration(milliseconds: 500));
+      Get.to(
+          QuestionScreen(
+            question: levelController.questionsHiveFavorite,
+            isFavorite: true,
+          ),
+          transition: Transition.fadeIn,
+          duration: Duration(milliseconds: 500));
     } else if (choice == 'Progress') {
-      Get.back();
-      Get.to(LevelScreen(
-        level: widget.level,
-        isProgress: true,
-      ),transition: Transition.rightToLeftWithFade,duration: Duration(milliseconds: 500));
-    } else if(choice=='Settings')setState(() {
-      Get.to(SettingScreen(),transition: Transition.rightToLeftWithFade,duration: Duration(milliseconds: 500));
-    });
+      if (!widget.isProgress) {
+        Get.back();
+        Get.to(
+            LevelScreen(
+              level: widget.level,
+              isProgress: true,
+            ),
+            transition: Transition.rightToLeftWithFade,
+            duration: Duration(milliseconds: 500));
+      }
+    } else if (choice == 'Settings')
+      setState(() {
+        Get.to(SettingScreen(),
+            transition: Transition.rightToLeftWithFade,
+            duration: Duration(milliseconds: 500));
+      });
   }
 }
 
@@ -354,6 +483,7 @@ class ModalBottomSheet extends StatefulWidget {
   const ModalBottomSheet(
       {Key key, this.level, this.categoryId, this.categoryName})
       : super(key: key);
+
   @override
   _ModalBottomSheetState createState() => _ModalBottomSheetState();
 }
@@ -370,6 +500,10 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
   Widget build(BuildContext context) {
     return Obx(() {
       return Container(
+        decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.only(
+                topRight: Radius.circular(20), topLeft: Radius.circular(20))),
         padding: EdgeInsets.all(10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -413,18 +547,21 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                         await HiveHelper.getBoxes('Table_Favorite'));
                     await checkExistTable(
                         levelController.listChunkQuestions.indexOf(e) + 1);
-                    Get.to(QuestionScreen(
-                      level: widget.level,
-                      categoryId: widget.categoryId,
-                      // ignore: deprecated_member_use
-                      question: levelController.questionsFromHive.isNullOrBlank
-                          ? RxList<Question>(e)
-                          : levelController.questionsFromHive,
-                      testNumber:
-                          levelController.listChunkQuestions.indexOf(e) + 1,
-                      isFavorite: false,
-                      questionTemp: RxList<Question>(e),
-                    ),transition: Transition.fadeIn,duration: Duration(milliseconds: 500));
+                    Get.to(
+                        QuestionScreen(
+                          level: widget.level,
+                          categoryId: widget.categoryId,
+                          question:
+                              levelController.questionsFromHive.isNullOrBlank
+                                  ? RxList<Question>(e)
+                                  : levelController.questionsFromHive,
+                          testNumber:
+                              levelController.listChunkQuestions.indexOf(e) + 1,
+                          isFavorite: false,
+                          questionTemp: RxList<Question>(e),
+                        ),
+                        transition: Transition.fadeIn,
+                        duration: Duration(milliseconds: 500));
                   },
                 );
               }).toList(),

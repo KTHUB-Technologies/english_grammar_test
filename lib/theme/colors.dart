@@ -12,7 +12,7 @@ class AppColors {
   static const closeIcon = Color(0xff6a6a6a);
   static const paragraphHeaderText = Color(0xff5c5c5c);
   static const paragraphText = Color(0xff5c5c5c);
-  static const List<Color> gradientColorPrimary  = [Color(0xFF29B6F6),Color(0xFF01579B)];
+  static const List<Color> gradientColorPrimary  = [Color(0xFF525252),Color(0xFF3d72b4)];
   static const List<Color> gradientColorWhite  = [Colors.white,Colors.white];
   static const transparent = Colors.transparent;
   static const green = Color(0xFF64DD17);
