@@ -1,40 +1,41 @@
 {
   "project_info": {
-    "project_number": "287962441689",
-    "project_id": "english-grammar-test-49e7b",
-    "storage_bucket": "english-grammar-test-49e7b.appspot.com"
+    "project_number": "1042312715170",
+    "firebase_url": "https://theenestweb.firebaseio.com",
+    "project_id": "theenestweb",
+    "storage_bucket": "theenestweb.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:287962441689:android:07e7a8ddfc0d800c641bc8",
+        "mobilesdk_app_id": "1:1042312715170:android:f265a7ef332785c7f830fb",
         "android_client_info": {
           "package_name": "com.example.the_enest_english_grammar_test"
         }
       },
       "oauth_client": [
         {
-          "client_id": "287962441689-fadtkgqhhjbap3rapq40unun5granvbm.apps.googleusercontent.com",
+          "client_id": "1042312715170-6d9b9ln21tbs7e2tglsgrlvlp2ndv8ck.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBJgpQQ9yTzxk_56jssb45Pk9aNUZmrnxM"
+          "current_key": "AIzaSyCshBLptKKcrv5nY2a9KVJiGYNayzHKRco"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "287962441689-fadtkgqhhjbap3rapq40unun5granvbm.apps.googleusercontent.com",
+              "client_id": "1042312715170-6d9b9ln21tbs7e2tglsgrlvlp2ndv8ck.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "287962441689-443bk2436db0teccrnpt7bbmnncgj7rd.apps.googleusercontent.com",
+              "client_id": "1042312715170-52mhhaoa1d05gkr0prg709649jdkgt7l.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.theEnestEnglishGrammarTest"
+                "bundle_id": "dev.kthub.theEnestEnglishGrammarTest"
               }
             }
           ]
