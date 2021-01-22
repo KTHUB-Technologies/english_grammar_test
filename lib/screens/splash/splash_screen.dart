@@ -6,11 +6,12 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/fade_container.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
-import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/screens/about_screen/about_screen.dart';
+import 'package:the_enest_english_grammar_test/screens/login_screen/login_screen.dart';
 
 
 class SplashScreen extends StatefulWidget {
@@ -19,7 +20,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>{
-  final LevelController levelController=Get.find();
+  final MainController mainController=Get.find();
   final AppController appController=Get.find();
   Timer timer;
 
@@ -73,7 +74,7 @@ class _SplashScreenState extends State<SplashScreen>{
   ///             OTHER METHODS            ///
   ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~///
   onBuildDone() async {
-    await levelController.loadJson();
+    await mainController.loadJson();
     await SoundsHelper.load();
     await checkDarkMode();
     /// Delay 3 seconds, then navigate to Login screen
@@ -93,7 +94,7 @@ class _SplashScreenState extends State<SplashScreen>{
   checkFirstLoad()async{
     final openBox=await Hive.openBox('First_Load');
     if(openBox.get('isFirst')!=null)
-      _navigateToMainScreen();
+      _navigateToLoginScreen();
     else
       Get.to(AboutScreen());
     openBox.close();
@@ -102,7 +103,7 @@ class _SplashScreenState extends State<SplashScreen>{
   _loadUserData() async {
 
   }
-  _navigateToMainScreen() {
-    Get.offNamedUntil('/MainScreen', (route) => false);
+  _navigateToLoginScreen() {
+    Get.offAll(LoginScreen());
   }
 }

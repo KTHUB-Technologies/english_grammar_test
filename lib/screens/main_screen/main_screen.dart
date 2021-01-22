@@ -6,7 +6,7 @@ import 'package:the_enest_english_grammar_test/commons/app_logo.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
-import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
@@ -20,7 +20,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final LevelController levelController = Get.find();
+  final MainController levelController = Get.find();
   final AppController appController = Get.find();
 
   @override
@@ -28,13 +28,6 @@ class _MainScreenState extends State<MainScreen> {
     levelController.categories = [];
     levelController.distinctCategory = [];
     super.initState();
-    checkFirst();
-  }
-
-  checkFirst() async {
-    final openBox = await Hive.openBox('First_Load');
-    await openBox.put('isFirst', 'checked');
-    openBox.close();
   }
 
   @override
@@ -179,26 +172,46 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  AppButton buildAppButtonLevel(int level) {
-    return AppButton(
-      "Let's Start",
-      onTap: () async {
-        SoundsHelper.checkAudio(Sounds.touch);
-        await levelController.loadQuestionFromLevel(level);
-        levelController.categories =
-            levelController.questions.map((e) => e.categoryId).toList();
-        levelController.distinctCategory =
-            levelController.categories.toSet().toList();
-        levelController.distinctCategory.sort();
+  Widget buildAppButtonLevel(int level) {
+    return Stack(
+      children: <Widget>[
+        AppButton(
+          "Let's Start",
+          onTap: () async {
+            SoundsHelper.checkAudio(Sounds.touch);
+            await levelController.loadQuestionFromLevel(level);
+            levelController.categories =
+                levelController.questions.map((e) => e.categoryId).toList();
+            levelController.distinctCategory =
+                levelController.categories.toSet().toList();
+            levelController.distinctCategory.sort();
 
-        Get.to(
-            LevelScreen(
-              level: level,
-              isProgress: false,
-            ),
-            transition: Transition.rightToLeftWithFade,
-            duration: Duration(milliseconds: 500));
-      },
+            Get.to(
+                LevelScreen(
+                  level: level,
+                  isProgress: false,
+                ),
+                transition: Transition.rightToLeftWithFade,
+                duration: Duration(milliseconds: 500));
+          },
+        ),
+        // ignore: deprecated_member_use
+        appController.idUserMicrosoft.value.isNullOrBlank
+            ? getLevel(level)!='Beginning'
+                ? Container(
+                    width: getScreenWidth(context) / 1.8,
+                    height: getScreenWidth(context) / 8,
+                    decoration: BoxDecoration(
+                        color: AppColors.black.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(15)),
+                    child: Icon(
+                      Icons.lock_outline,
+                      color: AppColors.white,
+                    ),
+                  )
+                : SizedBox()
+            : SizedBox(),
+      ],
     );
   }
 }

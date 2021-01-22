@@ -4,10 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 
-class LevelController extends GetxController {
+class MainController extends GetxController {
   ///SECTION
   List<int> sections = [1,2];
-  List<bool> selected = [true,false];
+  RxList<bool> selected = RxList<bool>([true,false]);
   Rx<int> sectionSelected = Rx<int>(0);
 
   ///JSON DATA
@@ -40,8 +40,7 @@ class LevelController extends GetxController {
     var data =
         await rootBundle.loadString('lib/res/strings/Question_Data.json');
     var result = jsonDecode(data);
-    listQuestions = result.map<Question>((e) => Question.fromJson(e)).toList();
-
+    listQuestions= result.map<Question>((e) => Question.fromJson(e)).toList();
     levels = listQuestions.map((e) => e.level).toList();
     distinctLevel = levels.toSet().toList();
     distinctLevel.sort();
@@ -50,7 +49,6 @@ class LevelController extends GetxController {
 
   Future loadQuestionFromLevel(int level) async {
     isShowLoading.value = true;
-    await loadJson();
     questions =
         RxList<Question>(listQuestions.where((f) => f.level == level).toList());
     isShowLoading.value=false;
