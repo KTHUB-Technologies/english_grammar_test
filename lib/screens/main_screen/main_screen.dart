@@ -29,38 +29,37 @@ class _MainScreenState extends State<MainScreen> {
   final LevelController levelController = Get.find();
   final AppController appController = Get.find();
 
-  // upDataToFireStore() async {
-  //   String data =
-  //       await rootBundle.loadString("lib/res/strings/Question_Data.json");
-  //   final jsonResult = jsonDecode(data);
-  //   List<Question> questions =
-  //       List.from(jsonResult.map((e) => Question.fromJson(e)).toList());
-  //   List<Question> questionsCloud = questions
-  //       .where((element) => element.categoryId == 1 && element.level == 1)
-  //       .toList();
-  //   questionsCloud.sort((a, b) => a.id.compareTo(b.id));
-  //   int block = 1;
-  //   int count = 1;
-  //   for (var i in questionsCloud) {
-  //     count++;
-  //     if (count % 500 == 0) {
-  //       block++;
-  //     }
-  //     await FireBaseHelper.fireStoreReference
-  //         .collection('QUESTIONS_DATA')
-  //         .doc('BLOCK_0')
-  //         .update({
-  //       'questions': FieldValue.arrayUnion([i.toJson()])
-  //     });
-  //   }
-  //   ///
-  //   var data = await FireBaseHelper.fireStoreReference.collection('QUESTIONS_DATA').get();
-  //   List<Question> questions = [];
-  //   for(var doc in data.docs){
-  //     questions.addAll(doc.data()['questions'].map<Question>((e)=>Question.fromJson(e)).toList());
-  //   }
-  //   print(questions.length);
-  // }
+  upDataToFireStore() async {
+    String data =
+        await rootBundle.loadString("lib/res/strings/Question_Data.json");
+    final jsonResult = jsonDecode(data);
+    List<Question> questions =
+        List.from(jsonResult.map((e) => Question.fromJson(e)).toList());
+    List<Question> questionsCloud = questions
+        .where((element) => element.categoryId == 1 && element.level == 1)
+        .toList();
+    questionsCloud.sort((a, b) => a.id.compareTo(b.id));
+    int block = 1;
+    int count = 1;
+    for (var i in questionsCloud) {
+      count++;
+      if (count % 500 == 0) {
+        block++;
+      }
+      await FireBaseHelper.fireStoreReference
+          .collection('QUESTIONS_DATA')
+          .doc('BLOCK_0')
+          .update({
+        'questions': FieldValue.arrayUnion([i.toJson()])
+      });
+    }
+    /// CHECK TOTAL QUESTION
+    // var dataLocal = await FireBaseHelper.fireStoreReference.collection('QUESTIONS_DATA').get();
+    // List<Question> questionsLocal = [];
+    // for(var doc in dataLocal.docs){
+    //   questionsLocal.addAll(doc.data()['questions'].map<Question>((e)=>Question.fromJson(e)).toList());
+    // }
+  }
 
   @override
   void initState() {
