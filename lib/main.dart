@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
@@ -13,6 +14,7 @@ void main() async {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]).then((_) async {
+    await Firebase.initializeApp();
     Directory directory= await getApplicationDocumentsDirectory();
     await Hive.initFlutter(directory.path);
     print(directory.path);
