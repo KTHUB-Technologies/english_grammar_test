@@ -4,10 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 
-class LevelController extends GetxController {
+class MainController extends GetxController {
   ///SECTION
   List<int> sections = [1,2];
-  List<bool> selected = [true,false];
+  RxList<bool> selected = RxList<bool>([true,false]);
   Rx<int> sectionSelected = Rx<int>(0);
 
   ///JSON DATA
@@ -35,7 +35,7 @@ class LevelController extends GetxController {
 
   Rx<Map> scoreOfCate=Rx<Map>({});
 
-  Future loadJson(String accessToken) async {
+  Future loadJson() async {
     isShowLoading.value = true;
     var data =
         await rootBundle.loadString('lib/res/strings/Question_Data.json');

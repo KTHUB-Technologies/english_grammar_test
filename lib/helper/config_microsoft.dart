@@ -2,6 +2,7 @@ import 'package:aad_oauth/aad_oauth.dart';
 import 'package:aad_oauth/model/config.dart';
 
 class ConfigMicrosoft{
+
   static const userProfileBaseUrl = 'https://graph.microsoft.com/v1.0/me';
   static const authorization = 'Authorization';
   static const bearer = 'Bearer ';

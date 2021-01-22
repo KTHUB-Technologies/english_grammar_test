@@ -26,7 +26,7 @@ class Question extends HiveObject{
   @HiveField(9)
   final String task;
   @HiveField(10)
-  final Rx<int> currentChecked;
+  Rx<int> currentChecked;
 
   Question({this.categoryId,this.categoryName,this.correctAnswer,this.explanation,this.explanationVi,this.groupId,this.id,this.level,this.options,this.task,this.currentChecked});
 

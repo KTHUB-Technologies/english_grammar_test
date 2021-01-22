@@ -31,7 +31,7 @@ class _SettingScreenState extends State<SettingScreen> {
         children: <Widget>[
           buildDarkModeSetting(),
           Dimens.height30,
-          buildSignOutButton(context),
+          buildButtonSignInOut(context),
         ],
       ),
     );
@@ -58,21 +58,21 @@ class _SettingScreenState extends State<SettingScreen> {
     });
   }
 
-  Widget buildSignOutButton(BuildContext context) {
+  Widget buildButtonSignInOut(BuildContext context) {
     return AppButton(
       // ignore: deprecated_member_use
-      appController.accessToken.value.isNullOrBlank ? 'Sign In' : 'Sign Out',
+      appController.idUserMicrosoft.value.isNullOrBlank ? 'Sign In' : 'Sign Out',
       widthButton: getScreenWidth(context) / 3,
       // ignore: deprecated_member_use
-      onTap: appController.accessToken.isNullOrBlank
+      onTap: appController.idUserMicrosoft.isNullOrBlank
           ? () {
-        Get.offAll(LoginScreen());
-      }
+              Get.offAll(LoginScreen());
+            }
           : () async {
-        await ConfigMicrosoft.oauth.logout();
-        appController.accessToken.value=null;
-        Get.offAll(LoginScreen());
-      },
+              await ConfigMicrosoft.oauth.logout();
+              appController.idUserMicrosoft.value = null;
+              Get.offAll(LoginScreen());
+            },
     );
   }
 }

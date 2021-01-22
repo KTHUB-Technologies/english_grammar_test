@@ -6,7 +6,7 @@ import 'package:the_enest_english_grammar_test/commons/app_logo.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
-import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
@@ -20,12 +20,11 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final LevelController levelController = Get.find();
+  final MainController levelController = Get.find();
   final AppController appController = Get.find();
 
   @override
   void initState() {
-    levelController.loadJson(appController.accessToken.value);
     levelController.categories = [];
     levelController.distinctCategory = [];
     super.initState();
@@ -46,7 +45,9 @@ class _MainScreenState extends State<MainScreen> {
                       Stack(
                         children: [
                           Container(
-                            decoration: BoxDecoration(gradient: LinearGradient(colors: AppColors.gradientColorPrimary)),
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                    colors: AppColors.gradientColorPrimary)),
                             height: getScreenHeight(context) / 2,
                           ),
                           Container(
@@ -69,7 +70,8 @@ class _MainScreenState extends State<MainScreen> {
                           Container(
                             height: getScreenHeight(context) / 2,
                             decoration: BoxDecoration(
-                               gradient: LinearGradient(colors: AppColors.gradientColorPrimary),
+                                gradient: LinearGradient(
+                                    colors: AppColors.gradientColorPrimary),
                                 borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(70))),
                             child: Column(
@@ -110,44 +112,42 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-
   _buildLevelNavigationRail() {
-
-    return levelController.distinctLevel.isEmpty?SizedBox():NavigationRail(
-
-        backgroundColor: AppColors.white,
-
-        minWidth: 55.0,
-        groupAlignment: 0.0,
-        selectedLabelTextStyle: TextStyle(
-          color: Colors.orangeAccent,
-          fontSize: 14,
-          letterSpacing: 1,
-          decorationThickness: 2.0,
-        ),
-        unselectedLabelTextStyle: TextStyle(
-          color: AppColors.black,
-          fontSize: 13,
-          letterSpacing: 0.8,
-        ),
-        selectedIndex: levelController.levelSelected.value,
-        onDestinationSelected: (int index) {
-          levelController.levelSelected.value = index;
-        },
-        labelType: NavigationRailLabelType.all,
-        destinations: levelController.distinctLevel
-            .map(
-              (e) => NavigationRailDestination(
-                  icon: SizedBox.shrink(),
-                  label: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: RotatedBox(
-                      quarterTurns: -1,
-                      child: Text(getLevel(e)),
-                    ),
-                  )),
-            )
-            .toList());
+    return levelController.distinctLevel.isEmpty
+        ? SizedBox()
+        : NavigationRail(
+            backgroundColor: AppColors.white,
+            minWidth: 55.0,
+            groupAlignment: 0.0,
+            selectedLabelTextStyle: TextStyle(
+              color: Colors.orangeAccent,
+              fontSize: 14,
+              letterSpacing: 1,
+              decorationThickness: 2.0,
+            ),
+            unselectedLabelTextStyle: TextStyle(
+              color: AppColors.black,
+              fontSize: 13,
+              letterSpacing: 0.8,
+            ),
+            selectedIndex: levelController.levelSelected.value,
+            onDestinationSelected: (int index) {
+              levelController.levelSelected.value = index;
+            },
+            labelType: NavigationRailLabelType.all,
+            destinations: levelController.distinctLevel
+                .map(
+                  (e) => NavigationRailDestination(
+                      icon: SizedBox.shrink(),
+                      label: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: RotatedBox(
+                          quarterTurns: -1,
+                          child: Text(getLevel(e)),
+                        ),
+                      )),
+                )
+                .toList());
   }
 
   _buildSelectedContent(int level) {
@@ -155,31 +155,47 @@ class _MainScreenState extends State<MainScreen> {
       children: [buildAppButtonLevel(level)],
     );
   }
-  _buildBottomNavigationBar(){
 
-  }
+  Widget buildAppButtonLevel(int level) {
+    return Stack(
+      children: <Widget>[
+        AppButton(
+          "Let's Start",
+          onTap: () async {
+            SoundsHelper.checkAudio(Sounds.touch);
+            await levelController.loadQuestionFromLevel(level);
+            levelController.categories =
+                levelController.questions.map((e) => e.categoryId).toList();
+            levelController.distinctCategory =
+                levelController.categories.toSet().toList();
+            levelController.distinctCategory.sort();
 
-  AppButton buildAppButtonLevel(int level) {
-    return AppButton(
-      "Let's Start",
-      onTap: () async {
-        SoundsHelper.checkAudio(Sounds.touch);
-        await levelController.loadQuestionFromLevel(level);
-        levelController.categories =
-            levelController.questions.map((e) => e.categoryId).toList();
-        levelController.distinctCategory =
-            levelController.categories.toSet().toList();
-        levelController.distinctCategory.sort();
-
-        Get.to(
-            LevelScreen(
-              level: level,
-              isProgress: false,
-            ),
-            transition: Transition.rightToLeftWithFade,
-            duration: Duration(milliseconds: 500));
-      },
-
+            Get.to(
+                LevelScreen(
+                  level: level,
+                  isProgress: false,
+                ),
+                transition: Transition.rightToLeftWithFade,
+                duration: Duration(milliseconds: 500));
+          },
+        ),
+        // ignore: deprecated_member_use
+        appController.idUserMicrosoft.value.isNullOrBlank
+            ? getLevel(level)!='Beginning'
+                ? Container(
+                    width: getScreenWidth(context) / 1.8,
+                    height: getScreenWidth(context) / 8,
+                    decoration: BoxDecoration(
+                        color: AppColors.black.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(15)),
+                    child: Icon(
+                      Icons.lock_outline,
+                      color: AppColors.white,
+                    ),
+                  )
+                : SizedBox()
+            : SizedBox(),
+      ],
     );
   }
 }

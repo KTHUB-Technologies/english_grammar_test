@@ -45,48 +45,56 @@ class _AboutScreenState extends State<AboutScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Container(
-            height: getScreenHeight(context)/1.5,
-            width: getScreenWidth(context),
-            child: PageView.builder(
-              controller: _controller,
-              physics: NeverScrollableScrollPhysics(),
-              onPageChanged: (value) {
-                currentPage.value = value;
-              },
-              itemCount: data.length,
-              itemBuilder: (context, index) => Content(
-                image: data[index]["image"],
-                text: data[index]['text'],
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: 10),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    data.length,
-                        (index) => buildDot(index: index),
-                  ),
-                ),
-                Dimens.height30,
-                Obx((){
-                  return AppButton(currentPage.value==data.length-1?'Get Started':'Continue',onTap: currentPage.value==data.length-1?(){
-                    Get.offAll(LoginScreen());
-                  }:(){
-                    _controller.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeIn);
-                  },);
-                }),
-              ],
-            ),
-          ),
+          buildPageViewBody(context),
+          buildButtonContinue(),
         ],
       ),
     );
+  }
+
+  Widget buildButtonContinue() {
+    return Padding(
+          padding: EdgeInsets.symmetric(
+              horizontal: 10),
+          child: Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  data.length,
+                      (index) => buildDot(index: index),
+                ),
+              ),
+              Dimens.height30,
+              Obx((){
+                return AppButton(currentPage.value==data.length-1?'Get Started':'Continue',onTap: currentPage.value==data.length-1?(){
+                  Get.offAll(LoginScreen());
+                }:(){
+                  _controller.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeIn);
+                },);
+              }),
+            ],
+          ),
+        );
+  }
+
+  Widget buildPageViewBody(BuildContext context) {
+    return Container(
+          height: getScreenHeight(context)/1.5,
+          width: getScreenWidth(context),
+          child: PageView.builder(
+            controller: _controller,
+            physics: NeverScrollableScrollPhysics(),
+            onPageChanged: (value) {
+              currentPage.value = value;
+            },
+            itemCount: data.length,
+            itemBuilder: (context, index) => Content(
+              image: data[index]["image"],
+              text: data[index]['text'],
+            ),
+          ),
+        );
   }
 
   Widget buildDot({int index}) {

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
-import 'package:the_enest_english_grammar_test/controller/level_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/localization/flutter_localizations_delegate.dart';
 import 'package:the_enest_english_grammar_test/routes/routes.dart';
 import 'package:the_enest_english_grammar_test/screens/splash/splash_screen.dart';
@@ -39,7 +39,7 @@ class _EnglishGrammarTestAppState extends State<EnglishGrammarTestApp> {
             navigatorKey: nav,
             getPages: Routes.route,
             initialBinding: BindingsBuilder((){
-              Get.put(LevelController());
+              Get.put(MainController());
             }),
             debugShowCheckedModeBanner: false,
             title: '',
