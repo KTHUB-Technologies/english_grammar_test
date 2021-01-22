@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -11,8 +13,10 @@ import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/level_screen.dart';
+import 'package:the_enest_english_grammar_test/screens/setting_screen/setting_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -151,19 +155,30 @@ class _MainScreenState extends State<MainScreen> {
               icon: SizedBox.shrink(),
               label: Padding(
                 padding: EdgeInsets.symmetric(vertical: 0),
-                child: IconButton(icon: Icon(Icons.person), onPressed: () {}),
+                child: IconButton(
+                    icon: Icon(Icons.person),
+                    onPressed: () async {
+                      await appController.loginWithMicrosoft();
+                    }),
               )))
           ..add(NavigationRailDestination(
-              icon: SizedBox.shrink(),
-              label:  IconButton(icon: Icon(Icons.language), onPressed: () {}),
-              ))
+            icon: SizedBox.shrink(),
+            label: IconButton(
+                icon: Icon(Icons.language),
+                onPressed: () async {
+                  await _navigateToFacebookApp();
+                }),
+          ))
           ..add(NavigationRailDestination(
               icon: SizedBox.shrink(),
               label: Padding(
                 padding: EdgeInsets.symmetric(vertical: 0),
-                child: IconButton(icon: Icon(Icons.settings), onPressed: () {}),
-              )))
-    );
+                child: IconButton(
+                    icon: Icon(Icons.settings),
+                    onPressed: () {
+                      _navigateToSettingScreen();
+                    }),
+              ))));
   }
 
   _buildSelectedContent(int level) {
@@ -197,7 +212,7 @@ class _MainScreenState extends State<MainScreen> {
         ),
         // ignore: deprecated_member_use
         appController.idUserMicrosoft.value.isNullOrBlank
-            ? getLevel(level)!='Beginning'
+            ?level != 1
                 ? Container(
                     width: getScreenWidth(context) / 1.8,
                     height: getScreenWidth(context) / 8,
@@ -213,5 +228,31 @@ class _MainScreenState extends State<MainScreen> {
             : SizedBox(),
       ],
     );
+  }
+
+  _navigateToFacebookApp() async {
+    if (Platform.isIOS) {
+      if (await canLaunch('https://www.facebook.com/Enestcenter')) {
+        await launch('https://www.facebook.com/Enestcenter',
+            forceSafariVC: false);
+      } else {
+        if (await canLaunch('https://www.facebook.com/Enestcenter')) {
+          await launch('https://www.facebook.com/Enestcenter');
+        } else {
+          throw 'Could not launch https://www.facebook.com/Enestcenter';
+        }
+      }
+    } else {
+      const url = 'https://www.facebook.com/Enestcenter';
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        throw 'Could not launch $url';
+      }
+    }
+  }
+
+  _navigateToSettingScreen() {
+    Get.to(SettingScreen());
   }
 }
