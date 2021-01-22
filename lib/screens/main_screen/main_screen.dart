@@ -140,19 +140,37 @@ class _MainScreenState extends State<MainScreen> {
           levelController.levelSelected.value = index;
         },
         labelType: NavigationRailLabelType.all,
-        destinations: levelController.distinctLevel
-            .map(
-              (e) => NavigationRailDestination(
-                  icon: SizedBox.shrink(),
-                  label: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: RotatedBox(
-                      quarterTurns: -1,
-                      child: Text(getLevel(e)),
-                    ),
-                  )),
-            )
-            .toList());
+        destinations: []
+          ..addAll(levelController.distinctLevel
+              .map(
+                (e) => NavigationRailDestination(
+                    icon: SizedBox.shrink(),
+                    label: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: RotatedBox(
+                        quarterTurns: -1,
+                        child: Text(getLevel(e)),
+                      ),
+                    )),
+              )
+              .toList())
+          ..add(NavigationRailDestination(
+              icon: SizedBox.shrink(),
+              label: Padding(
+                padding: EdgeInsets.symmetric(vertical: 0),
+                child: IconButton(icon: Icon(Icons.person), onPressed: () {}),
+              )))
+          ..add(NavigationRailDestination(
+              icon: SizedBox.shrink(),
+              label:  IconButton(icon: Icon(Icons.language), onPressed: () {}),
+              ))
+          ..add(NavigationRailDestination(
+              icon: SizedBox.shrink(),
+              label: Padding(
+                padding: EdgeInsets.symmetric(vertical: 0),
+                child: IconButton(icon: Icon(Icons.settings), onPressed: () {}),
+              )))
+    );
   }
 
   _buildSelectedContent(int level) {
@@ -160,8 +178,6 @@ class _MainScreenState extends State<MainScreen> {
       children: [buildAppButtonLevel(level)],
     );
   }
-
-  _buildBottomNavigationBar() {}
 
   AppButton buildAppButtonLevel(int level) {
     return AppButton(
