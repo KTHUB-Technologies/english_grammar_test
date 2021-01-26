@@ -82,7 +82,9 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_outlined),
           onPressed: () {
-            Get.offAll(MainScreen());
+           // Get.offAll(MainScreen());
+            Get.back();
+            Get.back();
           },
         ),
       ),

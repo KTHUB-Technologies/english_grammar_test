@@ -422,7 +422,6 @@ class _LevelScreenState extends State<LevelScreen> {
         }
       });
     }
-    print(length);
     return score / length;
   }
 

@@ -117,7 +117,6 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   _buildLevelNavigationRail() {
-    print( appController.user.value);
     return NavigationRail(
         backgroundColor: AppColors.white,
         minWidth: 55.0,

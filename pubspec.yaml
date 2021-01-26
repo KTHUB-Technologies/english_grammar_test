@@ -37,6 +37,7 @@ dependencies:
   animated_widgets: ^1.0.6
   aad_oauth: ^0.2.0
   rxdart: ^0.21.0
+  websafe_svg: ^1.1.4
 
 
 dev_dependencies:

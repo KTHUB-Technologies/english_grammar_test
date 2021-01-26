@@ -14,12 +14,14 @@ import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
+import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/check_answer/check_answer_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/question_screen/card_question/card_question.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
+import 'package:websafe_svg/websafe_svg.dart';
 
 class QuestionScreen extends StatefulWidget {
   final int level;
@@ -86,12 +88,21 @@ class _QuestionScreenState extends State<QuestionScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(colors: AppColors.gradientColorPrimary)),
-        child: Column(
-          children: [_buildHeader(), Dimens.height30, _buildQuestion()],
-        ),
+      body: Stack(
+        children: [
+          WebsafeSvg.asset(Images.quiz_bg, fit: BoxFit.fill),
+          Container(
+            child: Column(
+              children: [
+                Dimens.height30,
+                _buildHeader(),
+                _buildProgress(),
+                Dimens.height30,
+                _buildQuestion()
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -99,7 +110,10 @@ class _QuestionScreenState extends State<QuestionScreen>
   _buildHeader() {
     return ListTile(
       leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: AppColors.white,
+          ),
           onPressed: mainController.questionsFromHive.isNullOrBlank
               ? widget.isFavorite == false
                   ? () {
@@ -126,24 +140,14 @@ class _QuestionScreenState extends State<QuestionScreen>
               : () {
                   Get.back();
                 }),
-      subtitle: Obx(() => LinearPercentIndicator(
-            width: getScreenWidth(context) / 2,
-            animation: true,
-            lineHeight: 20.0,
-            animationDuration: 0,
-            percent:
-                ((mainController.currentTrue.value) / widget.question.length)
-                    .toDouble(),
-            center: AppText(
-                text:
-                    "${(((mainController.currentTrue.value) / widget.question.length) * 100).round()}%"),
-            linearStrokeCap: LinearStrokeCap.roundAll,
-            progressColor: Colors.greenAccent,
-          )),
+
       trailing: mainController.questionsFromHive.isNotEmpty
           ? widget.isFavorite == false
               ? IconButton(
-                  icon: Icon(Icons.rotate_left),
+                  icon: Icon(
+                    Icons.rotate_left,
+                    color: AppColors.white,
+                  ),
                   onPressed: () async {
                     showCupertinoDialog(
                         context: context,
@@ -168,10 +172,53 @@ class _QuestionScreenState extends State<QuestionScreen>
         text: widget.isFavorite == true
             ? "Favorite"
             : getCategory(widget.categoryId),
-        textSize: Dimens.paragraphHeaderTextSize,
         color: AppColors.white,
+        fontWeight: FontWeight.bold,
+        textSize: Dimens.paragraphHeaderTextSize,
       ),
     );
+  }
+
+  _buildProgress() {
+    return ListTile(
+      title: Obx(() => Text.rich(
+            TextSpan(
+              text: "Question ${mainController.index.value + 1}",
+              style: Theme.of(context)
+                  .textTheme
+                  .headline4
+                  .copyWith(color: AppColors.secondary),
+              children: [
+                TextSpan(
+                  text: "/${widget.question.length}",
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline5
+                      .copyWith(color: AppColors.secondary),
+                ),
+              ],
+            ),
+          )),
+      subtitle: widget.isFavorite
+          ? null
+          : Obx(() => LinearPercentIndicator(
+        width: getScreenWidth(context)/1.1,
+        animation: true,
+        lineHeight: 20.0,
+        animationDuration: 0,
+        percent: ((mainController.currentTrue.value) /
+            widget.question.length)
+            .toDouble(),
+        center: AppText(
+            text:
+            "${(((mainController.currentTrue.value) / widget.question.length) * 100).round()}%"),
+        linearStrokeCap: LinearStrokeCap.roundAll,
+        progressColor: Colors.greenAccent,
+      )),
+    );
+
+    AppText(
+        text: '${mainController.index.value + 1}/${widget.question.length}');
   }
 
   _buildQuestion() {
