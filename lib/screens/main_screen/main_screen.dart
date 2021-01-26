@@ -117,6 +117,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   _buildLevelNavigationRail() {
+    print( appController.user.value);
     return NavigationRail(
         backgroundColor: AppColors.white,
         minWidth: 55.0,
@@ -156,7 +157,9 @@ class _MainScreenState extends State<MainScreen> {
               label: Padding(
                 padding: EdgeInsets.symmetric(vertical: 0),
                 child: IconButton(
-                    icon: Icon(Icons.person),
+                    icon: appController.user.value.isNullOrBlank?Icon(Icons.person):CircleAvatar(
+                      child: AppText(text: shortUserName( appController.user.value['displayName'])),
+                    ),
                     onPressed: () async {
                       await appController.loginWithMicrosoft();
                     }),
@@ -211,7 +214,7 @@ class _MainScreenState extends State<MainScreen> {
           },
         ),
         // ignore: deprecated_member_use
-        appController.idUserMicrosoft.value.isNullOrBlank
+        appController.user.value.isNullOrBlank
             ?level != 1
                 ? Container(
                     width: getScreenWidth(context) / 1.8,

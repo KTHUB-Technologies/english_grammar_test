@@ -162,6 +162,7 @@ class _CardQuestionState extends State<CardQuestion> {
                           ),
                         ),
                         onTap: () async {
+
                           widget.question.currentChecked.value =
                               options.indexOf(e);
                           if (widget.question.currentChecked.value ==
@@ -173,6 +174,7 @@ class _CardQuestionState extends State<CardQuestion> {
                               Icons.check,
                               color: AppColors.green,
                             );
+                            mainController.currentTrue.value++;
                           } else {
                             SoundsHelper.checkAudio(Sounds.in_correct);
                             colorsI[widget.question.currentChecked.value] =

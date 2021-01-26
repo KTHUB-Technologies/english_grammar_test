@@ -16,7 +16,7 @@ class AppController extends GetxController {
 
   Rx<Locale> locale = Rx<Locale>();
 
-  Rx<String> idUserMicrosoft = Rx<String>(null);
+  Rx<Map> user = Rx<Map>(null);
 
   Rx<bool> isShowLoading = Rx<bool>(false);
 
@@ -70,9 +70,8 @@ class AppController extends GetxController {
         headers: {
           ConfigMicrosoft.authorization: ConfigMicrosoft.bearer + accessToken
         });
-
     Map profile = jsonDecode(response.body);
-    idUserMicrosoft.value = profile['id'];
+    user.value = profile;
     isShowLoading.value = false;
   }
 }
