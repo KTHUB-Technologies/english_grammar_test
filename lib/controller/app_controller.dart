@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -63,23 +64,15 @@ class AppController extends GetxController {
 
   loginWithMicrosoft() async {
     isShowLoading.value = true;
-    await FireBaseHelper.loginWithMicrosoft
-        .then((value) => print(value))
-        .catchError((e) => print(e));
+    await ConfigMicrosoft.oauth.login();
+    var accessToken = await ConfigMicrosoft.oauth.getAccessToken();
+    final response = await http.get(ConfigMicrosoft.userProfileBaseUrl,
+        headers: {
+          ConfigMicrosoft.authorization: ConfigMicrosoft.bearer + accessToken
+        });
 
-    // await ConfigMicrosoft.oauth.login();
-    // var accessToken = await ConfigMicrosoft.oauth.getAccessToken();
-    // print('Logged in successfully, your access token: $accessToken');
-    //
-    // final response = await http.get(ConfigMicrosoft.userProfileBaseUrl,headers: {ConfigMicrosoft.authorization: ConfigMicrosoft.bearer + accessToken});
-    // print(response.body);
-    //
-    // Map profile=jsonDecode(response.body);
-    // print(profile['id']);
-    //
-    // idUserMicrosoft.value=profile['id'];
-    // print(idUserMicrosoft.value);
-
+    Map profile = jsonDecode(response.body);
+    idUserMicrosoft.value = profile['id'];
     isShowLoading.value = false;
   }
 }
