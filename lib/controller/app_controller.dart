@@ -73,7 +73,6 @@ class AppController extends GetxController {
     print(response.body);
 
     Map profile = jsonDecode(response.body);
-    print(profile['id']);
 
     idUserMicrosoft.value = profile['id'];
     print(idUserMicrosoft.value);

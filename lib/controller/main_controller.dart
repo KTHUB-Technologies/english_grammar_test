@@ -87,7 +87,7 @@ class MainController extends GetxController {
 
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
-      List<dynamic> allQues=openBox.get('BeginningQuestions');
+      List<dynamic> allQues=openBox.get('LocalQuestions');
 
       listQuestions=allQues.map((e) => Question.fromJson(e)).toList();
     }else{
@@ -103,18 +103,18 @@ class MainController extends GetxController {
         listQuestions.add(ques);
       })).toList();
 
-      var beginningQuestions= listQuestions.where((e) => e.level==1 || e.level==2).toList();
+      DocumentSnapshot dataBlock0 = await FirebaseHelper.fireStoreReference
+          .collection(Constants.QUESTIONS_DATA)
+          .doc('BLOCK_0').get();
 
-      var allQuestions=beginningQuestions.map((e) => e.toJson()).toList();
+      var allQuestions=dataBlock0.data()['questions'].map((e) => e).toList();
 
-      await openBox.put('BeginningQuestions', allQuestions);
+      await openBox.put('LocalQuestions', allQuestions);
     }
 
     openBox.close();
 
     loadQuestions();
-
-    print(listQuestions.length);
   }
 
   loadQuestions(){

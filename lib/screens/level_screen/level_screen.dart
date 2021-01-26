@@ -337,13 +337,11 @@ class _LevelScreenState extends State<LevelScreen> {
                     : GestureDetector(
                         child: Icon(
                           Icons.rotate_left,
-                          color: score.value == null ||
-                                  score.value.toString() == 'NaN'
+                          color: score.value == 0.0
                               ? AppColors.divider
                               : AppColors.green,
                         ),
-                        onTap: score.value.toString() != 'NaN' &&
-                                score.value != null
+                        onTap: score.value != 0.0
                             ? () {
                                 showCupertinoDialog(
                                     context: context,
@@ -390,7 +388,7 @@ class _LevelScreenState extends State<LevelScreen> {
         '${widget.level}_$index', null);
     openBoxScore.close();
 
-    score.value = null;
+    score.value = 0.0;
   }
 
   restartLevel() async{
