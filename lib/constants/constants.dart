@@ -7,4 +7,6 @@ class Constants {
     'Progress',
     'Settings'
   ];
+
+  static const String QUESTIONS_DATA='QUESTIONS_DATA';
 }

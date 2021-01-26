@@ -60,10 +60,10 @@ class _SplashScreenState extends State<SplashScreen>{
   }
 
   checkConnect() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      Get.offNamedUntil('/NoConnectionScreen', (route) => false);
-    }
+    // var connectivityResult = await (Connectivity().checkConnectivity());
+    // if (connectivityResult == ConnectivityResult.none) {
+    //   Get.offNamedUntil('/NoConnectionScreen', (route) => false);
+    // }
   }
 
   ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~///
@@ -74,7 +74,8 @@ class _SplashScreenState extends State<SplashScreen>{
   ///             OTHER METHODS            ///
   ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~///
   onBuildDone() async {
-    await mainController.loadJson();
+    // await mainController.loadJson();
+    await mainController.getAllQuestions();
     await SoundsHelper.load();
     await checkDarkMode();
     /// Delay 3 seconds, then navigate to Login screen
