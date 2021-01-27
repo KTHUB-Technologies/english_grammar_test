@@ -52,6 +52,7 @@ class _QuestionScreenState extends State<QuestionScreen>
   AnimationController _formController;
   Rx<int> countTrue = Rx<int>();
   ConfettiController _controllerCenter;
+
   List<Widget> get listQuestion => widget.question
       .map((question) => TranslationAnimatedWidget.tween(
             enabled: true,
@@ -143,7 +144,6 @@ class _QuestionScreenState extends State<QuestionScreen>
               : () {
                   Get.back();
                 }),
-
       trailing: mainController.questionsFromHive.isNotEmpty
           ? widget.isFavorite == false
               ? IconButton(
@@ -184,40 +184,43 @@ class _QuestionScreenState extends State<QuestionScreen>
 
   _buildProgress() {
     return ListTile(
-      title: Obx(() => Text.rich(
-            TextSpan(
-              text: "Question ${mainController.index.value + 1}",
-              style: Theme.of(context)
-                  .textTheme
-                  .headline4
-                  .copyWith(color: AppColors.secondary),
-              children: [
-                TextSpan(
-                  text: "/${widget.question.length}",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline5
-                      .copyWith(color: AppColors.secondary),
-                ),
-              ],
-            ),
-          )),
+      title: Obx(() {
+        return Text.rich(
+          TextSpan(
+            text:
+                "Question ${(widget.question.length  < mainController.index.value+1) ? mainController.index.value : (mainController.index.value + 1)}",
+            style: Theme.of(context)
+                .textTheme
+                .headline4
+                .copyWith(color: AppColors.secondary),
+            children: [
+              TextSpan(
+                text: "/${widget.question.length}",
+                style: Theme.of(context)
+                    .textTheme
+                    .headline5
+                    .copyWith(color: AppColors.secondary),
+              ),
+            ],
+          ),
+        );
+      }),
       subtitle: widget.isFavorite
           ? null
           : Obx(() => LinearPercentIndicator(
-        width: getScreenWidth(context)/1.1,
-        animation: true,
-        lineHeight: 20.0,
-        animationDuration: 0,
-        percent: ((mainController.currentTrue.value) /
-            widget.question.length)
-            .toDouble(),
-        center: AppText(
-            text:
-            "${(((mainController.currentTrue.value) / widget.question.length) * 100).round()}%"),
-        linearStrokeCap: LinearStrokeCap.roundAll,
-        progressColor: Colors.greenAccent,
-      )),
+                width: getScreenWidth(context) / 1.1,
+                animation: true,
+                lineHeight: 20.0,
+                animationDuration: 0,
+                percent: ((mainController.currentTrue.value) /
+                        widget.question.length)
+                    .toDouble(),
+                center: AppText(
+                    text:
+                        "${(((mainController.currentTrue.value) / widget.question.length) * 100).round()}%"),
+                linearStrokeCap: LinearStrokeCap.roundAll,
+                progressColor: Colors.greenAccent,
+              )),
     );
   }
 
@@ -253,7 +256,8 @@ class _QuestionScreenState extends State<QuestionScreen>
       ),
     );
   }
-  _buildFinalResultContent(){
+
+  _buildFinalResultContent() {
     _controllerCenter.play();
     return Stack(
       children: [
@@ -261,10 +265,8 @@ class _QuestionScreenState extends State<QuestionScreen>
           alignment: Alignment.center,
           child: ConfettiWidget(
             confettiController: _controllerCenter,
-            blastDirectionality: BlastDirectionality
-                .explosive, // don't specify a direction, blast randomly
-            shouldLoop:
-            true, // start again as soon as the animation is finished
+            blastDirectionality: BlastDirectionality.explosive,
+            shouldLoop: true,
             colors: const [
               Colors.green,
               Colors.blue,
@@ -282,8 +284,7 @@ class _QuestionScreenState extends State<QuestionScreen>
                 lineWidth: 10.0,
                 animation: true,
                 animationDuration: 1200,
-                percent: (countTrue.value /
-                    widget.question.length),
+                percent: (countTrue.value / widget.question.length),
                 header: AppText(
                   text: 'Processing',
                 ),
@@ -292,14 +293,12 @@ class _QuestionScreenState extends State<QuestionScreen>
                   size: 50.0,
                   color: Colors.blue,
                 ),
-                circularStrokeCap:
-                CircularStrokeCap.butt,
+                circularStrokeCap: CircularStrokeCap.butt,
                 backgroundColor: Colors.grey,
                 progressColor: Colors.green,
               ),
               AppText(
-                text:
-                'Score: ${countTrue.value}/${widget.question.length}',
+                text: 'Score: ${countTrue.value}/${widget.question.length}',
               ),
               Dimens.height20,
               AppButton(

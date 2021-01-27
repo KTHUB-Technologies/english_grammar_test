@@ -109,89 +109,85 @@ class _CardQuestionState extends State<CardQuestion> {
   Widget buildQuestionContent(
       List<String> options, RxList<Color> colorsI, RxList<Icon> iconsI) {
     return Expanded(
-      child:  ListView(
-          children: <Widget>[
-            AppText(
-              text: widget.question.task,
-              textSize: Dimens.paragraphHeaderTextSize,
-            ),
-            Dimens.height10,
-            Column(
-              children: options.map((e) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 5.0),
-                  child: Obx(() {
-                    return AbsorbPointer(
-                      ignoringSemantics: true,
-                      absorbing: widget
-                              .question
-                              .currentChecked
-                              .value
-                              // ignore: deprecated_member_use
-                              .isNullOrBlank
-                          ? false
-                          : true,
-                      child: GestureDetector(
-                        child: AnimatedContainer(
-                          // ignore: deprecated_member_use
-                          duration: Duration(
-                              milliseconds: widget.question.currentChecked.value
-                                      .isBlank
-                                  ? 0
-                                  : 200),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
+      child: ListView(
+        children: <Widget>[
+          AppText(
+            text: widget.question.task,
+            textSize: Dimens.paragraphHeaderTextSize,
+          ),
+          Dimens.height10,
+          Column(
+            children: options.map((e) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 5.0),
+                child: Obx(() {
+                  return AbsorbPointer(
+                    ignoringSemantics: true,
+                    absorbing: widget
+                            .question
+                            .currentChecked
+                            .value
+                            // ignore: deprecated_member_use
+                            .isNullOrBlank
+                        ? false
+                        : true,
+                    child: GestureDetector(
+                      child: AnimatedContainer(
+                        // ignore: deprecated_member_use
+                        duration: Duration(
+                            milliseconds:
+                                widget.question.currentChecked.value.isBlank
+                                    ? 0
+                                    : 200),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: widget.question.currentChecked.value != null
+                              ? colorsI[options.indexOf(e)]
+                              : Colors.transparent,
+                          border: Border.all(
                             color: widget.question.currentChecked.value != null
                                 ? colorsI[options.indexOf(e)]
-                                : Colors.transparent,
-                            border: Border.all(
-                              color:
-                                  widget.question.currentChecked.value != null
-                                      ? colorsI[options.indexOf(e)]
-                                      : Colors.blueGrey,
-                            ),
-                          ),
-                          child: ListTile(
-                            title: AppText(
-                              text: e,
-                            ),
-                            trailing: iconsI[options.indexOf(e)],
+                                : Colors.blueGrey,
                           ),
                         ),
-                        onTap: () async {
-                          _handleOption(options.indexOf(e), colorsI, iconsI);
-                        },
+                        child: ListTile(
+                          title: AppText(
+                            text: e,
+                          ),
+                          trailing: iconsI[options.indexOf(e)],
+                        ),
                       ),
-                    );
-                  }),
-                );
-              }).toList(),
-            ),
-            Dimens.height10,
-            AnimatedOpacity(
-              // ignore: deprecated_member_use
-              opacity: widget.question.currentChecked.value.isNullOrBlank
-                  ? 0.0
-                  : 1.0,
-              // ignore: deprecated_member_use
-              duration: Duration(
-                  milliseconds:
-                      widget.question.currentChecked.value.isNullOrBlank
-                          ? 0
-                          : 500),
-              curve: Curves.easeInOut,
-              child: Card(
-                child: ListTile(
-                  title: AppText(
-                    text: widget.question.explanation,
-                  ),
+                      onTap: () async {
+                        _handleOption(options.indexOf(e), colorsI, iconsI);
+                      },
+                    ),
+                  );
+                }),
+              );
+            }).toList(),
+          ),
+          Dimens.height10,
+          AnimatedOpacity(
+            // ignore: deprecated_member_use
+            opacity:
+                widget.question.currentChecked.value.isNullOrBlank ? 0.0 : 1.0,
+            // ignore: deprecated_member_use
+            duration: Duration(
+                milliseconds: widget.question.currentChecked.value.isNullOrBlank
+                    ? 0
+                    : 500),
+            curve: Curves.easeInOut,
+            child: Card(
+              child: ListTile(
+                title: AppText(
+                  text: widget.question.explanation,
                 ),
               ),
             ),
-            Dimens.height10,
-          ],
-        ),
-
+          ),
+          Dimens.height10,
+        ],
+      ),
     );
   }
 
@@ -279,6 +275,7 @@ class _CardQuestionState extends State<CardQuestion> {
           heroTag: 'next',
           onPressed: () async {
             SoundsHelper.checkAudio(Sounds.touch);
+
             mainController.index.value++;
           },
           child: Icon(Icons.arrow_forward_rounded),

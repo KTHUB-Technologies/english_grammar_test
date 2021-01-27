@@ -84,11 +84,11 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                 lineWidth: 2.0,
                 animation: true,
                 percent:
-                    scorePercent == null || scorePercent.toString() == 'NaN'
+                    scorePercent == null || scorePercent.isNaN
                         ? 0
                         : scorePercent / 100.round(),
                 center: new Text(
-                  '${scorePercent == null || scorePercent.toString() == 'NaN' ? 0 : scorePercent.round()}%',
+                  '${scorePercent == null || scorePercent.isNaN ? 0 : scorePercent.round()}%',
                   style: new TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 10.0),
                 ),
@@ -98,7 +98,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
             ),
           ),
           onTap: () async {
-            Get.back();
+           // Get.back();
             mainController.questionsHiveFavorite =
                 RxList<Question>(await HiveHelper.getBoxes('Table_Favorite'));
             await checkExistTable(
