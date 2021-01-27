@@ -38,6 +38,7 @@ dependencies:
   aad_oauth: ^0.2.0
   rxdart: ^0.21.0
   websafe_svg: ^1.1.4
+  confetti: ^0.5.4+1
 
 
 dev_dependencies:

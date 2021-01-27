@@ -1,4 +1,5 @@
 import 'package:animated_widgets/animated_widgets.dart';
+import 'package:confetti/confetti.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -50,6 +51,7 @@ class _QuestionScreenState extends State<QuestionScreen>
   final MainController mainController = Get.find();
   AnimationController _formController;
   Rx<int> countTrue = Rx<int>();
+  ConfettiController _controllerCenter;
 
   List<Widget> get listQuestion => widget.question
       .map((question) => TranslationAnimatedWidget.tween(
@@ -77,6 +79,8 @@ class _QuestionScreenState extends State<QuestionScreen>
     mainController.currentTrue.value = 0;
     _formController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _controllerCenter =
+        ConfettiController(duration: const Duration(seconds: 10));
     super.initState();
   }
 
@@ -88,21 +92,28 @@ class _QuestionScreenState extends State<QuestionScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          WebsafeSvg.asset(Images.quiz_bg, fit: BoxFit.fill),
-          Container(
-            child: Column(
-              children: [
-                Dimens.height30,
-                _buildHeader(),
-                _buildProgress(),
-                Dimens.height30,
-                _buildQuestion()
-              ],
+      body: Container(
+        width: getScreenWidth(context),
+        child: Stack(
+          children: [
+            WebsafeSvg.asset(Images.quiz_bg,
+                fit: BoxFit.fill,
+                width: getScreenWidth(context),
+                height: getScreenHeight(context),
             ),
-          ),
-        ],
+            Container(
+              child: Column(
+                children: [
+                  Dimens.height30,
+                  _buildHeader(),
+                  _buildProgress(),
+                  Dimens.height30,
+                  _buildQuestion()
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -140,7 +151,6 @@ class _QuestionScreenState extends State<QuestionScreen>
               : () {
                   Get.back();
                 }),
-
       trailing: mainController.questionsFromHive.isNotEmpty
           ? widget.isFavorite == false
               ? IconButton(
@@ -181,44 +191,44 @@ class _QuestionScreenState extends State<QuestionScreen>
 
   _buildProgress() {
     return ListTile(
-      title: Obx(() => Text.rich(
-            TextSpan(
-              text: "Question ${mainController.index.value + 1}",
-              style: Theme.of(context)
-                  .textTheme
-                  .headline4
-                  .copyWith(color: AppColors.secondary),
-              children: [
-                TextSpan(
-                  text: "/${widget.question.length}",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline5
-                      .copyWith(color: AppColors.secondary),
-                ),
-              ],
-            ),
-          )),
+      title: Obx(() {
+        return Text.rich(
+          TextSpan(
+            text:
+                "Question ${(widget.question.length < mainController.index.value + 1) ? mainController.index.value : (mainController.index.value + 1)}",
+            style: Theme.of(context)
+                .textTheme
+                .headline4
+                .copyWith(color: AppColors.secondary),
+            children: [
+              TextSpan(
+                text: "/${widget.question.length}",
+                style: Theme.of(context)
+                    .textTheme
+                    .headline5
+                    .copyWith(color: AppColors.secondary),
+              ),
+            ],
+          ),
+        );
+      }),
       subtitle: widget.isFavorite
           ? null
           : Obx(() => LinearPercentIndicator(
-        width: getScreenWidth(context)/1.1,
-        animation: true,
-        lineHeight: 20.0,
-        animationDuration: 0,
-        percent: ((mainController.currentTrue.value) /
-            widget.question.length)
-            .toDouble(),
-        center: AppText(
-            text:
-            "${(((mainController.currentTrue.value) / widget.question.length) * 100).round()}%"),
-        linearStrokeCap: LinearStrokeCap.roundAll,
-        progressColor: Colors.greenAccent,
-      )),
+                width: getScreenWidth(context) / 1.1,
+                animation: true,
+                lineHeight: 20.0,
+                animationDuration: 0,
+                percent: ((mainController.currentTrue.value) /
+                        widget.question.length)
+                    .toDouble(),
+                center: AppText(
+                    text:
+                        "${(((mainController.currentTrue.value) / widget.question.length) * 100).round()}%"),
+                linearStrokeCap: LinearStrokeCap.roundAll,
+                progressColor: Colors.greenAccent,
+              )),
     );
-
-    AppText(
-        text: '${mainController.index.value + 1}/${widget.question.length}');
   }
 
   _buildQuestion() {
@@ -235,48 +245,7 @@ class _QuestionScreenState extends State<QuestionScreen>
                   widget.question.length == mainController.index.value
                       ? widget.question.length != 0
                           ? widget.isFavorite == false
-                              ? Center(
-                                  child: Column(
-                                    children: <Widget>[
-                                      CircularPercentIndicator(
-                                        radius: 120.0,
-                                        lineWidth: 10.0,
-                                        animation: true,
-                                        animationDuration: 1200,
-                                        percent: (countTrue.value /
-                                            widget.question.length),
-                                        header: AppText(
-                                          text: 'Processing',
-                                        ),
-                                        center: Icon(
-                                          Icons.person_pin,
-                                          size: 50.0,
-                                          color: Colors.blue,
-                                        ),
-                                        circularStrokeCap:
-                                            CircularStrokeCap.butt,
-                                        backgroundColor: Colors.grey,
-                                        progressColor: Colors.green,
-                                      ),
-                                      AppText(
-                                        text:
-                                            'Score: ${countTrue.value}/${widget.question.length}',
-                                      ),
-                                      Dimens.height20,
-                                      AppButton(
-                                        'Check Answer',
-                                        onTap: () async {
-                                          SoundsHelper.checkAudio(Sounds.touch);
-                                          Get.to(CheckAnswerScreen(
-                                            question: widget.question,
-                                          ));
-
-                                          await saveResult();
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                )
+                              ? _buildFinalResultContent()
                               : SizedBox()
                           : Center(
                               child: AppText(
@@ -292,6 +261,68 @@ class _QuestionScreenState extends State<QuestionScreen>
           }),
         ),
       ),
+    );
+  }
+
+  _buildFinalResultContent() {
+    _controllerCenter.play();
+    return Stack(
+      children: [
+        Align(
+          alignment: Alignment.center,
+          child: ConfettiWidget(
+            confettiController: _controllerCenter,
+            blastDirectionality: BlastDirectionality.explosive,
+            shouldLoop: true,
+            colors: const [
+              Colors.green,
+              Colors.blue,
+              Colors.pink,
+              Colors.orange,
+              Colors.purple
+            ], // manually specify the colors to be used
+          ),
+        ),
+        Center(
+          child: Column(
+            children: <Widget>[
+              CircularPercentIndicator(
+                radius: 120.0,
+                lineWidth: 10.0,
+                animation: true,
+                animationDuration: 1200,
+                percent: (countTrue.value / widget.question.length),
+                header: AppText(
+                  text: 'Processing',
+                ),
+                center: Icon(
+                  Icons.person_pin,
+                  size: 50.0,
+                  color: Colors.blue,
+                ),
+                circularStrokeCap: CircularStrokeCap.butt,
+                backgroundColor: Colors.grey,
+                progressColor: Colors.green,
+              ),
+              AppText(
+                text: 'Score: ${countTrue.value}/${widget.question.length}',
+              ),
+              Dimens.height20,
+              AppButton(
+                'Check Answer',
+                onTap: () async {
+                  SoundsHelper.checkAudio(Sounds.touch);
+                  Get.to(CheckAnswerScreen(
+                    question: widget.question,
+                  ));
+
+                  await saveResult();
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

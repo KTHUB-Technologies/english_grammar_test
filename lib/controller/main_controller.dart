@@ -63,6 +63,7 @@ class MainController extends GetxController {
 
     questionsFromCategory = RxList<Question>(
         questions.where((c) => c.categoryId == categoryId).toList());
+    print(questionsFromCategory.length);
     questionsFromCategory.sort((a, b) => a.id.compareTo(b.id));
     listChunkQuestions.clear();
 
@@ -72,7 +73,14 @@ class MainController extends GetxController {
           i + 20 > questionsFromCategory.length
               ? questionsFromCategory.length
               : i + 20));
+      ///Merge last test to previous test if total questions less than 10
+
+      if(listChunkQuestions.length>=2 && listChunkQuestions.last.length<10){
+        listChunkQuestions.elementAt(listChunkQuestions.length-2).addAll(listChunkQuestions.last);
+        listChunkQuestions.removeLast();
+      }
     }
+    print(listChunkQuestions.length);
     isShowLoading.value = false;
   }
 
