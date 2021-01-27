@@ -15,4 +15,5 @@ class ConfigMicrosoft{
   );
 
   static final AadOAuth oauth =  AadOAuth(config);
+
 }

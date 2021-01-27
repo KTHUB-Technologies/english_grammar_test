@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
@@ -46,7 +45,7 @@ class _CardQuestionState extends State<CardQuestion> {
     options = widget.question.options.split('///');
     for (var i = 0; i < options.length; i++) {
       colorsI.add(AppColors.transparent);
-      iconsI.add(Icon(null));
+      iconsI.add(Icon(Icons.adjust));
     }
     if (widget.isFavorite == true) {
       widget.question.currentChecked.value = widget.question.correctAnswer - 1;
@@ -109,84 +108,92 @@ class _CardQuestionState extends State<CardQuestion> {
   Widget buildQuestionContent(
       List<String> options, RxList<Color> colorsI, RxList<Icon> iconsI) {
     return Expanded(
-      child: ListView(
-        children: <Widget>[
-          AppText(
-            text: widget.question.task,
-            textSize: Dimens.paragraphHeaderTextSize,
-          ),
-          Dimens.height10,
-          Column(
-            children: options.map((e) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 5.0),
-                child: Obx(() {
-                  return AbsorbPointer(
-                    ignoringSemantics: true,
-                    absorbing: widget
-                            .question
-                            .currentChecked
-                            .value
-                            // ignore: deprecated_member_use
-                            .isNullOrBlank
-                        ? false
-                        : true,
-                    child: GestureDetector(
-                      child: AnimatedContainer(
-                        // ignore: deprecated_member_use
-                        duration: Duration(
-                            milliseconds:
-                                widget.question.currentChecked.value.isBlank
-                                    ? 0
-                                    : 200),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: widget.question.currentChecked.value != null
-                              ? colorsI[options.indexOf(e)]
-                              : Colors.transparent,
-                          border: Border.all(
+      child: GestureDetector(
+        onHorizontalDragStart: (value) {
+      ///TODO
+        },
+        child: ListView(
+          children: <Widget>[
+            AppText(
+              text: widget.question.task,
+              textSize: Dimens.paragraphHeaderTextSize,
+            ),
+            Dimens.height10,
+            Column(
+              children: options.map((e) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 5.0),
+                  child: Obx(() {
+                    return AbsorbPointer(
+                      ignoringSemantics: true,
+                      absorbing: widget
+                              .question
+                              .currentChecked
+                              .value
+                              // ignore: deprecated_member_use
+                              .isNullOrBlank
+                          ? false
+                          : true,
+                      child: GestureDetector(
+                        child: AnimatedContainer(
+                          // ignore: deprecated_member_use
+                          duration: Duration(
+                              milliseconds:
+                                  widget.question.currentChecked.value.isBlank
+                                      ? 0
+                                      : 200),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
                             color: widget.question.currentChecked.value != null
                                 ? colorsI[options.indexOf(e)]
-                                : Colors.blueGrey,
+                                : Colors.transparent,
+                            border: Border.all(
+                              color:
+                                  widget.question.currentChecked.value != null
+                                      ? colorsI[options.indexOf(e)]
+                                      : Colors.blueGrey,
+                            ),
+                          ),
+                          child: ListTile(
+                            title: AppText(
+                              text: e,
+                            ),
+                            trailing: iconsI[options.indexOf(e)],
                           ),
                         ),
-                        child: ListTile(
-                          title: AppText(
-                            text: e,
-                          ),
-                          trailing: iconsI[options.indexOf(e)],
-                        ),
+                        onTap: () async {
+                          _handleOption(options.indexOf(e), colorsI, iconsI);
+                        },
                       ),
-                      onTap: () async {
-                        _handleOption(options.indexOf(e), colorsI, iconsI);
-                      },
-                    ),
-                  );
-                }),
-              );
-            }).toList(),
-          ),
-          Dimens.height10,
-          AnimatedOpacity(
-            // ignore: deprecated_member_use
-            opacity:
-                widget.question.currentChecked.value.isNullOrBlank ? 0.0 : 1.0,
-            // ignore: deprecated_member_use
-            duration: Duration(
-                milliseconds: widget.question.currentChecked.value.isNullOrBlank
-                    ? 0
-                    : 500),
-            curve: Curves.easeInOut,
-            child: Card(
-              child: ListTile(
-                title: AppText(
-                  text: widget.question.explanation,
+                    );
+                  }),
+                );
+              }).toList(),
+            ),
+            Dimens.height10,
+            AnimatedOpacity(
+              // ignore: deprecated_member_use
+              opacity: widget.question.currentChecked.value.isNullOrBlank
+                  ? 0.0
+                  : 1.0,
+              // ignore: deprecated_member_use
+              duration: Duration(
+                  milliseconds:
+                      widget.question.currentChecked.value.isNullOrBlank
+                          ? 0
+                          : 500),
+              curve: Curves.easeInOut,
+              child: Card(
+                child: ListTile(
+                  title: AppText(
+                    text: widget.question.explanation,
+                  ),
                 ),
               ),
             ),
-          ),
-          Dimens.height10,
-        ],
+            Dimens.height10,
+          ],
+        ),
       ),
     );
   }

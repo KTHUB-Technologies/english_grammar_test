@@ -22,7 +22,7 @@ import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.d
 import 'package:the_enest_english_grammar_test/screens/question_screen/card_question/card_question.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
-import 'package:websafe_svg/websafe_svg.dart';
+
 
 class QuestionScreen extends StatefulWidget {
   final int level;
@@ -91,28 +91,30 @@ class _QuestionScreenState extends State<QuestionScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: getScreenWidth(context),
-        child: Stack(
-          children: [
-            WebsafeSvg.asset(Images.quiz_bg,
-                fit: BoxFit.fill,
-                width: getScreenWidth(context),
-                height: getScreenHeight(context),
+    return WillPopScope(
+      onWillPop: () async {
+        if (Navigator.of(context).userGestureInProgress)
+          return false;
+        else
+          return true;
+      },
+      child: Scaffold(
+        body: Container(
+          width: getScreenWidth(context),
+          child:    Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(image: AssetImage(Images.quiz_bg),fit: BoxFit.fill)
             ),
-            Container(
-              child: Column(
-                children: [
-                  Dimens.height30,
-                  _buildHeader(),
-                  _buildProgress(),
-                  Dimens.height30,
-                  _buildQuestion()
-                ],
-              ),
+            child: Column(
+              children: [
+                Dimens.height30,
+                _buildHeader(),
+                _buildProgress(),
+                Dimens.height30,
+                _buildQuestion()
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

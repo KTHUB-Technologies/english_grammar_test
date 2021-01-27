@@ -9,6 +9,7 @@ import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
@@ -137,6 +138,44 @@ class _MainScreenState extends State<MainScreen> {
           levelController.levelSelected.value = index;
         },
         labelType: NavigationRailLabelType.all,
+
+        trailing: Column(
+
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 0),
+              child: IconButton(
+                  icon: appController.user.value.isNullOrBlank?Icon(Icons.person):CircleAvatar(
+                    child: AppText(text: shortUserName( appController.user.value['displayName'])),
+                  ),
+                  onPressed: () async {
+await appController.loginWithMicrosoft();
+                    // showModalBottomSheet(context: context, builder: (context){
+                    //
+                    //   return Container(
+                    //
+                    //   );
+                    // });
+                  }),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 0),
+              child: IconButton(
+                  icon: Icon(Icons.language),
+                  onPressed: () async {
+                    await _navigateToFacebookApp();
+                  }),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 0),
+              child: IconButton(
+                  icon: Icon(Icons.settings),
+                  onPressed: () {
+                    _navigateToSettingScreen();
+                  }),
+            ),
+          ],
+        ),
         destinations: []
           ..addAll(levelController.distinctLevel
               .map(
@@ -151,36 +190,8 @@ class _MainScreenState extends State<MainScreen> {
                     )),
               )
               .toList())
-          ..add(NavigationRailDestination(
-              icon: SizedBox.shrink(),
-              label: Padding(
-                padding: EdgeInsets.symmetric(vertical: 0),
-                child: IconButton(
-                    icon: appController.user.value.isNullOrBlank?Icon(Icons.person):CircleAvatar(
-                      child: AppText(text: shortUserName( appController.user.value['displayName'])),
-                    ),
-                    onPressed: () async {
-                      await appController.loginWithMicrosoft();
-                    }),
-              )))
-          ..add(NavigationRailDestination(
-            icon: SizedBox.shrink(),
-            label: IconButton(
-                icon: Icon(Icons.language),
-                onPressed: () async {
-                  await _navigateToFacebookApp();
-                }),
-          ))
-          ..add(NavigationRailDestination(
-              icon: SizedBox.shrink(),
-              label: Padding(
-                padding: EdgeInsets.symmetric(vertical: 0),
-                child: IconButton(
-                    icon: Icon(Icons.settings),
-                    onPressed: () {
-                      _navigateToSettingScreen();
-                    }),
-              ))));
+
+          );
   }
 
   _buildSelectedContent(int level) {

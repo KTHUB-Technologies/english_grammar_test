@@ -30,6 +30,9 @@
 		</dict>
 		<dict/>
 	</array>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>facebook</string></array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
