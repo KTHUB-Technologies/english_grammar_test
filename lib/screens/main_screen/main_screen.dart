@@ -156,6 +156,7 @@ class _MainScreenState extends State<MainScreen> {
               label: Padding(
                 padding: EdgeInsets.symmetric(vertical: 0),
                 child: IconButton(
+                    // ignore: deprecated_member_use
                     icon: appController.user.value.isNullOrBlank?Icon(Icons.person):CircleAvatar(
                       child: AppText(text: shortUserName( appController.user.value['displayName'])),
                     ),

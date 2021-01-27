@@ -60,11 +60,9 @@ class _SettingScreenState extends State<SettingScreen> {
 
   Widget buildButtonSignInOut(BuildContext context) {
     return AppButton(
-      // ignore: deprecated_member_use
-      appController.user.value.isNullOrBlank ? 'Sign In' : 'Sign Out',
+      appController.user.value==null ? 'Sign In' : 'Sign Out',
       widthButton: getScreenWidth(context) / 3,
-      // ignore: deprecated_member_use
-      onTap: appController.user.isNullOrBlank
+      onTap: appController.user.value==null
           ? () {
               Get.offAll(LoginScreen());
             }
