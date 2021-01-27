@@ -109,8 +109,7 @@ class _CardQuestionState extends State<CardQuestion> {
   Widget buildQuestionContent(
       List<String> options, RxList<Color> colorsI, RxList<Icon> iconsI) {
     return Expanded(
-      child: SingleChildScrollView(
-        child: Column(
+      child:  ListView(
           children: <Widget>[
             AppText(
               text: widget.question.task,
@@ -137,7 +136,7 @@ class _CardQuestionState extends State<CardQuestion> {
                           // ignore: deprecated_member_use
                           duration: Duration(
                               milliseconds: widget.question.currentChecked.value
-                                      .isNullOrBlank
+                                      .isBlank
                                   ? 0
                                   : 200),
                           decoration: BoxDecoration(
@@ -160,33 +159,7 @@ class _CardQuestionState extends State<CardQuestion> {
                           ),
                         ),
                         onTap: () async {
-                          widget.question.currentChecked.value =
-                              options.indexOf(e);
-                          if (widget.question.currentChecked.value ==
-                              widget.question.correctAnswer - 1) {
-                            SoundsHelper.checkAudio(Sounds.correct);
-                            colorsI[widget.question.currentChecked.value] =
-                                AppColors.green.withOpacity(0.2);
-                            iconsI[widget.question.currentChecked.value] = Icon(
-                              Icons.check,
-                              color: AppColors.green,
-                            );
-                            mainController.currentTrue.value++;
-                          } else {
-                            SoundsHelper.checkAudio(Sounds.in_correct);
-                            colorsI[widget.question.currentChecked.value] =
-                                AppColors.red.withOpacity(0.2);
-                            colorsI[widget.question.correctAnswer - 1] =
-                                AppColors.green.withOpacity(0.2);
-                            iconsI[widget.question.currentChecked.value] = Icon(
-                              Icons.clear,
-                              color: AppColors.red,
-                            );
-                            iconsI[widget.question.correctAnswer - 1] = Icon(
-                              Icons.check,
-                              color: AppColors.green,
-                            );
-                          }
+                          _handleOption(options.indexOf(e), colorsI, iconsI);
                         },
                       ),
                     );
@@ -218,58 +191,7 @@ class _CardQuestionState extends State<CardQuestion> {
             Dimens.height10,
           ],
         ),
-      ),
-    );
-  }
 
-  Widget buildButton() {
-    return Container(
-      child: mainController.index.value == widget.listQuestions.length
-          ? SizedBox()
-          : Column(
-              children: <Widget>[
-                mainController.index.value + 1 > 1
-                    ? AppButton(
-                        'PREVIOUS',
-                        onTap: () async {
-                          SoundsHelper.checkAudio(Sounds.touch);
-                          mainController.index.value--;
-                        },
-                      )
-                    : SizedBox(),
-                Dimens.height10,
-                widget.question.currentChecked.value != null
-                    ? widget.listQuestions.length >
-                            (mainController.index.value + 1)
-                        ? AppButton(
-                            'NEXT',
-                            onTap: () async {
-                              SoundsHelper.checkAudio(Sounds.touch);
-                              mainController.index.value++;
-                            },
-                          )
-                        : mainController
-                                .questionsFromHive
-                                // ignore: deprecated_member_use
-                                .isNullOrBlank
-                            ? widget.isFavorite == false
-                                ? AppButton(
-                                    'SUBMIT',
-                                    onTap: widget.isFavorite == false
-                                        ? () async {
-                                            countTrueAnswer();
-                                          }
-                                        : () {
-                                            Get.to(CheckAnswerScreen(
-                                              question: widget.listQuestions,
-                                            ));
-                                          },
-                                  )
-                                : SizedBox()
-                            : SizedBox()
-                    : SizedBox(),
-              ],
-            ),
     );
   }
 
@@ -395,16 +317,17 @@ class _CardQuestionState extends State<CardQuestion> {
           elevation: 0,
           backgroundColor: Colors.transparent,
           heroTag: 'favorite',
-          onPressed: () async {
-
-          },
+          onPressed: () async {},
           child: IconButton(icon: Obx(() {
             return mainController.containFromFavorite.isNotEmpty
                 ? Icon(
                     Icons.favorite,
                     color: AppColors.red,
                   )
-                : Icon(Icons.favorite_border,color: Colors.grey,);
+                : Icon(
+                    Icons.favorite_border,
+                    color: Colors.grey,
+                  );
           }), onPressed: () async {
             SoundsHelper.checkAudio(Sounds.touch);
             addOrRemoveFromFavorite();
@@ -412,5 +335,34 @@ class _CardQuestionState extends State<CardQuestion> {
         ),
       ),
     );
+  }
+
+  _handleOption(int selected, colorsI, iconsI) {
+    widget.question.currentChecked.value = selected;
+    if (widget.question.currentChecked.value ==
+        widget.question.correctAnswer - 1) {
+      SoundsHelper.checkAudio(Sounds.correct);
+      colorsI[widget.question.currentChecked.value] =
+          AppColors.green.withOpacity(0.2);
+      iconsI[widget.question.currentChecked.value] = Icon(
+        Icons.check,
+        color: AppColors.green,
+      );
+      mainController.currentTrue.value++;
+    } else {
+      SoundsHelper.checkAudio(Sounds.in_correct);
+      colorsI[widget.question.currentChecked.value] =
+          AppColors.red.withOpacity(0.2);
+      colorsI[widget.question.correctAnswer - 1] =
+          AppColors.green.withOpacity(0.2);
+      iconsI[widget.question.currentChecked.value] = Icon(
+        Icons.clear,
+        color: AppColors.red,
+      );
+      iconsI[widget.question.correctAnswer - 1] = Icon(
+        Icons.check,
+        color: AppColors.green,
+      );
+    }
   }
 }
