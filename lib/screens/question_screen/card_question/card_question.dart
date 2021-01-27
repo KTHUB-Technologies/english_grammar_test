@@ -228,36 +228,38 @@ class _CardQuestionState extends State<CardQuestion> {
     return Container(
       child: mainController.index.value == widget.listQuestions.length
           ? SizedBox()
-          : Column(
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 mainController.index.value + 1 > 1
-                    ? AppButton(
-                        'PREVIOUS',
-                        onTap: () async {
+                    ? FloatingActionButton(
+                        child: Icon(Icons.arrow_back_outlined),
+                        heroTag: null,
+                        onPressed: () async {
                           SoundsHelper.checkAudio(Sounds.touch);
                           mainController.index.value--;
-                        },
-                      )
+                        })
                     : SizedBox(),
                 Dimens.height10,
                 widget.question.currentChecked.value != null
                     ? widget.listQuestions.length >
                             (mainController.index.value + 1)
-                        ? AppButton(
-                            'NEXT',
-                            onTap: () async {
+                        ? FloatingActionButton(
+                            child: Icon(Icons.arrow_forward_outlined),
+                            heroTag: null,
+                            onPressed: () async {
                               SoundsHelper.checkAudio(Sounds.touch);
                               mainController.index.value++;
-                            },
-                          )
+                            })
                         : mainController
                                 .questionsFromHive
                                 // ignore: deprecated_member_use
                                 .isNullOrBlank
                             ? widget.isFavorite == false
-                                ? AppButton(
-                                    'SUBMIT',
-                                    onTap: widget.isFavorite == false
+                                ? FloatingActionButton(
+                                    child: Icon(Icons.arrow_forward_outlined),
+                                    heroTag: null,
+                                    onPressed: widget.isFavorite == false
                                         ? () async {
                                             countTrueAnswer();
                                           }

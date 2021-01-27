@@ -1,8 +1,11 @@
 
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/constants/constants.dart';
@@ -40,17 +43,13 @@ class MainController extends GetxController {
 
   Rx<Map> scoreOfCate=Rx<Map>({});
 
-  // Future loadJson() async {
-  //   isShowLoading.value = true;
-  //   var data =
-  //       await rootBundle.loadString('lib/res/strings/Question_Data.json');
-  //   var result = jsonDecode(data);
-  //   listQuestions= result.map<Question>((e) => Question.fromJson(e)).toList();
-  //   levels = listQuestions.map((e) => e.level).toList();
-  //   distinctLevel = levels.toSet().toList();
-  //   distinctLevel.sort();
-  //   isShowLoading.value=false;
-  // }
+  Future loadJson() async {
+    isShowLoading.value = true;
+    var data =
+        await rootBundle.loadString('lib/res/strings/Question_Data.json');
+    var result = jsonDecode(data);
+    listQuestions= result.map<Question>((e) => Question.fromJson(e)).toList();
+  }
 
   Future loadQuestionFromLevel(int level) async {
     isShowLoading.value = true;
@@ -85,12 +84,14 @@ class MainController extends GetxController {
   getAllQuestions() async{
     final openBox=await Hive.openBox("Questions");
 
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      List<dynamic> allQues=openBox.get('LocalQuestions');
+    if (openBox.get('AllQuestions')!=null) {
+      print('-----------> local');
+      List<dynamic> allQues=openBox.get('AllQuestions');
 
       listQuestions=allQues.map((e) => Question.fromJson(e)).toList();
     }else{
+      print('-----------> firebase');
+      await loadJson();
       QuerySnapshot data = await FirebaseHelper.fireStoreReference
           .collection(Constants.QUESTIONS_DATA)
           .get();
@@ -103,18 +104,15 @@ class MainController extends GetxController {
         listQuestions.add(ques);
       })).toList();
 
-      DocumentSnapshot dataBlock0 = await FirebaseHelper.fireStoreReference
-          .collection(Constants.QUESTIONS_DATA)
-          .doc('BLOCK_0').get();
+      var allQuestion=listQuestions.map((e) => e.toJson()).toList();
 
-      var allQuestions=dataBlock0.data()['questions'].map((e) => e).toList();
-
-      await openBox.put('LocalQuestions', allQuestions);
+      await openBox.put('AllQuestions', allQuestion);
     }
 
     openBox.close();
 
     loadQuestions();
+    print(listQuestions.length);
   }
 
   loadQuestions(){
