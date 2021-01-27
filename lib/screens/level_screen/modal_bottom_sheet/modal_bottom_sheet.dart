@@ -111,8 +111,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                   level: widget.level,
                   categoryId: widget.categoryId,
                   question:
-                      // ignore: deprecated_member_use
-                      mainController.questionsFromHive.isNullOrBlank
+                      mainController.questionsFromHive.isEmpty
                           ? RxList<Question>(e)
                           : mainController.questionsFromHive,
                   testNumber: mainController.listChunkQuestions.indexOf(e) + 1,

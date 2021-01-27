@@ -126,14 +126,11 @@ class _CardQuestionState extends State<CardQuestion> {
                     absorbing: widget
                             .question
                             .currentChecked
-                            .value
-                            // ignore: deprecated_member_use
-                            .isNullOrBlank
+                            .value==null
                         ? false
                         : true,
                     child: GestureDetector(
                       child: AnimatedContainer(
-                        // ignore: deprecated_member_use
                         duration: Duration(
                             milliseconds:
                                 widget.question.currentChecked.value.isBlank
@@ -168,12 +165,10 @@ class _CardQuestionState extends State<CardQuestion> {
           ),
           Dimens.height10,
           AnimatedOpacity(
-            // ignore: deprecated_member_use
             opacity:
-                widget.question.currentChecked.value.isNullOrBlank ? 0.0 : 1.0,
-            // ignore: deprecated_member_use
+                widget.question.currentChecked.value==null ? 0.0 : 1.0,
             duration: Duration(
-                milliseconds: widget.question.currentChecked.value.isNullOrBlank
+                milliseconds: widget.question.currentChecked.value==null
                     ? 0
                     : 500),
             curve: Curves.easeInOut,
