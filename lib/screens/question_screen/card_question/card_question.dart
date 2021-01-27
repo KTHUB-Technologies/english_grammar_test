@@ -50,7 +50,8 @@ class _CardQuestionState extends State<CardQuestion> {
     }
     if (widget.isFavorite == true) {
       widget.question.currentChecked.value = widget.question.correctAnswer - 1;
-      colorsI[widget.question.currentChecked.value] = AppColors.green;
+      colorsI[widget.question.currentChecked.value] =
+          AppColors.green.withOpacity(0.2);
       iconsI[widget.question.currentChecked.value] = Icon(
         Icons.check,
         color: AppColors.green,
@@ -59,14 +60,17 @@ class _CardQuestionState extends State<CardQuestion> {
       if (widget.question.currentChecked.value != null) {
         if (widget.question.currentChecked.value ==
             widget.question.correctAnswer - 1) {
-          colorsI[widget.question.currentChecked.value] = AppColors.green;
+          colorsI[widget.question.currentChecked.value] =
+              AppColors.green.withOpacity(0.2);
           iconsI[widget.question.currentChecked.value] = Icon(
             Icons.check,
             color: AppColors.green,
           );
         } else {
-          colorsI[widget.question.currentChecked.value] = AppColors.red;
-          colorsI[widget.question.correctAnswer - 1] = AppColors.green;
+          colorsI[widget.question.currentChecked.value] =
+              AppColors.red.withOpacity(0.2);
+          colorsI[widget.question.correctAnswer - 1] =
+              AppColors.green.withOpacity(0.2);
 
           iconsI[widget.question.currentChecked.value] = Icon(
             Icons.clear,
@@ -84,14 +88,20 @@ class _CardQuestionState extends State<CardQuestion> {
           .questionsHiveFavorite
           .where((e) => e.id == widget.question.id)
           .toList());
-      return Container(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: <Widget>[
-            buildQuestionContent(options, colorsI, iconsI),
-            buildButton(),
-          ],
-        ),
+      return Stack(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: <Widget>[
+                buildQuestionContent(options, colorsI, iconsI),
+              ],
+            ),
+          ),
+          _buildFloatingPreviousButton(),
+          _buildCompleteButton(),
+          _buildFloatingAddFavoriteButton()
+        ],
       );
     });
   }
@@ -102,24 +112,6 @@ class _CardQuestionState extends State<CardQuestion> {
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                AppText(
-                    text:
-                        '${mainController.index.value + 1}/${widget.listQuestions.length}'),
-                IconButton(icon: Obx(() {
-                  return mainController.containFromFavorite.isNotEmpty
-                      ? Icon(
-                          Icons.favorite,
-                          color: AppColors.red,
-                        )
-                      : Icon(Icons.favorite_border);
-                }), onPressed: () async {
-                  addOrRemoveFromFavorite();
-                }),
-              ],
-            ),
             AppText(
               text: widget.question.task,
               textSize: Dimens.paragraphHeaderTextSize,
@@ -150,8 +142,14 @@ class _CardQuestionState extends State<CardQuestion> {
                                   : 200),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
+                            color: widget.question.currentChecked.value != null
+                                ? colorsI[options.indexOf(e)]
+                                : Colors.transparent,
                             border: Border.all(
-                              color: colorsI[options.indexOf(e)],
+                              color:
+                                  widget.question.currentChecked.value != null
+                                      ? colorsI[options.indexOf(e)]
+                                      : Colors.blueGrey,
                             ),
                           ),
                           child: ListTile(
@@ -168,18 +166,18 @@ class _CardQuestionState extends State<CardQuestion> {
                               widget.question.correctAnswer - 1) {
                             SoundsHelper.checkAudio(Sounds.correct);
                             colorsI[widget.question.currentChecked.value] =
-                                AppColors.green;
+                                AppColors.green.withOpacity(0.2);
                             iconsI[widget.question.currentChecked.value] = Icon(
                               Icons.check,
                               color: AppColors.green,
                             );
+                            mainController.currentTrue.value++;
                           } else {
                             SoundsHelper.checkAudio(Sounds.in_correct);
                             colorsI[widget.question.currentChecked.value] =
-                                AppColors.red;
+                                AppColors.red.withOpacity(0.2);
                             colorsI[widget.question.correctAnswer - 1] =
-                                AppColors.green;
-
+                                AppColors.green.withOpacity(0.2);
                             iconsI[widget.question.currentChecked.value] = Icon(
                               Icons.clear,
                               color: AppColors.red,
@@ -316,5 +314,105 @@ class _CardQuestionState extends State<CardQuestion> {
         widget.countTrue.value++;
     }
     mainController.index.value = widget.listQuestions.length;
+  }
+
+  _buildFloatingPreviousButton() {
+    return mainController.index.value + 1 > 1
+        ? Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FloatingActionButton(
+                heroTag: 'previous',
+                onPressed: () async {
+                  SoundsHelper.checkAudio(Sounds.touch);
+                  mainController.index.value--;
+                },
+                child: Icon(Icons.arrow_back_rounded),
+              ),
+            ),
+          )
+        : SizedBox();
+  }
+
+  _buildCompleteButton() {
+    return widget.question.currentChecked.value != null
+        ? widget.listQuestions.length > (mainController.index.value + 1)
+            ? _buildFloatingNextButton()
+            : mainController
+                    .questionsFromHive
+                    // ignore: deprecated_member_use
+                    .isNullOrBlank
+                ? widget.isFavorite == false
+                    ? _buildFloatingSubmitButton()
+                    : SizedBox()
+                : SizedBox()
+        : SizedBox();
+  }
+
+  _buildFloatingNextButton() {
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: FloatingActionButton(
+          heroTag: 'next',
+          onPressed: () async {
+            SoundsHelper.checkAudio(Sounds.touch);
+            mainController.index.value++;
+          },
+          child: Icon(Icons.arrow_forward_rounded),
+        ),
+      ),
+    );
+  }
+
+  _buildFloatingSubmitButton() {
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: FloatingActionButton(
+          heroTag: 'submit',
+          onPressed: () async {
+            SoundsHelper.checkAudio(Sounds.touch);
+            widget.isFavorite == false
+                ? countTrueAnswer()
+                : Get.to(CheckAnswerScreen(
+                    question: widget.listQuestions,
+                  ));
+          },
+          child: Icon(Icons.flag_rounded),
+        ),
+      ),
+    );
+  }
+
+  _buildFloatingAddFavoriteButton() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: FloatingActionButton(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          heroTag: 'favorite',
+          onPressed: () async {
+
+          },
+          child: IconButton(icon: Obx(() {
+            return mainController.containFromFavorite.isNotEmpty
+                ? Icon(
+                    Icons.favorite,
+                    color: AppColors.red,
+                  )
+                : Icon(Icons.favorite_border,color: Colors.grey,);
+          }), onPressed: () async {
+            SoundsHelper.checkAudio(Sounds.touch);
+            addOrRemoveFromFavorite();
+          }),
+        ),
+      ),
+    );
   }
 }

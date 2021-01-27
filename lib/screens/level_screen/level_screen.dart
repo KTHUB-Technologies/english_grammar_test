@@ -322,9 +322,9 @@ class _LevelScreenState extends State<LevelScreen> {
                   radius: 35.0,
                   lineWidth: 2.0,
                   animation: true,
-                  percent: score.value == null || score.value.toString() == 'NaN' ? 0 : score.value/100.round(),
+                  percent: score.value == null || score.value.isNaN ? 0 : score.value/100.round(),
                   center: new Text(
-                    '${score.value == null || score.value.toString() == 'NaN' ? 0 : score.value.round()}%',
+                    '${score.value == null || score.value.isNaN ? 0 : score.value.round()}%',
                     style:
                     new TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
                   ),

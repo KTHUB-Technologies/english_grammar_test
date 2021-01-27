@@ -8,14 +8,15 @@ environment:
 
 dependencies:
   #Core dependencies
+  firebase_core: ^0.7.0
+  cloud_firestore: ^0.16.0
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
   flutter_cupertino_localizations: ^1.0.1
-  firebase_core: ^0.7.0
   firebase_auth: ^0.20.0+1
-  cloud_firestore: ^0.16.0
+  firebase_auth_oauth: ^0.2.4
   fluro: 1.6.3
   validate: ^1.7.0
   url_launcher: ^5.4.2
@@ -36,6 +37,9 @@ dependencies:
   animated_widgets: ^1.0.6
   aad_oauth: ^0.2.0
   rxdart: ^0.21.0
+  websafe_svg: ^1.1.4
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

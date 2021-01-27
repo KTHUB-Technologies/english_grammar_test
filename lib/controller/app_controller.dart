@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
+import 'package:the_enest_english_grammar_test/helper/firebase_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/shared_preferences_helper.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,7 +15,7 @@ class AppController extends GetxController {
 
   Rx<Locale> locale = Rx<Locale>();
 
-  Rx<String> idUserMicrosoft = Rx<String>(null);
+  Rx<Map> user = Rx<Map>(null);
 
   Rx<bool> isShowLoading = Rx<bool>(false);
 
@@ -61,22 +63,14 @@ class AppController extends GetxController {
 
   loginWithMicrosoft() async {
     isShowLoading.value = true;
-
     await ConfigMicrosoft.oauth.login();
     var accessToken = await ConfigMicrosoft.oauth.getAccessToken();
-    print('Logged in successfully, your access token: $accessToken');
-
     final response = await http.get(ConfigMicrosoft.userProfileBaseUrl,
         headers: {
           ConfigMicrosoft.authorization: ConfigMicrosoft.bearer + accessToken
         });
-    print(response.body);
-
     Map profile = jsonDecode(response.body);
-
-    idUserMicrosoft.value = profile['id'];
-    print(idUserMicrosoft.value);
-
+    user.value = profile;
     isShowLoading.value = false;
   }
 }

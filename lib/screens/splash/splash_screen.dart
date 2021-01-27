@@ -12,6 +12,7 @@ import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/screens/about_screen/about_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/login_screen/login_screen.dart';
+import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 
 
 class SplashScreen extends StatefulWidget {
@@ -95,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen>{
   checkFirstLoad()async{
     final openBox=await Hive.openBox('First_Load');
     if(openBox.get('isFirst')!=null)
-      _navigateToLoginScreen();
+      _navigateToMainScreen();
     else
       Get.to(AboutScreen());
     openBox.close();
@@ -104,7 +105,7 @@ class _SplashScreenState extends State<SplashScreen>{
   _loadUserData() async {
 
   }
-  _navigateToLoginScreen() {
-    Get.offAll(LoginScreen());
+  _navigateToMainScreen() {
+    Get.offAll(MainScreen());
   }
 }

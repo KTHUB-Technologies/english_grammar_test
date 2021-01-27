@@ -7,12 +7,12 @@ class ConfigMicrosoft{
   static const authorization = 'Authorization';
   static const bearer = 'Bearer ';
 
-  static Config config = new Config(
-      tenant: "4ae3f938-bb88-48f4-aa29-8153f2660c5d",
-      clientId: "3838ee20-f117-4010-8f07-c33d5a9e46cf",
+  static Config config =  Config(
+      tenant: "351983a7-160f-4e5b-8100-6518447a1937",
+      clientId: "0900e203-5228-495b-8b46-772bcd81d2bf",
       scope: "https://graph.microsoft.com/user.read",
-      redirectUri: "msal3838ee20-f117-4010-8f07-c33d5a9e46cf://auth"
+      redirectUri: "msal0900e203-5228-495b-8b46-772bcd81d2bf://auth"
   );
 
-  static final AadOAuth oauth = new AadOAuth(config);
+  static final AadOAuth oauth =  AadOAuth(config);
 }

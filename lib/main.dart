@@ -15,6 +15,7 @@ void main() async {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]).then((_) async {
+    await Firebase.initializeApp();
     Directory directory= await getApplicationDocumentsDirectory();
     await Hive.initFlutter(directory.path);
     print(directory.path);

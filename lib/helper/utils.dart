@@ -119,3 +119,6 @@ getSection(int sectionSelected) {
       return "";
   }
 }
+shortUserName(String displayName){
+  return displayName.split(' ').toList().map((e) => e.substring(0,1)).toList().join("");
+}

@@ -34,6 +34,7 @@ class MainController extends GetxController {
   RxList<List<Question>> listChunkQuestions = RxList<List<Question>>([]);
   List<Question> listQuestions=List<Question>();
   Rx<int> index = Rx<int>(0);
+  Rx<int> currentTrue = Rx<int>(0);
   Rx<bool> isShowLoading = Rx<bool>(false);
   RxList<Widget> answers = RxList<Widget>([]);
   RxList<Question> questionsFromHive = RxList<Question>([]);

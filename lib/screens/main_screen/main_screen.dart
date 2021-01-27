@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -11,8 +13,10 @@ import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/level_screen.dart';
+import 'package:the_enest_english_grammar_test/screens/setting_screen/setting_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -113,41 +117,70 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   _buildLevelNavigationRail() {
-    return levelController.distinctLevel.isEmpty
-        ? SizedBox()
-        : NavigationRail(
-            backgroundColor: AppColors.white,
-            minWidth: 55.0,
-            groupAlignment: 0.0,
-            selectedLabelTextStyle: TextStyle(
-              color: Colors.orangeAccent,
-              fontSize: 14,
-              letterSpacing: 1,
-              decorationThickness: 2.0,
-            ),
-            unselectedLabelTextStyle: TextStyle(
-              color: AppColors.black,
-              fontSize: 13,
-              letterSpacing: 0.8,
-            ),
-            selectedIndex: levelController.levelSelected.value,
-            onDestinationSelected: (int index) {
-              levelController.levelSelected.value = index;
-            },
-            labelType: NavigationRailLabelType.all,
-            destinations: levelController.distinctLevel
-                .map(
-                  (e) => NavigationRailDestination(
-                      icon: SizedBox.shrink(),
-                      label: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: RotatedBox(
-                          quarterTurns: -1,
-                          child: Text(getLevel(e)),
-                        ),
-                      )),
-                )
-                .toList());
+    return NavigationRail(
+        backgroundColor: AppColors.white,
+        minWidth: 55.0,
+        groupAlignment: 0.0,
+        selectedLabelTextStyle: TextStyle(
+          color: Colors.orangeAccent,
+          fontSize: 14,
+          letterSpacing: 1,
+          decorationThickness: 2.0,
+        ),
+        unselectedLabelTextStyle: TextStyle(
+          color: AppColors.black,
+          fontSize: 13,
+          letterSpacing: 0.8,
+        ),
+        selectedIndex: levelController.levelSelected.value,
+        onDestinationSelected: (int index) {
+          levelController.levelSelected.value = index;
+        },
+        labelType: NavigationRailLabelType.all,
+        destinations: []
+          ..addAll(levelController.distinctLevel
+              .map(
+                (e) => NavigationRailDestination(
+                    icon: SizedBox.shrink(),
+                    label: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: RotatedBox(
+                        quarterTurns: -1,
+                        child: Text(getLevel(e)),
+                      ),
+                    )),
+              )
+              .toList())
+          ..add(NavigationRailDestination(
+              icon: SizedBox.shrink(),
+              label: Padding(
+                padding: EdgeInsets.symmetric(vertical: 0),
+                child: IconButton(
+                    icon: appController.user.value.isNullOrBlank?Icon(Icons.person):CircleAvatar(
+                      child: AppText(text: shortUserName( appController.user.value['displayName'])),
+                    ),
+                    onPressed: () async {
+                      await appController.loginWithMicrosoft();
+                    }),
+              )))
+          ..add(NavigationRailDestination(
+            icon: SizedBox.shrink(),
+            label: IconButton(
+                icon: Icon(Icons.language),
+                onPressed: () async {
+                  await _navigateToFacebookApp();
+                }),
+          ))
+          ..add(NavigationRailDestination(
+              icon: SizedBox.shrink(),
+              label: Padding(
+                padding: EdgeInsets.symmetric(vertical: 0),
+                child: IconButton(
+                    icon: Icon(Icons.settings),
+                    onPressed: () {
+                      _navigateToSettingScreen();
+                    }),
+              ))));
   }
 
   _buildSelectedContent(int level) {
@@ -180,8 +213,8 @@ class _MainScreenState extends State<MainScreen> {
           },
         ),
         // ignore: deprecated_member_use
-        appController.idUserMicrosoft.value.isNullOrBlank
-            ? getLevel(level)!='Beginning'
+        appController.user.value.isNullOrBlank
+            ?level != 1
                 ? Container(
                     width: getScreenWidth(context) / 1.8,
                     height: getScreenWidth(context) / 8,
@@ -197,5 +230,31 @@ class _MainScreenState extends State<MainScreen> {
             : SizedBox(),
       ],
     );
+  }
+
+  _navigateToFacebookApp() async {
+    if (Platform.isIOS) {
+      if (await canLaunch('https://www.facebook.com/Enestcenter')) {
+        await launch('https://www.facebook.com/Enestcenter',
+            forceSafariVC: false);
+      } else {
+        if (await canLaunch('https://www.facebook.com/Enestcenter')) {
+          await launch('https://www.facebook.com/Enestcenter');
+        } else {
+          throw 'Could not launch https://www.facebook.com/Enestcenter';
+        }
+      }
+    } else {
+      const url = 'https://www.facebook.com/Enestcenter';
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        throw 'Could not launch $url';
+      }
+    }
+  }
+
+  _navigateToSettingScreen() {
+    Get.to(SettingScreen());
   }
 }
