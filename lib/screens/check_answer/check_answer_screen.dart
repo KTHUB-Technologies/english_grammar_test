@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
-import 'package:the_enest_english_grammar_test/screens/level_screen/level_screen.dart';
-import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 import 'package:websafe_svg/websafe_svg.dart';
@@ -22,7 +21,6 @@ class CheckAnswerScreen extends StatefulWidget {
 class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
   List<String> options = [];
   Rx<int> index = Rx<int>(0);
-  GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
   List<Widget> get listCheckedAnswer => widget.question.map((e) {
         options = e.options.split('///');
@@ -44,7 +42,7 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
                         color: Colors.green,
                       )
                     : AppText(
-                        text: options[e.currentChecked.value],
+                        text: 'Your Answer: ${options[e.currentChecked.value]}',
                         color: Colors.red,
                       ),
                 Dimens.height10,
@@ -84,10 +82,12 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
     return Scaffold(
       body: Column(
         children: [
+          Dimens.height30,
           _buildHeader(),
           Expanded(
             child: Obx(() {
               return Container(
+                decoration: BoxDecoration(color: AppColors.red,borderRadius: BorderRadius.all(Radius.circular(50))),
                 child: Row(
                   children: [
                     widget.question.isEmpty
@@ -97,12 +97,18 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
                             index: index,
                           ),
                     Expanded(
-                        child: Stack(
-                      children: [
-                        WebsafeSvg.asset(Images.quiz_bg, fit: BoxFit.fill),
-                        listCheckedAnswer[index.value]
-                      ],
-                    ))
+                        child:  Stack(
+                        children: [
+                          Container(
+                            child: WebsafeSvg.asset(Images.quiz_bg,
+                                fit: BoxFit.fill,
+                                width: getScreenWidth(context),
+                                height: getScreenHeight(context)),
+                          ),
+                          listCheckedAnswer[index.value]
+                        ],
+                      ),
+                    )
                     //Expanded(child:   Container(child: AppText(text: "TEST",),))
                   ],
                 ),
@@ -117,18 +123,19 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
   _buildHeader() {
     return ListTile(
       leading: IconButton(
-          icon: Icon(Icons.arrow_back_rounded),
-          onPressed: _navigateBack),
+          icon: Icon(Icons.arrow_back_rounded), onPressed: _navigateBack),
       title: AppText(
         text: 'Check Answer',
+        textSize: Dimens.paragraphHeaderTextSize,
+        color: AppColors.secondary,
       ),
     );
   }
-  _navigateBack(){
-    int count = 0;
-    Navigator.popUntil(context, (route){
-      return count++ == 2;
 
+  _navigateBack() {
+    int count = 0;
+    Navigator.popUntil(context, (route) {
+      return count++ == 2;
     });
   }
 }
@@ -149,6 +156,8 @@ class _ListCheckState extends State<ListCheck> {
     return SingleChildScrollView(
       child: IntrinsicHeight(
         child: NavigationRail(
+
+          backgroundColor: AppColors.white,
           minWidth: 80,
           destinations: widget.question
               .map((element) => NavigationRailDestination(

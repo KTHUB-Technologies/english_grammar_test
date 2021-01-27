@@ -92,21 +92,28 @@ class _QuestionScreenState extends State<QuestionScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          WebsafeSvg.asset(Images.quiz_bg, fit: BoxFit.fill),
-          Container(
-            child: Column(
-              children: [
-                Dimens.height30,
-                _buildHeader(),
-                _buildProgress(),
-                Dimens.height30,
-                _buildQuestion()
-              ],
+      body: Container(
+        width: getScreenWidth(context),
+        child: Stack(
+          children: [
+            WebsafeSvg.asset(Images.quiz_bg,
+                fit: BoxFit.fill,
+                width: getScreenWidth(context),
+                height: getScreenHeight(context),
             ),
-          ),
-        ],
+            Container(
+              child: Column(
+                children: [
+                  Dimens.height30,
+                  _buildHeader(),
+                  _buildProgress(),
+                  Dimens.height30,
+                  _buildQuestion()
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -188,7 +195,7 @@ class _QuestionScreenState extends State<QuestionScreen>
         return Text.rich(
           TextSpan(
             text:
-                "Question ${(widget.question.length  < mainController.index.value+1) ? mainController.index.value : (mainController.index.value + 1)}",
+                "Question ${(widget.question.length < mainController.index.value + 1) ? mainController.index.value : (mainController.index.value + 1)}",
             style: Theme.of(context)
                 .textTheme
                 .headline4
