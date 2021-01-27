@@ -119,7 +119,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                   questionTemp: RxList<Question>(e),
                 ),
                 transition: Transition.fadeIn,
-                duration: Duration(milliseconds: 500));
+                duration: Duration(milliseconds: 500),preventDuplicates: false);
           },
         );
       }).toList(),

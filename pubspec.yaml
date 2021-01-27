@@ -35,10 +35,11 @@ dependencies:
   hive_flutter: ^0.3.1
   path_provider: ^1.6.24
   animated_widgets: ^1.0.6
-  aad_oauth: ^0.2.0
+  aad_oauth: ^0.2.1
   rxdart: ^0.21.0
   websafe_svg: ^1.1.4
   confetti: ^0.5.4+1
+  dio: ^3.0.10
 
 
 dev_dependencies:

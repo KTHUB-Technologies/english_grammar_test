@@ -9,6 +9,7 @@ import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
@@ -32,6 +33,7 @@ class _MainScreenState extends State<MainScreen> {
     levelController.categories = [];
     levelController.distinctCategory = [];
     super.initState();
+    firstLoad();
   }
 
   @override
@@ -39,6 +41,7 @@ class _MainScreenState extends State<MainScreen> {
     return Obx(() {
       return LoadingContainer(
         child: Scaffold(
+          resizeToAvoidBottomPadding: false,
           body: Container(
             child: Row(
               children: [
@@ -160,6 +163,9 @@ class _MainScreenState extends State<MainScreen> {
                       child: AppText(text: shortUserName( appController.user.value['displayName'])),
                     ),
                     onPressed: () async {
+                      var rectSize =
+                      Rect.fromLTWH(0.0, 200.0, getScreenWidth(context), getScreenHeight(context));
+                      ConfigMicrosoft.oauth.setWebViewScreenSize(rectSize);
                       await appController.loginWithMicrosoft();
                     }),
               )))
@@ -253,7 +259,15 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  _navigateToSettingScreen() {
-    Get.to(SettingScreen());
+  _navigateToSettingScreen() async{
+    await ConfigMicrosoft.oauth.logout();
+    appController.user.value = null;
+    // Get.to(SettingScreen());
+  }
+
+  firstLoad() async{
+    final openBox=await Hive.openBox('First_Load');
+    await openBox.put('isFirst', true);
+    openBox.close();
   }
 }

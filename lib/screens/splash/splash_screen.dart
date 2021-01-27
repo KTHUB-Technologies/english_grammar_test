@@ -102,6 +102,7 @@ class _SplashScreenState extends State<SplashScreen>{
 
   _loadUserData() async {
 
+
   }
   _navigateToMainScreen() {
     Get.offAll(MainScreen());
