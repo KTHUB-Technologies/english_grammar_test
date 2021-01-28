@@ -260,9 +260,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   _navigateToSettingScreen() async{
-    await ConfigMicrosoft.oauth.logout();
-    appController.user.value = null;
-    // Get.to(SettingScreen());
+    Get.to(SettingScreen());
   }
 
   firstLoad() async{

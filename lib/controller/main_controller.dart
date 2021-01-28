@@ -42,13 +42,13 @@ class MainController extends GetxController {
 
   Rx<Map> scoreOfCate=Rx<Map>({});
 
-  // Future loadJson() async {
-  //   isShowLoading.value = true;
-  //   var data =
-  //       await rootBundle.loadString('lib/res/strings/Question_Data.json');
-  //   var result = jsonDecode(data);
-  //   listQuestions= result.map<Question>((e) => Question.fromJson(e)).toList();
-  // }
+  Future loadJson() async {
+    isShowLoading.value = true;
+    var data =
+        await rootBundle.loadString('lib/res/strings/Question_Data.json');
+    var result = jsonDecode(data);
+    listQuestions= result.map<Question>((e) => Question.fromJson(e)).toList();
+  }
 
   Future loadQuestionFromLevel(int level) async {
     isShowLoading.value = true;
@@ -98,7 +98,7 @@ class MainController extends GetxController {
       listQuestions=allQues.map((e) => Question.fromJson(e)).toList();
     }else{
       print('-----------> firebase');
-      // await loadJson();
+      await loadJson();
       QuerySnapshot data = await FireBaseHelper.fireStoreReference
           .collection(Constants.QUESTIONS_DATA)
           .get();

@@ -69,6 +69,9 @@ class _SettingScreenState extends State<SettingScreen> {
           : () async {
               await ConfigMicrosoft.oauth.logout();
               appController.user.value = null;
+              final openBox=await Hive.openBox('accessToken');
+              await openBox.clear();
+              openBox.close();
               Get.offAll(MainScreen());
             },
     );
