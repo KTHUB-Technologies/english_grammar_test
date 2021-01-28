@@ -112,8 +112,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                   level: widget.level,
                   categoryId: widget.categoryId,
                   question:
-                      // ignore: deprecated_member_use
-                      mainController.questionsFromHive.isNullOrBlank
+                      mainController.questionsFromHive.isEmpty
                           ? RxList<Question>(e)
                           : mainController.questionsFromHive,
                   testNumber: mainController.listChunkQuestions.indexOf(e) + 1,
@@ -121,7 +120,8 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                   questionTemp: RxList<Question>(e),
                 ),
                 transition: Transition.fadeIn,
-                duration: Duration(milliseconds: 500));
+
+                duration: Duration(milliseconds: 500),preventDuplicates: false);
 
           },
         );

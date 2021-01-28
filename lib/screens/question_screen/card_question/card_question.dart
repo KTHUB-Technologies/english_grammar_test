@@ -108,6 +108,7 @@ class _CardQuestionState extends State<CardQuestion> {
   Widget buildQuestionContent(
       List<String> options, RxList<Color> colorsI, RxList<Icon> iconsI) {
     return Expanded(
+
       child: GestureDetector(
         onHorizontalDragStart: (value) {
       ///TODO
@@ -144,6 +145,7 @@ class _CardQuestionState extends State<CardQuestion> {
                                       : 200),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
+
                             color: widget.question.currentChecked.value != null
                                 ? colorsI[options.indexOf(e)]
                                 : Colors.transparent,
@@ -165,6 +167,7 @@ class _CardQuestionState extends State<CardQuestion> {
                           _handleOption(options.indexOf(e), colorsI, iconsI);
                         },
                       ),
+
                     );
                   }),
                 );
@@ -188,6 +191,7 @@ class _CardQuestionState extends State<CardQuestion> {
                   title: AppText(
                     text: widget.question.explanation,
                   ),
+
                 ),
               ),
             ),
@@ -195,6 +199,57 @@ class _CardQuestionState extends State<CardQuestion> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildButton() {
+    return Container(
+      child: mainController.index.value == widget.listQuestions.length
+          ? SizedBox()
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                mainController.index.value + 1 > 1
+                    ? FloatingActionButton(
+                        child: Icon(Icons.arrow_back_outlined),
+                        heroTag: null,
+                        onPressed: () async {
+                          SoundsHelper.checkAudio(Sounds.touch);
+                          mainController.index.value--;
+                        })
+                    : SizedBox(),
+                Dimens.height10,
+                widget.question.currentChecked.value != null
+                    ? widget.listQuestions.length >
+                            (mainController.index.value + 1)
+                        ? FloatingActionButton(
+                            child: Icon(Icons.arrow_forward_outlined),
+                            heroTag: null,
+                            onPressed: () async {
+                              SoundsHelper.checkAudio(Sounds.touch);
+                              mainController.index.value++;
+                            })
+                        : mainController
+                                .questionsFromHive==null
+                            ? widget.isFavorite == false
+                                ? FloatingActionButton(
+                                    child: Icon(Icons.arrow_forward_outlined),
+                                    heroTag: null,
+                                    onPressed: widget.isFavorite == false
+                                        ? () async {
+                                            countTrueAnswer();
+                                          }
+                                        : () {
+                                            Get.to(CheckAnswerScreen(
+                                              question: widget.listQuestions,
+                                            ));
+                                          },
+                                  )
+                                : SizedBox()
+                            : SizedBox()
+                    : SizedBox(),
+              ],
+            ),
     );
   }
 
@@ -263,9 +318,7 @@ class _CardQuestionState extends State<CardQuestion> {
         ? widget.listQuestions.length > (mainController.index.value + 1)
             ? _buildFloatingNextButton()
             : mainController
-                    .questionsFromHive
-                    // ignore: deprecated_member_use
-                    .isNullOrBlank
+                    .questionsFromHive.isEmpty
                 ? widget.isFavorite == false
                     ? _buildFloatingSubmitButton()
                     : SizedBox()

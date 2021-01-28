@@ -212,7 +212,7 @@ class _LevelScreenState extends State<LevelScreen> {
                                             getCategory(e), widget.level, e);
                                       }
                                     : () {},
-                                Rx<double>(snapshot.data));
+                                Rx<double>((snapshot.data??0.0)*100));
                           }),
                     );
                   }).toList(),
@@ -339,13 +339,11 @@ class _LevelScreenState extends State<LevelScreen> {
                     : GestureDetector(
                         child: Icon(
                           Icons.rotate_left,
-                          color: score.value == null ||
-                                  score.value.toString() == 'NaN'
+                          color: score.value == 0.0
                               ? AppColors.divider
                               : AppColors.green,
                         ),
-                        onTap: score.value.toString() != 'NaN' &&
-                                score.value != null
+                        onTap: score.value != 0.0
                             ? () {
                                 showCupertinoDialog(
                                     context: context,
@@ -392,7 +390,7 @@ class _LevelScreenState extends State<LevelScreen> {
         '${widget.level}_$index', null);
     openBoxScore.close();
 
-    score.value = null;
+    score.value = 0.0;
   }
 
   restartLevel() async{
@@ -410,18 +408,14 @@ class _LevelScreenState extends State<LevelScreen> {
   Future<double> getScoreOfCate(int index) async {
     double score = 0;
     Map scoreCate = new Map();
-    int length = 0;
+    int length=RxList<Question>(
+        mainController.questions.where((c) => c.categoryId == index).toList()).length;
     final openBox = await Hive.openBox('Table_Score_${widget.level}');
     if (openBox.get('${widget.level}_$index') != null) {
       scoreCate.addAll(openBox.get('${widget.level}_$index'));
       scoreCate.forEach((key, value) {
         List<String> split = value.toString().split('_');
-        if (!(double.tryParse(split[0]) / double.tryParse(split[1]))
-                .isNaN) {
-          score +=
-              (double.tryParse(split[0]) / double.tryParse(split[1])) * 100;
-          length++;
-        }
+        score+=double.tryParse(split[0]);
       });
     }
     return score / length;

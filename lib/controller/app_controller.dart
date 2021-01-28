@@ -1,13 +1,11 @@
 import 'dart:convert';
-
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
-import 'package:the_enest_english_grammar_test/helper/firebase_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/shared_preferences_helper.dart';
-import 'package:http/http.dart' as http;
 
 class AppController extends GetxController {
   int value = 0;
@@ -64,14 +62,23 @@ class AppController extends GetxController {
 
   loginWithMicrosoft() async {
     isShowLoading.value = true;
-    await ConfigMicrosoft.oauth.login();
-    var accessToken = await ConfigMicrosoft.oauth.getAccessToken();
-    final response = await http.get(ConfigMicrosoft.userProfileBaseUrl,
-        headers: {
-          ConfigMicrosoft.authorization: ConfigMicrosoft.bearer + accessToken
-        });
-    Map profile = jsonDecode(response.body);
-    user.value = profile;
+    try{
+      await ConfigMicrosoft.oauth.login();
+      var accessToken = await ConfigMicrosoft.oauth.getAccessToken();
+      final response = await Dio().get(ConfigMicrosoft.userProfileBaseUrl,
+          options: Options(headers: {
+            ConfigMicrosoft.authorization: ConfigMicrosoft.bearer + accessToken
+          }));
+      Map profile = jsonDecode(response.toString());
+      print(profile);
+      user.value = profile;
+      final openBox=await Hive.openBox('accessToken');
+      await openBox.put('accessToken', accessToken);
+      openBox.close();
+    }catch (e){
+      print(e);
+    }
+
     isShowLoading.value = false;
   }
 }

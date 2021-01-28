@@ -6,7 +6,7 @@ import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
-import 'package:the_enest_english_grammar_test/screens/login_screen/login_screen.dart';
+import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
@@ -68,7 +68,7 @@ class _AboutScreenState extends State<AboutScreen> {
               Dimens.height30,
               Obx((){
                 return AppButton(currentPage.value==data.length-1?'Get Started':'Continue',onTap: currentPage.value==data.length-1?(){
-                  Get.offAll(LoginScreen());
+                  Get.offAll(MainScreen());
                 }:(){
                   _controller.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeIn);
                 },);

@@ -127,7 +127,7 @@ class _QuestionScreenState extends State<QuestionScreen>
             Icons.arrow_back_ios,
             color: AppColors.white,
           ),
-          onPressed: mainController.questionsFromHive.isNullOrBlank
+          onPressed: mainController.questionsFromHive.isEmpty
               ? widget.isFavorite == false
                   ? () {
                       showCupertinoDialog(
@@ -222,11 +222,13 @@ class _QuestionScreenState extends State<QuestionScreen>
                 lineHeight: 20.0,
                 animationDuration: 0,
                 percent: ((mainController.currentTrue.value) /
+                    widget.question.length).isInfinite || ((mainController.currentTrue.value) /
+                    widget.question.length).isNaN?0.0:((mainController.currentTrue.value) /
                         widget.question.length)
                     .toDouble(),
                 center: AppText(
                     text:
-                        "${(((mainController.currentTrue.value) / widget.question.length) * 100).round()}%"),
+                        "${((mainController.currentTrue.value) / widget.question.length).isInfinite ||((mainController.currentTrue.value) / widget.question.length).isNaN?0:(((mainController.currentTrue.value) / widget.question.length) * 100).round()}%"),
                 linearStrokeCap: LinearStrokeCap.roundAll,
                 progressColor: Colors.greenAccent,
               )),
@@ -332,8 +334,7 @@ class _QuestionScreenState extends State<QuestionScreen>
     var listQuestions = widget.question.map((e) => e.toJson()).toList();
     final openBoxLevel = await Hive.openBox('Table_${widget.level}');
     Map level = await openBoxLevel.get('${widget.categoryId}');
-    // ignore: deprecated_member_use
-    if (level.isNullOrBlank) {
+    if (level==null) {
       level = {'${widget.testNumber}': listQuestions};
     } else {
       level['${widget.testNumber}'] = listQuestions;
@@ -343,8 +344,7 @@ class _QuestionScreenState extends State<QuestionScreen>
 
     final openBox = await Hive.openBox('Table_Score_${widget.level}');
     Map score = await openBox.get('${widget.level}_${widget.categoryId}');
-    // ignore: deprecated_member_use
-    if (score.isNullOrBlank) {
+    if (score==null) {
       score = {
         '${widget.testNumber}': '${countTrue.value}_${widget.question.length}'
       };

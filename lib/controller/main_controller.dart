@@ -1,7 +1,13 @@
+
 import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:the_enest_english_grammar_test/constants/constants.dart';
+import 'package:the_enest_english_grammar_test/helper/firebase_helper.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 
 class MainController extends GetxController {
@@ -24,7 +30,7 @@ class MainController extends GetxController {
 
   RxList<Question> questionsFromCategory = RxList<Question>([]);
   RxList<List<Question>> listChunkQuestions = RxList<List<Question>>([]);
-  List<Question> listQuestions;
+  List<Question> listQuestions=List<Question>();
   Rx<int> index = Rx<int>(0);
   Rx<int> currentTrue = Rx<int>(0);
   Rx<bool> isShowLoading = Rx<bool>(false);
@@ -36,17 +42,13 @@ class MainController extends GetxController {
 
   Rx<Map> scoreOfCate=Rx<Map>({});
 
-  Future loadJson() async {
-    isShowLoading.value = true;
-    var data =
-        await rootBundle.loadString('lib/res/strings/Question_Data.json');
-    var result = jsonDecode(data);
-    listQuestions= result.map<Question>((e) => Question.fromJson(e)).toList();
-    levels = listQuestions.map((e) => e.level).toList();
-    distinctLevel = levels.toSet().toList();
-    distinctLevel.sort();
-    isShowLoading.value=false;
-  }
+  // Future loadJson() async {
+  //   isShowLoading.value = true;
+  //   var data =
+  //       await rootBundle.loadString('lib/res/strings/Question_Data.json');
+  //   var result = jsonDecode(data);
+  //   listQuestions= result.map<Question>((e) => Question.fromJson(e)).toList();
+  // }
 
   Future loadQuestionFromLevel(int level) async {
     isShowLoading.value = true;
@@ -81,6 +83,53 @@ class MainController extends GetxController {
     print(listChunkQuestions.length);
     isShowLoading.value = false;
   }
+
+  ///Load data from firebase
+
+  RxList<ListQuestion> questionsFromFirebase= RxList<ListQuestion>([]);
+
+  getAllQuestions() async{
+    final openBox=await Hive.openBox("Questions");
+
+    if (openBox.get('AllQuestions')!=null) {
+      print('-----------> local');
+      List<dynamic> allQues=openBox.get('AllQuestions');
+
+      listQuestions=allQues.map((e) => Question.fromJson(e)).toList();
+    }else{
+      print('-----------> firebase');
+      // await loadJson();
+      QuerySnapshot data = await FireBaseHelper.fireStoreReference
+          .collection(Constants.QUESTIONS_DATA)
+          .get();
+
+      for(var i in data.docs){
+        questionsFromFirebase.add(ListQuestion.fromJson(i.data()));
+      }
+
+      questionsFromFirebase.map((element) => element.questions.forEach((ques) {
+        listQuestions.add(ques);
+      })).toList();
+
+      var allQuestion=listQuestions.map((e) => e.toJson()).toList();
+
+      await openBox.put('AllQuestions', allQuestion);
+    }
+
+    openBox.close();
+
+    loadQuestions();
+    print(listQuestions.length);
+  }
+
+  loadQuestions(){
+    levels = listQuestions.map((e) => e.level).toList();
+    distinctLevel = levels.toSet().toList();
+    distinctLevel.sort();
+    isShowLoading.value=false;
+  }
+
+
 
   // RxList<Widget> answers = RxList<Widget>([]);
   // Rx<int> index = Rx<int>(0);

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,7 +10,6 @@ import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/screens/about_screen/about_screen.dart';
-import 'package:the_enest_english_grammar_test/screens/login_screen/login_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 
 
@@ -61,10 +59,10 @@ class _SplashScreenState extends State<SplashScreen>{
   }
 
   checkConnect() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
-      Get.offNamedUntil('/NoConnectionScreen', (route) => false);
-    }
+    // var connectivityResult = await (Connectivity().checkConnectivity());
+    // if (connectivityResult == ConnectivityResult.none) {
+    //   Get.offNamedUntil('/NoConnectionScreen', (route) => false);
+    // }
   }
 
   ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~///
@@ -75,7 +73,8 @@ class _SplashScreenState extends State<SplashScreen>{
   ///             OTHER METHODS            ///
   ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~///
   onBuildDone() async {
-    await mainController.loadJson();
+    // await mainController.loadJson();
+    await mainController.getAllQuestions();
     await SoundsHelper.load();
     await checkDarkMode();
     /// Delay 3 seconds, then navigate to Login screen
@@ -102,6 +101,7 @@ class _SplashScreenState extends State<SplashScreen>{
   }
 
   _loadUserData() async {
+
 
   }
   _navigateToMainScreen() {

@@ -6,7 +6,7 @@ import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
-import 'package:the_enest_english_grammar_test/screens/login_screen/login_screen.dart';
+import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
@@ -60,18 +60,16 @@ class _SettingScreenState extends State<SettingScreen> {
 
   Widget buildButtonSignInOut(BuildContext context) {
     return AppButton(
-      // ignore: deprecated_member_use
-      appController.user.value.isNullOrBlank ? 'Sign In' : 'Sign Out',
+      appController.user.value==null ? 'Sign In' : 'Sign Out',
       widthButton: getScreenWidth(context) / 3,
-      // ignore: deprecated_member_use
-      onTap: appController.user.isNullOrBlank
+      onTap: appController.user.value==null
           ? () {
-              Get.offAll(LoginScreen());
+              Get.offAll(MainScreen());
             }
           : () async {
               await ConfigMicrosoft.oauth.logout();
               appController.user.value = null;
-              Get.offAll(LoginScreen());
+              Get.offAll(MainScreen());
             },
     );
   }

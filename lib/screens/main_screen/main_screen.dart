@@ -33,6 +33,7 @@ class _MainScreenState extends State<MainScreen> {
     levelController.categories = [];
     levelController.distinctCategory = [];
     super.initState();
+    firstLoad();
   }
 
   @override
@@ -40,6 +41,7 @@ class _MainScreenState extends State<MainScreen> {
     return Obx(() {
       return LoadingContainer(
         child: Scaffold(
+          resizeToAvoidBottomPadding: false,
           body: Container(
             child: Row(
               children: [
@@ -191,7 +193,9 @@ await appController.loginWithMicrosoft();
               )
               .toList())
 
+
           );
+
   }
 
   _buildSelectedContent(int level) {
@@ -223,8 +227,7 @@ await appController.loginWithMicrosoft();
                 duration: Duration(milliseconds: 500));
           },
         ),
-        // ignore: deprecated_member_use
-        appController.user.value.isNullOrBlank
+        appController.user.value==null
             ?level != 1
                 ? Container(
                     width: getScreenWidth(context) / 1.8,
@@ -265,7 +268,15 @@ await appController.loginWithMicrosoft();
     }
   }
 
-  _navigateToSettingScreen() {
-    Get.to(SettingScreen());
+  _navigateToSettingScreen() async{
+    await ConfigMicrosoft.oauth.logout();
+    appController.user.value = null;
+    // Get.to(SettingScreen());
+  }
+
+  firstLoad() async{
+    final openBox=await Hive.openBox('First_Load');
+    await openBox.put('isFirst', true);
+    openBox.close();
   }
 }
