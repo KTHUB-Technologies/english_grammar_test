@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1042312715170:android:f265a7ef332785c7f830fb",
+        "mobilesdk_app_id": "1:1042312715170:android:41f3a651e2c584f6f830fb",
         "android_client_info": {
-          "package_name": "com.example.the_enest_english_grammar_test"
+          "package_name": "dev.kthub.theENESTenglishgrammartest"
         }
       },
       "oauth_client": [

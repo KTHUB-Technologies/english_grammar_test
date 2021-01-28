@@ -22,17 +22,11 @@ double subTotal(List<double> prices) {
 }
 
 getScreenWidth(BuildContext context) {
-  return MediaQuery
-      .of(context)
-      .size
-      .width;
+  return MediaQuery.of(context).size.width;
 }
 
 getScreenHeight(BuildContext context) {
-  return MediaQuery
-      .of(context)
-      .size
-      .height;
+  return MediaQuery.of(context).size.height;
 }
 
 getLevel(num levelId) {
@@ -128,7 +122,5 @@ getSection(int sectionSelected) {
 }
 
 shortUserName(String displayName) {
-  return displayName.split(' ').toList().map((e) => e.substring(0, 1))
-      .toList()
-      .join("");
+  return displayName.split(' ').map((e) => e.substring(0, 1)).toList().join("");
 }
