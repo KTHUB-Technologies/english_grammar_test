@@ -80,7 +80,8 @@ class _SplashScreenState extends State<SplashScreen>{
     /// Delay 3 seconds, then navigate to Login screen
     timer=Timer.periodic(Duration(seconds: 2), (timer) async {
       await _loadUserData();
-      await checkFirstLoad();
+      _navigateToMainScreen();
+    //  await checkFirstLoad();
     });
   }
 
