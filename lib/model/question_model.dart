@@ -3,6 +3,21 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 part 'question_model.g.dart';
 
+class ListQuestion{
+  List<Question> questions;
+
+  ListQuestion({this.questions});
+
+  ListQuestion.fromJson(Map<dynamic, dynamic> json)
+      :questions = (json['questions'] as List ?? [])
+      .map((f) => Question.fromJson(f))
+      .toList();
+
+  Map<dynamic, dynamic> toJson() => {
+    "questions": questions.map((e) => e.toJson()).toList()?? '',
+  };
+}
+
 @HiveType(typeId: 0)
 class Question extends HiveObject{
   @HiveField(0)
@@ -26,35 +41,35 @@ class Question extends HiveObject{
   @HiveField(9)
   final String task;
   @HiveField(10)
-  final Rx<int> currentChecked;
+  Rx<int> currentChecked;
 
   Question({this.categoryId,this.categoryName,this.correctAnswer,this.explanation,this.explanationVi,this.groupId,this.id,this.level,this.options,this.task,this.currentChecked});
 
   Question.fromJson(Map<dynamic,dynamic>json):
-        categoryId=json['categoryId'],
-        categoryName=json['categoryName'],
-        correctAnswer=json['correctAnswer'],
-        explanation=json['explanation'],
-        explanationVi=json['explanationVi'],
-        groupId=json['groupId'],
-        id=json['id'],
-        level=json['level'],
-        options=json['options'],
-        task=json['task'],
-        currentChecked=Rx<int>(json['currentChecked']);
+        categoryId=json['categoryId']??null,
+        categoryName=json['categoryName']??'',
+        correctAnswer=json['correctAnswer']??null,
+        explanation=json['explanation']??'',
+        explanationVi=json['explanationVi']??'',
+        groupId=json['groupId']??'',
+        id=json['id']??null,
+        level=json['level']??null,
+        options=json['options']??'',
+        task=json['task']??'',
+        currentChecked=Rx<int>(json['currentChecked']??null);
 
   Map<dynamic, dynamic> toJson()=>{
-    'categoryId':categoryId,
-    'categoryName':categoryName,
-    'correctAnswer':correctAnswer,
-    'explanation':explanation,
-    'explanationVi':explanationVi,
-    'groupId':groupId,
-    'id':id,
-    'level':level,
-    'options':options,
-    'task':task,
-    'currentChecked':int.tryParse(currentChecked.toString())
+    'categoryId':categoryId??null,
+    'categoryName':categoryName??'',
+    'correctAnswer':correctAnswer??null,
+    'explanation':explanation??'',
+    'explanationVi':explanationVi??'',
+    'groupId':groupId??'',
+    'id':id??null,
+    'level':level??null,
+    'options':options??'',
+    'task':task??'',
+    'currentChecked':int.tryParse(currentChecked.toString())??null
   };
 }
 

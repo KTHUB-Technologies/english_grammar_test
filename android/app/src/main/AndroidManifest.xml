@@ -1,6 +1,5 @@
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.the_enest_english_grammar_test"
+    package="dev.kthub.theENESTenglishgrammartest"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-sdk tools:overrideLibrary="xyz.luan.audioplayers"/>
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
@@ -10,7 +9,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="the_enest_english_grammar_test"
+        android:label="The ENEST English Grammar Test"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

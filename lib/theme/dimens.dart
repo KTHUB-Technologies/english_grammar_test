@@ -3,7 +3,7 @@ import '../helper/utils.dart';
 
 class Dimens {
   static double getLogoSize(BuildContext context) =>
-      getScreenWidth(context) / 6;
+      getScreenWidth(context) / 2;
   static const double screenPaddingTop = 16;
   static const double defaultButtonTextSize = 12;
   static const double descriptionTextSize = 16;
