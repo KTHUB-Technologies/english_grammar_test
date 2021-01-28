@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
+import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
@@ -17,27 +18,49 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   final AppController appController = Get.find();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return Obx(()=>LoadingContainer(
+      child: Scaffold(
+        body: Column(
+          children: <Widget>[
+            // buildDarkModeSetting(),
+            Container(
+              height: 30,
+              decoration: BoxDecoration(
+                  gradient:
+                  LinearGradient(colors: AppColors.gradientColorPrimary)),
+            ),
+            _buildHeader(),
+            _buildButtonSignInOut(context),
+          ],
+        ),
+      ),isLoading: appController.isShowLoading.value,
+    ));
+  }
+
+  _buildHeader() {
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(colors: AppColors.gradientColorPrimary)),
+      child: ListTile(
+        leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: AppColors.white,
+            ),
+            onPressed: () => Get.back()),
         title: AppText(
           text: 'SETTINGS',
           textSize: Dimens.paragraphHeaderTextSize,
           color: AppColors.white,
         ),
       ),
-      body: Column(
-        children: <Widget>[
-          buildDarkModeSetting(),
-          Dimens.height30,
-          buildButtonSignInOut(context),
-        ],
-      ),
     );
   }
 
-  Widget buildDarkModeSetting() {
+  _buildDarkModeSetting() {
     return Obx(() {
       return Card(
         child: ListTile(
@@ -58,18 +81,36 @@ class _SettingScreenState extends State<SettingScreen> {
     });
   }
 
-  Widget buildButtonSignInOut(BuildContext context) {
-    return AppButton(
-      appController.user.value==null ? 'Sign In' : 'Sign Out',
+  _buildButtonSignInOut(BuildContext context) {
+    return Obx(() => Card(
+          child: ListTile(
+            leading: Icon(Icons.email),
+            title: AppText(
+              text: appController.user.value == null
+                  ? 'Sign In With The ENEST Account'
+                  : appController.user.value['mail'],
+            ),
+            onTap: () async {
+              appController.user.value == null
+                  ? appController.loginWithMicrosoft()
+                  : appController.signOut();
+            },
+          ),
+        ));
+
+    AppButton(
+      appController.user.value == null
+          ? 'Sign In With The ENEST Account'
+          : appController.user.value['mail'],
       widthButton: getScreenWidth(context) / 3,
-      onTap: appController.user.value==null
+      onTap: appController.user.value == null
           ? () {
               Get.offAll(MainScreen());
             }
           : () async {
               await ConfigMicrosoft.oauth.logout();
               appController.user.value = null;
-              final openBox=await Hive.openBox('accessToken');
+              final openBox = await Hive.openBox('accessToken');
               await openBox.clear();
               openBox.close();
               Get.offAll(MainScreen());

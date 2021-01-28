@@ -89,9 +89,10 @@ class _MainScreenState extends State<MainScreen> {
                                   child: AppText(
                                     text: getLevelDescription(
                                         levelController.levelSelected.value +
-                                            1),
-                                    textAlign: TextAlign.center,
+                                            1,context),
+                                    textAlign: TextAlign.left,
                                     color: AppColors.white,
+                                    textSize: Dimens.paragraphHeaderTextSize,
                                   ),
                                 ),
                                 Dimens.height10,

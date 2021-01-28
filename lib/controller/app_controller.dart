@@ -62,7 +62,7 @@ class AppController extends GetxController {
 
   loginWithMicrosoft() async {
     isShowLoading.value = true;
-    try{
+    try {
       await ConfigMicrosoft.oauth.login();
       var accessToken = await ConfigMicrosoft.oauth.getAccessToken();
       final response = await Dio().get(ConfigMicrosoft.userProfileBaseUrl,
@@ -72,13 +72,27 @@ class AppController extends GetxController {
       Map profile = jsonDecode(response.toString());
       print(profile);
       user.value = profile;
-      final openBox=await Hive.openBox('accessToken');
+      final openBox = await Hive.openBox('accessToken');
       await openBox.put('accessToken', accessToken);
       openBox.close();
-    }catch (e){
+    } catch (e) {
       print(e);
     }
 
+    isShowLoading.value = false;
+  }
+
+  signOut()async {
+    isShowLoading.value = true;
+    try {
+      await ConfigMicrosoft.oauth.logout();
+      user.value = null;
+      final openBox = await Hive.openBox('accessToken');
+      await openBox.clear();
+      openBox.close();
+    } catch (e) {
+      print(e);
+    }
     isShowLoading.value = false;
   }
 }

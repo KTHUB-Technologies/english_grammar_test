@@ -6,6 +6,7 @@ import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
+import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/check_answer/check_answer_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
@@ -250,12 +251,14 @@ class _CardQuestionState extends State<CardQuestion> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: FloatingActionButton(
+                elevation: 0,
+                backgroundColor: Colors.transparent,
                 heroTag: 'previous',
                 onPressed: () async {
                   SoundsHelper.checkAudio(Sounds.touch);
                   mainController.index.value--;
                 },
-                child: Icon(Icons.arrow_back_rounded),
+                child: Image.asset(Images.arrow_back),
               ),
             ),
           )
@@ -281,13 +284,15 @@ class _CardQuestionState extends State<CardQuestion> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: FloatingActionButton(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
           heroTag: 'next',
           onPressed: () async {
             SoundsHelper.checkAudio(Sounds.touch);
 
             mainController.index.value++;
           },
-          child: Icon(Icons.arrow_forward_rounded),
+          child: Image.asset(Images.arrow_forward),
         ),
       ),
     );
@@ -299,6 +304,8 @@ class _CardQuestionState extends State<CardQuestion> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: FloatingActionButton(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
           heroTag: 'submit',
           onPressed: () async {
             SoundsHelper.checkAudio(Sounds.touch);
@@ -308,7 +315,7 @@ class _CardQuestionState extends State<CardQuestion> {
                     question: widget.listQuestions,
                   ));
           },
-          child: Icon(Icons.flag_rounded),
+          child: Image.asset(Images.finish_flag),
         ),
       ),
     );
@@ -369,6 +376,7 @@ class _CardQuestionState extends State<CardQuestion> {
         Icons.check,
         color: AppColors.green,
       );
+      mainController.currentTrue.value++;
     }
   }
 }

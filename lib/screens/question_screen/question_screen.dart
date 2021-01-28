@@ -226,10 +226,7 @@ class _QuestionScreenState extends State<QuestionScreen>
                     widget.question.length).isNaN?0.0:((mainController.currentTrue.value) /
                         widget.question.length)
                     .toDouble(),
-                center: AppText(
-                    text:
-                        "${((mainController.currentTrue.value) / widget.question.length).isInfinite ||((mainController.currentTrue.value) / widget.question.length).isNaN?0:(((mainController.currentTrue.value) / widget.question.length) * 100).round()}%"),
-                linearStrokeCap: LinearStrokeCap.roundAll,
+               linearStrokeCap: LinearStrokeCap.roundAll,
                 progressColor: Colors.greenAccent,
               )),
     );
