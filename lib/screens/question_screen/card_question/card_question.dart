@@ -202,57 +202,6 @@ class _CardQuestionState extends State<CardQuestion> {
     );
   }
 
-  Widget buildButton() {
-    return Container(
-      child: mainController.index.value == widget.listQuestions.length
-          ? SizedBox()
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                mainController.index.value + 1 > 1
-                    ? FloatingActionButton(
-                        child: Icon(Icons.arrow_back_outlined),
-                        heroTag: null,
-                        onPressed: () async {
-                          SoundsHelper.checkAudio(Sounds.touch);
-                          mainController.index.value--;
-                        })
-                    : SizedBox(),
-                Dimens.height10,
-                widget.question.currentChecked.value != null
-                    ? widget.listQuestions.length >
-                            (mainController.index.value + 1)
-                        ? FloatingActionButton(
-                            child: Icon(Icons.arrow_forward_outlined),
-                            heroTag: null,
-                            onPressed: () async {
-                              SoundsHelper.checkAudio(Sounds.touch);
-                              mainController.index.value++;
-                            })
-                        : mainController
-                                .questionsFromHive==null
-                            ? widget.isFavorite == false
-                                ? FloatingActionButton(
-                                    child: Icon(Icons.arrow_forward_outlined),
-                                    heroTag: null,
-                                    onPressed: widget.isFavorite == false
-                                        ? () async {
-                                            countTrueAnswer();
-                                          }
-                                        : () {
-                                            Get.to(CheckAnswerScreen(
-                                              question: widget.listQuestions,
-                                            ));
-                                          },
-                                  )
-                                : SizedBox()
-                            : SizedBox()
-                    : SizedBox(),
-              ],
-            ),
-    );
-  }
-
   addOrRemoveFromFavorite() async {
     if (mainController.containFromFavorite.isEmpty) {
       List<Question> question = [];

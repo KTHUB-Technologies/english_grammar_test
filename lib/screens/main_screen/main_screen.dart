@@ -269,9 +269,7 @@ await appController.loginWithMicrosoft();
   }
 
   _navigateToSettingScreen() async{
-    await ConfigMicrosoft.oauth.logout();
-    appController.user.value = null;
-    // Get.to(SettingScreen());
+    Get.to(SettingScreen());
   }
 
   firstLoad() async{
