@@ -79,7 +79,7 @@ class _SplashScreenState extends State<SplashScreen>{
     await mainController.getAllQuestions();
     await _loadUserData();
     await SoundsHelper.load();
-    await checkDarkMode();
+    // await checkDarkMode();
     /// Delay 3 seconds, then navigate to Login screen
     timer=Timer.periodic(Duration(seconds: 2), (timer) async {
       await _loadUserData();
@@ -88,21 +88,28 @@ class _SplashScreenState extends State<SplashScreen>{
     });
   }
 
-  checkDarkMode() async{
-    final openBox=await Hive.openBox('Dark_Mode');
-    if(openBox.get('isDark')!=null)
-      appController.isDark.value=openBox.get('isDark');
-    openBox.close();
-  }
+  checkSound() async{
+      final openBox=await Hive.openBox('Sound');
+      if(openBox.get('isSound')!=null)
+        appController.isDark.value=openBox.get('isSound');
+      openBox.close();
+    }
 
-  checkFirstLoad()async{
-    final openBox=await Hive.openBox('First_Load');
-    if(openBox.get('isFirst')!=null)
-      _navigateToMainScreen();
-    else
-      Get.to(AboutScreen());
-    openBox.close();
-  }
+  // checkDarkMode() async{
+  //   final openBox=await Hive.openBox('Dark_Mode');
+  //   if(openBox.get('isDark')!=null)
+  //     appController.isDark.value=openBox.get('isDark');
+  //   openBox.close();
+  // }
+
+  // checkFirstLoad()async{
+  //   final openBox=await Hive.openBox('First_Load');
+  //   if(openBox.get('isFirst')!=null)
+  //     _navigateToMainScreen();
+  //   else
+  //     Get.to(AboutScreen());
+  //   openBox.close();
+  // }
 
   _loadUserData() async {
     final openBox=await Hive.openBox('Token');

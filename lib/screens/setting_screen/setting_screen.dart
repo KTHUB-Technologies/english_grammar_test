@@ -33,6 +33,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   LinearGradient(colors: AppColors.gradientColorPrimary)),
             ),
             _buildHeader(),
+            _buildSoundSetting(),
             _buildButtonSignInOut(context),
           ],
         ),
@@ -60,26 +61,26 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  _buildDarkModeSetting() {
-    return Obx(() {
-      return Card(
-        child: ListTile(
-          title: AppText(
-            text: 'Dark Mode',
-            color: AppColors.blue,
-          ),
-          trailing: Switch(
-              value: appController.isDark.value,
-              onChanged: (bool value) async {
-                final openBox = await Hive.openBox('Dark_Mode');
-                appController.isDark.value = value;
-                await openBox.put('isDark', appController.isDark.value);
-                openBox.close();
-              }),
-        ),
-      );
-    });
-  }
+  // _buildDarkModeSetting() {
+  //   return Obx(() {
+  //     return Card(
+  //       child: ListTile(
+  //         title: AppText(
+  //           text: 'Dark Mode',
+  //           color: AppColors.blue,
+  //         ),
+  //         trailing: Switch(
+  //             value: appController.isDark.value,
+  //             onChanged: (bool value) async {
+  //               final openBox = await Hive.openBox('Dark_Mode');
+  //               appController.isDark.value = value;
+  //               await openBox.put('isDark', appController.isDark.value);
+  //               openBox.close();
+  //             }),
+  //       ),
+  //     );
+  //   });
+  // }
 
   _buildButtonSignInOut(BuildContext context) {
     return Obx(() => Card(
@@ -98,23 +99,44 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
         ));
 
-    AppButton(
-      appController.user.value == null
-          ? 'Sign In With The ENEST Account'
-          : appController.user.value['mail'],
-      widthButton: getScreenWidth(context) / 3,
-      onTap: appController.user.value == null
-          ? () {
-              Get.offAll(MainScreen());
-            }
-          : () async {
-              await ConfigMicrosoft.oauth.logout();
-              appController.user.value = null;
-              final openBox = await Hive.openBox('accessToken');
-              await openBox.clear();
-              openBox.close();
-              Get.offAll(MainScreen());
-            },
-    );
+    // AppButton(
+    //   appController.user.value == null
+    //       ? 'Sign In With The ENEST Account'
+    //       : appController.user.value['mail'],
+    //   widthButton: getScreenWidth(context) / 3,
+    //   onTap: appController.user.value == null
+    //       ? () {
+    //           Get.offAll(MainScreen());
+    //         }
+    //       : () async {
+    //           await ConfigMicrosoft.oauth.logout();
+    //           appController.user.value = null;
+    //           final openBox = await Hive.openBox('accessToken');
+    //           await openBox.clear();
+    //           openBox.close();
+    //           Get.offAll(MainScreen());
+    //         },
+    // );
+  }
+
+  _buildSoundSetting() {
+    return Obx(() {
+      return Card(
+        child: ListTile(
+          title: AppText(
+            text: 'Sounds Mode',
+            color: AppColors.blue,
+          ),
+          trailing: Switch(
+              value: appController.sound.value,
+              onChanged: (bool value) async {
+                final openBox = await Hive.openBox('Sound');
+                appController.sound.value = value;
+                await openBox.put('isSound', appController.isDark.value);
+                openBox.close();
+              }),
+        ),
+      );
+    });
   }
 }

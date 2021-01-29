@@ -31,6 +31,7 @@ class AppController extends GetxController {
   }
 
   Rx<bool> isDark = Rx<bool>(false);
+  Rx<bool> sound=Rx<bool>(true);
 
   getDefaultLanguage() async {
     String languageCode = await SharedPreferencesHelper.getStringValue(
