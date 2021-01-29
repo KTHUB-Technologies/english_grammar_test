@@ -72,7 +72,7 @@ class AppController extends GetxController {
       Map profile = jsonDecode(response.toString());
       print(profile);
       user.value = profile;
-      final openBox=await Hive.openBox('accessToken');
+      final openBox=await Hive.openBox('Token');
       await openBox.put('accessToken', accessToken);
       openBox.close();
     }catch (e){
