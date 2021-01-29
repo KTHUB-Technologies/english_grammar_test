@@ -123,6 +123,8 @@ class _LevelScreenState extends State<LevelScreen> {
                     text: getLevel(widget.level),
                   ),
                   trailing: PopupMenuButton(
+                    elevation: 20,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                       onSelected: choiceAction,
                       itemBuilder: (context) {
                         return Constants.choices.map((e) {
@@ -131,7 +133,7 @@ class _LevelScreenState extends State<LevelScreen> {
                             child: ListTile(
                               title: AppText(
                                 text: e,
-                                color: AppColors.blue,
+                                color: AppColors.orangeAccent,
                               ),
                             ),
                           );
@@ -314,7 +316,7 @@ class _LevelScreenState extends State<LevelScreen> {
                 Expanded(
                   child: AppText(
                     text: getCategory(index),
-                    color: AppColors.blue,
+                    color: AppColors.orangeAccent,
                   ),
                 ),
                 Dimens.width20,
@@ -323,10 +325,10 @@ class _LevelScreenState extends State<LevelScreen> {
                   lineWidth: 2.0,
                   animation: true,
                   percent: score.value == null || score.value.isNaN ? 0 : score.value/100.round(),
-                  center: new Text(
+                  center:  Text(
                     '${score.value == null || score.value.isNaN ? 0 : score.value.round()}%',
                     style:
-                    new TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
+                     TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
                   ),
                   circularStrokeCap: CircularStrokeCap.round,
                   progressColor: Colors.purple,
@@ -432,9 +434,10 @@ class _LevelScreenState extends State<LevelScreen> {
     } else {
       mainController.score.value.clear();
     }
-    showModalBottomSheet(
+    await showModalBottomSheet(
         backgroundColor: AppColors.transparent,
         isScrollControlled: true,
+
         context: context,
         builder: (context) {
           return ModalBottomSheet(

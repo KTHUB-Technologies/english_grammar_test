@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
-import 'package:websafe_svg/websafe_svg.dart';
 
 class CheckAnswerScreen extends StatefulWidget {
   final RxList<Question> question;
@@ -30,15 +28,18 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                AppText(
-                  text: '${widget.question.indexOf(e) + 1}. ${e.task}',
-                  color: AppColors.white,
-                  textSize: Dimens.paragraphHeaderTextSize,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: AppText(
+                    text: '${widget.question.indexOf(e) + 1}. ${e.task}',
+                    color: AppColors.white,
+                    textSize: Dimens.paragraphHeaderTextSize,
+                  ),
                 ),
                 Dimens.height10,
                 e.currentChecked.value == e.correctAnswer - 1
                     ? AppText(
-                        text: options[e.currentChecked.value],
+                        text: 'Your Answer: ${options[e.currentChecked.value]}',
                         color: Colors.green,
                       )
                     : AppText(
@@ -87,7 +88,9 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
           Expanded(
             child: Obx(() {
               return Container(
-                decoration: BoxDecoration(color: AppColors.red,borderRadius: BorderRadius.all(Radius.circular(50))),
+                decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(15))),
                 child: Row(
                   children: [
                     widget.question.isEmpty
@@ -97,18 +100,13 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
                             index: index,
                           ),
                     Expanded(
-                        child:  Stack(
-                        children: [
-                          Container(
-                            child: WebsafeSvg.asset(Images.quiz_bg,
-                                fit: BoxFit.fill,
-                                width: getScreenWidth(context),
-                                height: getScreenHeight(context)),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              image: DecorationImage(image: AssetImage(Images.quiz_bg),fit: BoxFit.fill),
+                            borderRadius: BorderRadius.only(topRight: Radius.circular(30),topLeft: Radius.circular(30))
                           ),
-                          listCheckedAnswer[index.value]
-                        ],
-                      ),
-                    )
+                      child: listCheckedAnswer[index.value],
+                    ))
                     //Expanded(child:   Container(child: AppText(text: "TEST",),))
                   ],
                 ),
@@ -121,13 +119,16 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
   }
 
   _buildHeader() {
-    return ListTile(
-      leading: IconButton(
-          icon: Icon(Icons.arrow_back_rounded), onPressed: _navigateBack),
-      title: AppText(
-        text: 'Check Answer',
-        textSize: Dimens.paragraphHeaderTextSize,
-        color: AppColors.secondary,
+    return Container(
+      color: AppColors.white,
+      child: ListTile(
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back_rounded), onPressed: _navigateBack),
+        title: AppText(
+          text: 'Check Answer',
+          textSize: Dimens.paragraphHeaderTextSize,
+          color: AppColors.secondary,
+        ),
       ),
     );
   }
@@ -135,7 +136,7 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
   _navigateBack() {
     int count = 0;
     Navigator.popUntil(context, (route) {
-      return count++ == 2;
+      return count++ == 3;
     });
   }
 }
@@ -154,40 +155,44 @@ class _ListCheckState extends State<ListCheck> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: IntrinsicHeight(
-        child: NavigationRail(
-
-          backgroundColor: AppColors.white,
-          minWidth: 80,
-          destinations: widget.question
-              .map((element) => NavigationRailDestination(
-                    icon: Row(
-                      children: [
-                        Dimens.width10,
-                        AppText(
-                            text: '${widget.question.indexOf(element) + 1}. '),
-                        element.currentChecked.value ==
-                                element.correctAnswer - 1
-                            ? Icon(
-                                Icons.check,
-                                color: Colors.green,
-                              )
-                            : Icon(
-                                Icons.clear,
-                                color: Colors.red,
-                              ),
-                        widget.index.value == widget.question.indexOf(element)
-                            ? Icon(Icons.arrow_forward_rounded)
-                            : SizedBox()
-                      ],
-                    ),
-                    label: SizedBox(),
-                  ))
-              .toList(),
-          selectedIndex: widget.index.value,
-          onDestinationSelected: (int value) {
-            widget.index.value = value;
-          },
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: getScreenHeight(context)),
+        child: IntrinsicHeight(
+          child: NavigationRail(
+            groupAlignment: -1.0,
+            backgroundColor: AppColors.white,
+            minWidth: 90,
+            destinations: widget.question
+                .map((element) => NavigationRailDestination(
+                      icon: Row(
+                        children: [
+                          Dimens.width10,
+                          AppText(
+                              text:
+                                  '${widget.question.indexOf(element) + 1}. '),
+                          element.currentChecked.value ==
+                                  element.correctAnswer - 1
+                              ? Icon(
+                                  Icons.check,
+                                  color: Colors.green,
+                                )
+                              : Icon(
+                                  Icons.clear,
+                                  color: Colors.red,
+                                ),
+                          widget.index.value == widget.question.indexOf(element)
+                              ? Icon(Icons.arrow_forward_rounded)
+                              : SizedBox()
+                        ],
+                      ),
+                      label: SizedBox(),
+                    ))
+                .toList(),
+            selectedIndex: widget.index.value,
+            onDestinationSelected: (int value) {
+              widget.index.value = value;
+            },
+          ),
         ),
       ),
     );

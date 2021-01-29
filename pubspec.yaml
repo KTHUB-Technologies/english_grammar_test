@@ -1,7 +1,7 @@
 name: the_enest_english_grammar_test
 description: The Enest English Grammar Test With Explanation
 
-version: 1.0.0+1
+version: 1.0.1+1
 
 environment:
   sdk: ">=2.8.0 <3.0.0"
@@ -37,7 +37,6 @@ dependencies:
   animated_widgets: ^1.0.6
   aad_oauth: ^0.2.1
   rxdart: ^0.21.0
-  websafe_svg: ^1.1.4
   confetti: ^0.5.4+1
   dio: ^3.0.10
 
@@ -56,9 +55,9 @@ dev_dependencies:
 flutter_icons:
   android: "ic_launcher"
   ios: true
-  image_path: "lib/res/images/ic_logo.png"
+  image_path: "lib/res/images/logo.jpg"
   adaptive_icon_background: "#ffffff"
-  adaptive_icon_foreground: "lib/res/images/ic_logo.png"
+  adaptive_icon_foreground: "lib/res/images/logo.jpg"
 
 flutter:
   uses-material-design: true

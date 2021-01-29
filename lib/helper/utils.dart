@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
 
 /// This method is used when we need to call a method after build() function is completed.
 void onWidgetBuildDone(function) {
@@ -96,14 +97,14 @@ getCategory(num categoryId) {
   }
 }
 
-getLevelDescription(int level) {
+getLevelDescription(int level, context) {
   switch (level) {
     case 1:
-      return 'beginning content-beginning content-beginning content-beginning content-beginning content-beginning content-beginning content';
+      return "You can use English for everyday tasks and activities. You can also understand common phrases related to topics such as personal information and employment.";
     case 2:
-      return 'intermediate content-intermediate content-intermediate content-intermediate content-intermediate content-intermediate content';
+      return "You can communicate confidently about many topics. You can also understand the main ideas of texts within your field of specialization.";
     case 3:
-      return 'advanced content-advanced content-advanced content-advanced content-advanced content-advanced content-advanced content';
+      return "You can express yourself fluently in almost any situation. You are able to perform complex tasks related to work and study. You can also produce clear, detailed texts on challenging subjects.";
     default:
       return '';
   }
@@ -119,6 +120,7 @@ getSection(int sectionSelected) {
       return "";
   }
 }
-shortUserName(String displayName){
-  return displayName.split(' ').toList().map((e) => e.substring(0,1)).toList().join("");
+
+shortUserName(String displayName) {
+  return displayName.split(' ').map((e) => e.substring(0, 1)).toList().join("");
 }

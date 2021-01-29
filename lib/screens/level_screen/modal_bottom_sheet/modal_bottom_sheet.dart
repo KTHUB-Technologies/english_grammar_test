@@ -87,13 +87,13 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                     scorePercent == null || scorePercent.isNaN
                         ? 0
                         : scorePercent / 100.round(),
-                center: new Text(
+                center:  Text(
                   '${scorePercent == null || scorePercent.isNaN ? 0 : scorePercent.round()}%',
-                  style: new TextStyle(
+                  style:  TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 10.0),
                 ),
                 circularStrokeCap: CircularStrokeCap.round,
-                progressColor: Colors.purple,
+                progressColor: AppColors.green,
               ),
             ),
           ),
@@ -106,6 +106,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
             e.forEach((question) {
               question.currentChecked.value = null;
             });
+
             Get.to(
                 QuestionScreen(
                   level: widget.level,
@@ -119,7 +120,9 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                   questionTemp: RxList<Question>(e),
                 ),
                 transition: Transition.fadeIn,
+
                 duration: Duration(milliseconds: 500),preventDuplicates: false);
+
           },
         );
       }).toList(),

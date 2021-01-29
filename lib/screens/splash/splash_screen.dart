@@ -82,7 +82,9 @@ class _SplashScreenState extends State<SplashScreen>{
     await checkDarkMode();
     /// Delay 3 seconds, then navigate to Login screen
     timer=Timer.periodic(Duration(seconds: 2), (timer) async {
-      await checkFirstLoad();
+      await _loadUserData();
+      _navigateToMainScreen();
+    //  await checkFirstLoad();
     });
   }
 

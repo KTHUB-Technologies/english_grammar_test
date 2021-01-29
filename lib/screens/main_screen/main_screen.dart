@@ -89,9 +89,10 @@ class _MainScreenState extends State<MainScreen> {
                                   child: AppText(
                                     text: getLevelDescription(
                                         levelController.levelSelected.value +
-                                            1),
-                                    textAlign: TextAlign.center,
+                                            1,context),
+                                    textAlign: TextAlign.left,
                                     color: AppColors.white,
+                                    textSize: Dimens.paragraphHeaderTextSize,
                                   ),
                                 ),
                                 Dimens.height10,
@@ -140,6 +141,44 @@ class _MainScreenState extends State<MainScreen> {
           levelController.levelSelected.value = index;
         },
         labelType: NavigationRailLabelType.all,
+
+        trailing: Column(
+
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 0),
+              child: IconButton(
+                  icon: appController.user.value.isNullOrBlank?Icon(Icons.person):CircleAvatar(
+                    child: AppText(text: shortUserName( appController.user.value['displayName'])),
+                  ),
+                  onPressed: () async {
+await appController.loginWithMicrosoft();
+                    // showModalBottomSheet(context: context, builder: (context){
+                    //
+                    //   return Container(
+                    //
+                    //   );
+                    // });
+                  }),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 0),
+              child: IconButton(
+                  icon: Icon(Icons.language),
+                  onPressed: () async {
+                    await _navigateToFacebookApp();
+                  }),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 0),
+              child: IconButton(
+                  icon: Icon(Icons.settings),
+                  onPressed: () {
+                    _navigateToSettingScreen();
+                  }),
+            ),
+          ],
+        ),
         destinations: []
           ..addAll(levelController.distinctLevel
               .map(
@@ -154,39 +193,10 @@ class _MainScreenState extends State<MainScreen> {
                     )),
               )
               .toList())
-          ..add(NavigationRailDestination(
-              icon: SizedBox.shrink(),
-              label: Padding(
-                padding: EdgeInsets.symmetric(vertical: 0),
-                child: IconButton(
-                    icon: appController.user.value==null?Icon(Icons.person):CircleAvatar(
-                      child: AppText(text: shortUserName( appController.user.value['displayName'])),
-                    ),
-                    onPressed: () async {
-                      var rectSize =
-                      Rect.fromLTWH(0.0, 200.0, getScreenWidth(context), getScreenHeight(context));
-                      ConfigMicrosoft.oauth.setWebViewScreenSize(rectSize);
-                      await appController.loginWithMicrosoft();
-                    }),
-              )))
-          ..add(NavigationRailDestination(
-            icon: SizedBox.shrink(),
-            label: IconButton(
-                icon: Icon(Icons.language),
-                onPressed: () async {
-                  await _navigateToFacebookApp();
-                }),
-          ))
-          ..add(NavigationRailDestination(
-              icon: SizedBox.shrink(),
-              label: Padding(
-                padding: EdgeInsets.symmetric(vertical: 0),
-                child: IconButton(
-                    icon: Icon(Icons.settings),
-                    onPressed: () {
-                      _navigateToSettingScreen();
-                    }),
-              ))));
+
+
+          );
+
   }
 
   _buildSelectedContent(int level) {
