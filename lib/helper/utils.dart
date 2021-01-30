@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
+import 'package:the_enest_english_grammar_test/theme/colors.dart';
 
 /// This method is used when we need to call a method after build() function is completed.
 void onWidgetBuildDone(function) {
@@ -123,4 +124,19 @@ getSection(int sectionSelected) {
 
 shortUserName(String displayName) {
   return displayName.split(' ').map((e) => e.substring(0, 1)).toList().join("");
+}
+categoryColorCard(int index){
+  var position = index%4;
+
+  switch(position){
+    case 0 :
+      return AppColors.gradientColorCard1;
+    case 1 :
+      return AppColors.gradientColorCard2;
+    case 2 :
+      return AppColors.gradientColorCard3;
+    case 3 :
+      return AppColors.gradientColorCard4;
+    default:
+  }
 }

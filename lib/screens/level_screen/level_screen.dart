@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:the_enest_english_grammar_test/commons/animted_list.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
@@ -11,10 +10,9 @@ import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
-import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
-import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
+import 'package:the_enest_english_grammar_test/screens/level_screen/category_card.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/question_screen/question_screen.dart';
@@ -39,6 +37,7 @@ class _LevelScreenState extends State<LevelScreen> {
 
   @override
   void initState() {
+    //mainController.loadQuestionFromLevel(widget.level);
     super.initState();
   }
 
@@ -123,8 +122,9 @@ class _LevelScreenState extends State<LevelScreen> {
                     text: getLevel(widget.level),
                   ),
                   trailing: PopupMenuButton(
-                    elevation: 20,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                      elevation: 20,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
                       onSelected: choiceAction,
                       itemBuilder: (context) {
                         return Constants.choices.map((e) {
@@ -162,16 +162,16 @@ class _LevelScreenState extends State<LevelScreen> {
           .toList(),
       borderRadius: BorderRadius.circular(15),
       onPressed: (int index) {
-          for (int buttonIndex = 0;
-              buttonIndex < mainController.selected.length;
-              buttonIndex++) {
-            if (buttonIndex == index) {
-              mainController.selected[buttonIndex] = true;
-            } else {
-              mainController.selected[buttonIndex] = false;
-            }
+        for (int buttonIndex = 0;
+            buttonIndex < mainController.selected.length;
+            buttonIndex++) {
+          if (buttonIndex == index) {
+            mainController.selected[buttonIndex] = true;
+          } else {
+            mainController.selected[buttonIndex] = false;
           }
-          mainController.sectionSelected.value = index;
+        }
+        mainController.sectionSelected.value = index;
       },
       isSelected: mainController.selected,
     );
@@ -192,31 +192,56 @@ class _LevelScreenState extends State<LevelScreen> {
                 height: 54,
               ),
               Expanded(
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: mainController.distinctCategory.map((e) {
-                    return WidgetAnimator(
-                      FutureBuilder(
-                          future: getScoreOfCate(e),
-                          builder: (context, snapshot) {
-                            return buildListCategories(
-                                context,
-                                e,
-                                widget.isProgress == false
+                child: ListView.builder(
+                    itemCount: mainController.distinctCategory.length,
+                    itemBuilder: (context, index) {
+
+                      return WidgetAnimator(
+                        FutureBuilder(
+                            future: getScoreOfCate(
+                                mainController.distinctCategory[index]),
+                            builder: (context, snapshot) {
+                              return CategoryCard(
+                                index: index,
+                                level: widget.level,
+                                category:
+                                    mainController.distinctCategory[index],
+                                onTap: widget.isProgress == false
                                     ? () async {
                                         await mainController
                                             .loadQuestionFromLevelAndCategory(
-                                                widget.level, e);
+                                                widget.level,
+                                                mainController
+                                                    .distinctCategory[index]);
 
                                         modalBottomSheet(
-                                            getCategory(e), widget.level, e);
+                                            getCategory(mainController
+                                                .distinctCategory[index]),
+                                            widget.level,
+                                            mainController
+                                                .distinctCategory[index]);
                                       }
                                     : () {},
-                                Rx<double>((snapshot.data??0.0)*100));
-                          }),
-                    );
-                  }).toList(),
-                ),
+                                score: Rx<double>((snapshot.data ?? 0.0) * 100),
+                              );
+
+                              // buildListCategories(
+                              //   context,
+                              //   e,
+                              //   widget.isProgress == false
+                              //       ? () async {
+                              //           await mainController
+                              //               .loadQuestionFromLevelAndCategory(
+                              //                   widget.level, e);
+                              //
+                              //           modalBottomSheet(
+                              //               getCategory(e), widget.level, e);
+                              //         }
+                              //       : () {},
+                              //   Rx<double>((snapshot.data??0.0)*100));
+                            }),
+                      );
+                    }),
               ),
             ],
           ),
@@ -303,104 +328,86 @@ class _LevelScreenState extends State<LevelScreen> {
           );
   }
 
-  Widget buildListCategories(
-      BuildContext context, int index, Function onTap, Rx<double> score) {
-    return Obx(() {
-      return GestureDetector(
-        child: Card(
-          child: Container(
-            height: getScreenHeight(context) / 15,
-            padding: EdgeInsets.symmetric(horizontal: Dimens.formPadding),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: AppText(
-                    text: getCategory(index),
-                    color: AppColors.orangeAccent,
-                  ),
-                ),
-                Dimens.width20,
-                CircularPercentIndicator(
-                  radius: 35.0,
-                  lineWidth: 2.0,
-                  animation: true,
-                  percent: score.value == null || score.value.isNaN ? 0 : score.value/100.round(),
-                  center:  Text(
-                    '${score.value == null || score.value.isNaN ? 0 : score.value.round()}%',
-                    style:
-                     TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
-                  ),
-                  circularStrokeCap: CircularStrokeCap.round,
-                  progressColor: Colors.purple,
-                ),
-                Dimens.width20,
-                widget.isProgress == false
-                    ? SizedBox()
-                    : GestureDetector(
-                        child: Icon(
-                          Icons.rotate_left,
-                          color: score.value == 0.0
-                              ? AppColors.divider
-                              : AppColors.green,
-                        ),
-                        onTap: score.value != 0.0
-                            ? () {
-                                showCupertinoDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return IOSDialog(
-                                        title: 'WARNING',
-                                        content:
-                                            "Do you want to restart ${getCategory(index)}?",
-                                        cancel: () {
-                                          Get.back();
-                                        },
-                                        confirm: () async {
-                                          Get.back();
+  // Widget buildListCategories(
+  //     BuildContext context, int index, Function onTap, Rx<double> score) {
+  //   return Obx(() {
+  //     return GestureDetector(
+  //       child: Card(
+  //         child: Container(
+  //           height: getScreenHeight(context) / 15,
+  //           padding: EdgeInsets.symmetric(horizontal: Dimens.formPadding),
+  //           child: Row(
+  //             children: <Widget>[
+  //               Expanded(
+  //                 child: AppText(
+  //                   text: getCategory(index),
+  //                   color: AppColors.orangeAccent,
+  //                 ),
+  //               ),
+  //               Dimens.width20,
+  //               CircularPercentIndicator(
+  //                 radius: 35.0,
+  //                 lineWidth: 2.0,
+  //                 animation: true,
+  //                 percent: score.value == null || score.value.isNaN ? 0 : score.value/100.round(),
+  //                 center:  Text(
+  //                   '${score.value == null || score.value.isNaN ? 0 : score.value.round()}%',
+  //                   style:
+  //                    TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
+  //                 ),
+  //                 circularStrokeCap: CircularStrokeCap.round,
+  //                 progressColor: Colors.purple,
+  //               ),
+  //               Dimens.width20,
+  //               widget.isProgress == false
+  //                   ? SizedBox()
+  //                   : GestureDetector(
+  //                       child: Icon(
+  //                         Icons.rotate_left,
+  //                         color: score.value == 0.0
+  //                             ? AppColors.divider
+  //                             : AppColors.green,
+  //                       ),
+  //                       onTap: score.value != 0.0
+  //                           ? () {
+  //                               showCupertinoDialog(
+  //                                   context: context,
+  //                                   builder: (context) {
+  //                                     return IOSDialog(
+  //                                       title: 'WARNING',
+  //                                       content:
+  //                                           "Do you want to restart ${getCategory(index)}?",
+  //                                       cancel: () {
+  //                                         Get.back();
+  //                                       },
+  //                                       confirm: () async {
+  //                                         Get.back();
+  //
+  //                                         restartScoreOfCate(index, score);
+  //                                       },
+  //                                     );
+  //                                   });
+  //                             }
+  //                           : () {},
+  //                     ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //       onTap: () async {
+  //         SoundsHelper.checkAudio(Sounds.touch);
+  //         onTap();
+  //       },
+  //     );
+  //   });
+  // }
 
-                                          restartScoreOfCate(index, score);
-                                        },
-                                      );
-                                    });
-                              }
-                            : () {},
-                      ),
-              ],
-            ),
-          ),
-        ),
-        onTap: () async {
-          SoundsHelper.checkAudio(Sounds.touch);
-          onTap();
-        },
-      );
-    });
-  }
-
-  restartScoreOfCate(int index, Rx<double> score) async{
-    final openBox = await Hive.openBox(
-        'Table_${widget.level}');
-    openBox.put('$index', null);
-    openBox.close();
-
-    final openBoxScore =
-        await Hive.openBox(
-        'Table_Score_${widget.level}');
-    openBoxScore.put(
-        '${widget.level}_$index', null);
-    openBoxScore.close();
-
-    score.value = 0.0;
-  }
-
-  restartLevel() async{
-    final openBox = await Hive.openBox(
-        'Table_${widget.level}');
+  restartLevel() async {
+    final openBox = await Hive.openBox('Table_${widget.level}');
     openBox.deleteFromDisk();
     openBox.close();
 
-    final openBoxScore = await Hive.openBox(
-        'Table_Score_${widget.level}');
+    final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
     openBoxScore.deleteFromDisk();
     openBoxScore.close();
   }
@@ -408,14 +415,16 @@ class _LevelScreenState extends State<LevelScreen> {
   Future<double> getScoreOfCate(int index) async {
     double score = 0;
     Map scoreCate = new Map();
-    int length=RxList<Question>(
-        mainController.questions.where((c) => c.categoryId == index).toList()).length;
+    int length = RxList<Question>(mainController.questions
+            .where((c) => c.categoryId == index)
+            .toList())
+        .length;
     final openBox = await Hive.openBox('Table_Score_${widget.level}');
     if (openBox.get('${widget.level}_$index') != null) {
       scoreCate.addAll(openBox.get('${widget.level}_$index'));
       scoreCate.forEach((key, value) {
         List<String> split = value.toString().split('_');
-        score+=double.tryParse(split[0]);
+        score += double.tryParse(split[0]);
       });
     }
     return score / length;
@@ -437,7 +446,6 @@ class _LevelScreenState extends State<LevelScreen> {
     await showModalBottomSheet(
         backgroundColor: AppColors.transparent,
         isScrollControlled: true,
-
         context: context,
         builder: (context) {
           return ModalBottomSheet(
@@ -449,7 +457,7 @@ class _LevelScreenState extends State<LevelScreen> {
   }
 
   choiceAction(String choice) async {
-    switch(choice){
+    switch (choice) {
       case 'Favorite':
         bool exist = await HiveHelper.isExists(boxName: 'Table_Favorite');
         if (exist) {
