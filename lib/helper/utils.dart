@@ -140,3 +140,13 @@ categoryColorCard(int index){
     default:
   }
 }
+getTotalTest(int totalQuestion){
+  int totalTest= 0;
+  if(totalQuestion<=10){
+    totalTest = 1;
+  }else{
+    totalTest = (totalQuestion/20).round();
+  }
+  return totalTest;
+}
+

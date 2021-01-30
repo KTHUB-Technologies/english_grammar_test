@@ -17,8 +17,11 @@ class CategoryCard extends StatefulWidget {
   final int category;
   final Function onTap;
   final Rx<double> score;
+  final num totalQuestion;
+  final num questionComplete;
 
-  const CategoryCard({Key key, this.index, this.onTap, this.score, this.level, this.category})
+
+  const CategoryCard({Key key, this.index, this.onTap, this.score, this.level, this.category, this.totalQuestion, this.questionComplete})
       : super(key: key);
 
   @override
@@ -28,10 +31,13 @@ class CategoryCard extends StatefulWidget {
 class _CategoryCardState extends State<CategoryCard> {
   @override
   void initState() {
+
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
+
+    final totalTest = getTotalTest(widget.totalQuestion);
     return Obx(() {
       return GestureDetector(
         child: Padding(
@@ -66,14 +72,14 @@ class _CategoryCardState extends State<CategoryCard> {
                               percent: widget.score.value == null ||
                                       widget.score.value.isNaN
                                   ? 0
-                                  : widget.score.value / 100.round()),
+                                  : widget.score.value/widget.totalQuestion),
                         ),
                         Dimens.height10,
                         Row(
                           children: [
                             Expanded(child: SizedBox()),
-                            _buildProgress('Question', 100, 40),
-                            _buildProgress('Test', 4, 2),
+                            _buildProgress('Question', widget.totalQuestion, widget.score.value.round()),
+                            _buildProgress('Test', totalTest, 0),
                             Expanded(child: SizedBox()),
                           ],
                         )

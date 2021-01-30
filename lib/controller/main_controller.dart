@@ -49,11 +49,11 @@ class MainController extends GetxController {
     listQuestions = result.map<Question>((e) => Question.fromJson(e)).toList();
   }
 
-  Future loadQuestionFromLevel(int level) async {
-    isShowLoading.value = true;
+   loadQuestionFromLevel(int level) async {
+  //  isShowLoading.value = true;
     questions =
         RxList<Question>(listQuestions.where((f) => f.level == level).toList());
-    isShowLoading.value = false;
+    //isShowLoading.value = false;
   }
 
   Future loadQuestionFromLevelAndCategory(int level, int categoryId) async {
@@ -123,7 +123,6 @@ class MainController extends GetxController {
     openBox.close();
 
     loadQuestions();
-    print(listQuestions.length);
   }
 
   loadQuestions() {

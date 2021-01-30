@@ -37,10 +37,12 @@ class _LevelScreenState extends State<LevelScreen> {
 
   @override
   void initState() {
-    //mainController.loadQuestionFromLevel(widget.level);
+
     super.initState();
   }
-
+loadQuestion()async{
+  await mainController.loadQuestionFromLevel(widget.level);
+}
   @override
   void dispose() {
     super.dispose();
@@ -152,19 +154,20 @@ class _LevelScreenState extends State<LevelScreen> {
   _buildSectionTitle() {
     return ToggleButtons(
       children: mainController.sections
-          .map((e) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: AppText(
-                  text: getSection(e),
-                  color: AppColors.white,
-                ),
-              ))
+          .map((e) =>
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: AppText(
+              text: getSection(e),
+              color: AppColors.white,
+            ),
+          ))
           .toList(),
       borderRadius: BorderRadius.circular(15),
       onPressed: (int index) {
         for (int buttonIndex = 0;
-            buttonIndex < mainController.selected.length;
-            buttonIndex++) {
+        buttonIndex < mainController.selected.length;
+        buttonIndex++) {
           if (buttonIndex == index) {
             mainController.selected[buttonIndex] = true;
           } else {
@@ -195,6 +198,10 @@ class _LevelScreenState extends State<LevelScreen> {
                 child: ListView.builder(
                     itemCount: mainController.distinctCategory.length,
                     itemBuilder: (context, index) {
+                      final totalQuestion = mainController.questions.where((
+                          question) => question.level == widget.level && question.categoryId ==
+                          mainController.distinctCategory[index]).toList().length;
+
 
                       return WidgetAnimator(
                         FutureBuilder(
@@ -202,27 +209,28 @@ class _LevelScreenState extends State<LevelScreen> {
                                 mainController.distinctCategory[index]),
                             builder: (context, snapshot) {
                               return CategoryCard(
+                                totalQuestion:totalQuestion,
                                 index: index,
                                 level: widget.level,
                                 category:
-                                    mainController.distinctCategory[index],
+                                mainController.distinctCategory[index],
                                 onTap: widget.isProgress == false
                                     ? () async {
-                                        await mainController
-                                            .loadQuestionFromLevelAndCategory(
-                                                widget.level,
-                                                mainController
-                                                    .distinctCategory[index]);
+                                  await mainController
+                                      .loadQuestionFromLevelAndCategory(
+                                      widget.level,
+                                      mainController
+                                          .distinctCategory[index]);
 
-                                        modalBottomSheet(
-                                            getCategory(mainController
-                                                .distinctCategory[index]),
-                                            widget.level,
-                                            mainController
-                                                .distinctCategory[index]);
-                                      }
+                                  modalBottomSheet(
+                                      getCategory(mainController
+                                          .distinctCategory[index]),
+                                      widget.level,
+                                      mainController
+                                          .distinctCategory[index]);
+                                }
                                     : () {},
-                                score: Rx<double>((snapshot.data ?? 0.0) * 100),
+                                score: Rx<double>((snapshot.data ?? 0)),
                               );
 
                               // buildListCategories(
@@ -281,51 +289,51 @@ class _LevelScreenState extends State<LevelScreen> {
     return widget.isProgress == false
         ? SizedBox()
         : Column(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.symmetric(
+              horizontal: Dimens.formPadding, vertical: 15),
+          child: Row(
             children: <Widget>[
-              Container(
-                margin: EdgeInsets.symmetric(
-                    horizontal: Dimens.formPadding, vertical: 15),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        'Delete All At This Level',
-                        style: TextStyle(
-                          color: AppColors.red,
-                          fontSize: Dimens.paragraphHeaderTextSize,
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      child: Icon(
-                        Icons.delete,
-                        color: AppColors.red,
-                      ),
-                      onTap: () {
-                        showCupertinoDialog(
-                            context: context,
-                            builder: (context) {
-                              return IOSDialog(
-                                title: 'WARNING',
-                                content:
-                                    "Do you want to reset all question in this level?",
-                                cancel: () {
-                                  Get.back();
-                                },
-                                confirm: () async {
-                                  Get.offAll(MainScreen());
-
-                                  await restartLevel();
-                                },
-                              );
-                            });
-                      },
-                    ),
-                  ],
+              Expanded(
+                child: Text(
+                  'Delete All At This Level',
+                  style: TextStyle(
+                    color: AppColors.red,
+                    fontSize: Dimens.paragraphHeaderTextSize,
+                  ),
                 ),
               ),
+              GestureDetector(
+                child: Icon(
+                  Icons.delete,
+                  color: AppColors.red,
+                ),
+                onTap: () {
+                  showCupertinoDialog(
+                      context: context,
+                      builder: (context) {
+                        return IOSDialog(
+                          title: 'WARNING',
+                          content:
+                          "Do you want to reset all question in this level?",
+                          cancel: () {
+                            Get.back();
+                          },
+                          confirm: () async {
+                            Get.offAll(MainScreen());
+
+                            await restartLevel();
+                          },
+                        );
+                      });
+                },
+              ),
             ],
-          );
+          ),
+        ),
+      ],
+    );
   }
 
   // Widget buildListCategories(
@@ -416,8 +424,8 @@ class _LevelScreenState extends State<LevelScreen> {
     double score = 0;
     Map scoreCate = new Map();
     int length = RxList<Question>(mainController.questions
-            .where((c) => c.categoryId == index)
-            .toList())
+        .where((c) => c.categoryId == index)
+        .toList())
         .length;
     final openBox = await Hive.openBox('Table_Score_${widget.level}');
     if (openBox.get('${widget.level}_$index') != null) {
@@ -427,7 +435,7 @@ class _LevelScreenState extends State<LevelScreen> {
         score += double.tryParse(split[0]);
       });
     }
-    return score / length;
+    return score;
   }
 
   modalBottomSheet(String cateName, int level, int categoryId) async {
