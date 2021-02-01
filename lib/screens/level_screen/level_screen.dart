@@ -232,42 +232,6 @@ class _LevelScreenState extends State<LevelScreen> {
                   }).toList(),
                 ),
               ),
-              // Expanded(
-              //   child: ListView.builder(
-              //       itemCount: mainController.distinctCategory.length,
-              //       itemBuilder: (context, index) {
-              //         final totalQuestion = mainController.questions.where((
-              //             question) => question.level == widget.level && question.categoryId ==
-              //             mainController.distinctCategory[index]).toList().length;
-              //
-              //         return WidgetAnimator(
-              //             CategoryCard(
-              //               totalQuestion:totalQuestion,
-              //               index: index,
-              //               level: widget.level,
-              //               category:
-              //               mainController.distinctCategory[index],
-              //               onTap: widget.isProgress == false
-              //                   ? () async {
-              //                 await mainController
-              //                     .loadQuestionFromLevelAndCategory(
-              //                     widget.level,
-              //                     mainController
-              //                         .distinctCategory[index]);
-              //
-              //                 modalBottomSheet(
-              //                     getCategory(mainController
-              //                         .distinctCategory[index]),
-              //                     widget.level,
-              //                     mainController
-              //                         .distinctCategory[index]);
-              //               }
-              //                   : () {},
-              //               score: Rx<double>((getScoreOfCate(mainController.distinctCategory[index]) ?? 0)),
-              //             ),
-              //         );
-              //       }),
-              // ),
             ],
           ),
         );
