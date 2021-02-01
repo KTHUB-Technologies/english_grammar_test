@@ -6,6 +6,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:the_enest_english_grammar_test/commons/android_dialog.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
 import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
+import 'package:the_enest_english_grammar_test/theme/colors.dart';
 
 /// This method is used when we need to call a method after build() function is completed.
 void onWidgetBuildDone(function) {
@@ -161,4 +162,29 @@ showConfirmDialog(BuildContext context,
           );
         });
   }
+}
+
+categoryColorCard(int index){
+  var position = index%4;
+
+  switch(position){
+    case 0 :
+      return AppColors.gradientColorCard1;
+    case 1 :
+      return AppColors.gradientColorCard2;
+    case 2 :
+      return AppColors.gradientColorCard3;
+    case 3 :
+      return AppColors.gradientColorCard4;
+    default:
+  }
+}
+getTotalTest(int totalQuestion){
+  int totalTest= 0;
+  if(totalQuestion<=10){
+    totalTest = 1;
+  }else{
+    totalTest = (totalQuestion/20).round();
+  }
+  return totalTest;
 }

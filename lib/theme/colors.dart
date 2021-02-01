@@ -14,8 +14,14 @@ class AppColors {
   static const paragraphHeaderText = Color(0xff5c5c5c);
   static const paragraphText = Color(0xff5c5c5c);
   static const List<Color> gradientColorPrimary  = [Color(0xFF136a8a),Color(0xFF267871)];
-  static const List<Color> gradientColorWhite  = [Colors.white,Colors.white];
+  static const List<Color> gradientColorCard1  = [Color(0xFF74ebd5),Color(0xFFACB6E5)];
+  static const List<Color> gradientColorCard2  = [Color(0xFF2980B9),Color(0xFF6DD5FA)];
+  static const List<Color> gradientColorCard3  = [Color(0xFFee9ca7),Color(0xFFffdde1)];
+  static const List<Color> gradientColorCard4  = [Color(0xFFF2994A),Color(0xFFF2C94C)];
   static const transparent = Colors.transparent;
   static const green = Color(0xFF64DD17);
   static const orangeAccent = Colors.orangeAccent;
+
+
+
 }
