@@ -75,6 +75,7 @@ class AppController extends GetxController {
       user.value = profile;
       final openBox = await Hive.openBox('accessToken');
       await openBox.put('accessToken', accessToken);
+      await openBox.put('id',profile['id']);
       openBox.close();
     } catch (e) {
       print(e);

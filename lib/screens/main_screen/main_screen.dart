@@ -88,8 +88,8 @@ class _MainScreenState extends State<MainScreen> {
                                   padding: const EdgeInsets.all(20.0),
                                   child: AppText(
                                     text: getLevelDescription(
-                                        levelController.levelSelected.value +
-                                            1,context),
+                                        levelController.levelSelected.value + 1,
+                                        context),
                                     textAlign: TextAlign.left,
                                     color: AppColors.white,
                                     textSize: Dimens.paragraphHeaderTextSize,
@@ -141,24 +141,20 @@ class _MainScreenState extends State<MainScreen> {
           levelController.levelSelected.value = index;
         },
         labelType: NavigationRailLabelType.all,
-
         trailing: Column(
-
           children: [
             Padding(
               padding: EdgeInsets.symmetric(vertical: 0),
               child: IconButton(
-                  icon: appController.user.value.isNullOrBlank?Icon(Icons.person):CircleAvatar(
-                    child: AppText(text: shortUserName( appController.user.value['displayName'])),
-                  ),
+                  icon: appController.user.value == null
+                      ? Icon(Icons.person)
+                      : CircleAvatar(
+                          child: AppText(
+                              text: shortUserName(
+                                  appController.user.value['displayName'])),
+                        ),
                   onPressed: () async {
-await appController.loginWithMicrosoft();
-                    // showModalBottomSheet(context: context, builder: (context){
-                    //
-                    //   return Container(
-                    //
-                    //   );
-                    // });
+                    await appController.loginWithMicrosoft();
                   }),
             ),
             Padding(
@@ -179,24 +175,19 @@ await appController.loginWithMicrosoft();
             ),
           ],
         ),
-        destinations: []
-          ..addAll(levelController.distinctLevel
-              .map(
-                (e) => NavigationRailDestination(
-                    icon: SizedBox.shrink(),
-                    label: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: RotatedBox(
-                        quarterTurns: -1,
-                        child: Text(getLevel(e)),
-                      ),
-                    )),
-              )
-              .toList())
-
-
-          );
-
+        destinations: []..addAll(levelController.distinctLevel
+            .map(
+              (e) => NavigationRailDestination(
+                  icon: SizedBox.shrink(),
+                  label: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: RotatedBox(
+                      quarterTurns: -1,
+                      child: Text(getLevel(e)),
+                    ),
+                  )),
+            )
+            .toList()));
   }
 
   _buildSelectedContent(int level) {
@@ -228,8 +219,8 @@ await appController.loginWithMicrosoft();
                 duration: Duration(milliseconds: 500));
           },
         ),
-        appController.user.value==null
-            ?level != 1
+        appController.user.value == null
+            ? level != 1
                 ? Container(
                     width: getScreenWidth(context) / 1.8,
                     height: getScreenWidth(context) / 8,
@@ -269,12 +260,12 @@ await appController.loginWithMicrosoft();
     }
   }
 
-  _navigateToSettingScreen() async{
+  _navigateToSettingScreen() async {
     Get.to(SettingScreen());
   }
 
-  firstLoad() async{
-    final openBox=await Hive.openBox('First_Load');
+  firstLoad() async {
+    final openBox = await Hive.openBox('First_Load');
     await openBox.put('isFirst', true);
     openBox.close();
   }

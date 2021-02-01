@@ -131,17 +131,14 @@ class _CardQuestionState extends State<CardQuestion> {
                       absorbing: widget
                               .question
                               .currentChecked
-                              .value
-                              // ignore: deprecated_member_use
-                              .isNullOrBlank
+                              .value==null
                           ? false
                           : true,
                       child: GestureDetector(
                         child: AnimatedContainer(
-                          // ignore: deprecated_member_use
                           duration: Duration(
                               milliseconds:
-                                  widget.question.currentChecked.value.isBlank
+                                  widget.question.currentChecked.value==null
                                       ? 0
                                       : 200),
                           decoration: BoxDecoration(
@@ -168,7 +165,6 @@ class _CardQuestionState extends State<CardQuestion> {
                           _handleOption(options.indexOf(e), colorsI, iconsI);
                         },
                       ),
-
                     );
                   }),
                 );
@@ -176,14 +172,12 @@ class _CardQuestionState extends State<CardQuestion> {
             ),
             Dimens.height10,
             AnimatedOpacity(
-              // ignore: deprecated_member_use
-              opacity: widget.question.currentChecked.value.isNullOrBlank
+              opacity: widget.question.currentChecked.value==null
                   ? 0.0
                   : 1.0,
-              // ignore: deprecated_member_use
               duration: Duration(
                   milliseconds:
-                      widget.question.currentChecked.value.isNullOrBlank
+                      widget.question.currentChecked.value==null
                           ? 0
                           : 500),
               curve: Curves.easeInOut,
