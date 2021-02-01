@@ -134,10 +134,7 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
   }
 
   _navigateBack() {
-    int count = 0;
-    Navigator.popUntil(context, (route) {
-      return count++ == 3;
-    });
+    Get.close(3);
   }
 }
 
