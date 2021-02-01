@@ -39,12 +39,19 @@ class _LevelScreenState extends State<LevelScreen> {
 
   @override
   void initState() {
+    loadAllScoreOfLevel();
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  loadAllScoreOfLevel() async{
+    final openBox = await Hive.openBox('Table_Score_${widget.level}');
+    mainController.scoreOfCate.value=openBox.toMap();
+    openBox.close();
   }
 
   @override
@@ -196,24 +203,20 @@ class _LevelScreenState extends State<LevelScreen> {
                   padding: EdgeInsets.zero,
                   children: mainController.distinctCategory.map((e) {
                     return WidgetAnimator(
-                      FutureBuilder(
-                          future: getScoreOfCate(e),
-                          builder: (context, snapshot) {
-                            return buildListCategories(
-                                context,
-                                e,
-                                widget.isProgress == false
-                                    ? () async {
-                                        await mainController
-                                            .loadQuestionFromLevelAndCategory(
-                                                widget.level, e);
+                        buildListCategories(
+                            context,
+                            e,
+                            widget.isProgress == false
+                                ? () async {
+                              await mainController
+                                  .loadQuestionFromLevelAndCategory(
+                                  widget.level, e);
 
-                                        modalBottomSheet(
-                                            getCategory(e), widget.level, e);
-                                      }
-                                    : () {},
-                                Rx<double>((snapshot.data??0.0)*100));
-                          }),
+                              modalBottomSheet(
+                                  getCategory(e), widget.level, e);
+                            }
+                                : () {},
+                            Rx<double>((getScoreOfCate(e)??0.0)*100)),
                     );
                   }).toList(),
                 ),
@@ -405,14 +408,13 @@ class _LevelScreenState extends State<LevelScreen> {
     openBoxScore.close();
   }
 
-  Future<double> getScoreOfCate(int index) async {
+  getScoreOfCate(int index) {
     double score = 0;
     Map scoreCate = new Map();
     int length=RxList<Question>(
         mainController.questions.where((c) => c.categoryId == index).toList()).length;
-    final openBox = await Hive.openBox('Table_Score_${widget.level}');
-    if (openBox.get('${widget.level}_$index') != null) {
-      scoreCate.addAll(openBox.get('${widget.level}_$index'));
+    if (mainController.scoreOfCate.value.containsKey('${widget.level}_$index')) {
+      scoreCate.addAll(mainController.scoreOfCate.value['${widget.level}_$index']);
       scoreCate.forEach((key, value) {
         List<String> split = value.toString().split('_');
         score+=double.tryParse(split[0]);

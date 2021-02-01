@@ -349,7 +349,10 @@ class _QuestionScreenState extends State<QuestionScreen>
       score['${widget.testNumber}'] =
           '${countTrue.value}_${widget.question.length}';
     }
+
     await openBox.put('${widget.level}_${widget.categoryId}', score);
+
+    mainController.scoreOfCate.value=openBox.toMap();
     openBox.close();
   }
 
