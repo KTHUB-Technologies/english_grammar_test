@@ -363,8 +363,6 @@ class _QuestionScreenState extends State<QuestionScreen>
     level['${widget.testNumber}'] = null;
     await openBox.put('${widget.categoryId}', level);
 
-    Get.close(2);
-
     final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
     Map score = openBoxScore.get('${widget.level}_${widget.categoryId}');
     score['${widget.testNumber}'] = '0_0';
@@ -372,6 +370,8 @@ class _QuestionScreenState extends State<QuestionScreen>
     mainController.score.value.clear();
 
     mainController.scoreOfCate.value=openBoxScore.toMap();
+
+    Get.close(2);
     openBoxScore.close();
   }
 }

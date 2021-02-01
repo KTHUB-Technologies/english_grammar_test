@@ -18,10 +18,11 @@ class CategoryCard extends StatefulWidget {
   final Function onTap;
   final Rx<double> score;
   final num totalQuestion;
+  final Rx<int> testCompleted;
   final num questionComplete;
 
 
-  const CategoryCard({Key key, this.index, this.onTap, this.score, this.level, this.category, this.totalQuestion, this.questionComplete})
+  const CategoryCard({Key key, this.index, this.onTap, this.score, this.level, this.category, this.totalQuestion, this.testCompleted, this.questionComplete})
       : super(key: key);
 
   @override
@@ -79,74 +80,13 @@ class _CategoryCardState extends State<CategoryCard> {
                           children: [
                             Expanded(child: SizedBox()),
                             _buildProgress('Question', widget.totalQuestion, widget.score.value.round()),
-                            _buildProgress('Test', totalTest, 0),
+                            _buildProgress('Test', totalTest, widget.testCompleted.value),
                             Expanded(child: SizedBox()),
                           ],
                         )
                       ],
                     ),
                   )
-                  // Row(
-                  //   children: <Widget>[
-                  //     Expanded(
-                  //       child: AppText(
-                  //         text: getCategory(widget.index),
-                  //         color: AppColors.orangeAccent,
-                  //       ),
-                  //     ),
-                  //     Dimens.width20,
-                  //     CircularPercentIndicator(
-                  //       radius: 35.0,
-                  //       lineWidth: 2.0,
-                  //       animation: true,
-                  //       percent:
-                  //           widget.score.value == null || widget.score.value.isNaN
-                  //               ? 0
-                  //               : widget.score.value / 100.round(),
-                  //       center: Text(
-                  //         '${widget.score.value == null || widget.score.value.isNaN ? 0 : widget.score.value.round()}%',
-                  //         style:
-                  //             TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
-                  //       ),
-                  //       circularStrokeCap: CircularStrokeCap.round,
-                  //       progressColor: Colors.purple,
-                  //     ),
-                  //     Dimens.width20,
-                  //
-                  //     ///
-                  //     // widget.isProgress == false
-                  //     //     ? SizedBox()
-                  //     //     : GestureDetector(
-                  //     //         child: Icon(
-                  //     //           Icons.rotate_left,
-                  //     //           color: widget.score.value == 0.0
-                  //     //               ? AppColors.divider
-                  //     //               : AppColors.green,
-                  //     //         ),
-                  //     //         onTap: () {
-                  //     //           if (widget.score.value != 0.0) {
-                  //     //             showCupertinoDialog(
-                  //     //                 context: context,
-                  //     //                 builder: (context) {
-                  //     //                   return IOSDialog(
-                  //     //                     title: 'WARNING',
-                  //     //                     content:
-                  //     //                         "Do you want to restart ${getCategory(index)}?",
-                  //     //                     cancel: () {
-                  //     //                       Get.back();
-                  //     //                     },
-                  //     //                     confirm: () async {
-                  //     //                       Get.back();
-                  //     //
-                  //     //                       restartScoreOfCate(index, score);
-                  //     //                     },
-                  //     //                   );
-                  //     //                 });
-                  //     //           }
-                  //     //         },
-                  //     //       ),
-                  //   ],
-                  // ),
                   ),
             ],
           ),

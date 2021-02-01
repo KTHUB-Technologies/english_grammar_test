@@ -40,18 +40,17 @@ class _LevelScreenState extends State<LevelScreen> {
     loadAllScoreOfLevel();
     super.initState();
   }
-loadQuestion()async{
-  await mainController.loadQuestionFromLevel(widget.level);
-}
+
+  loadAllScoreOfLevel() async {
+    final openBox = await Hive.openBox('Table_Score_${widget.level}');
+    mainController.scoreOfCate.value = openBox.toMap();
+    print(mainController.scoreOfCate.value);
+    openBox.close();
+  }
+
   @override
   void dispose() {
     super.dispose();
-  }
-
-  loadAllScoreOfLevel() async{
-    final openBox = await Hive.openBox('Table_Score_${widget.level}');
-    mainController.scoreOfCate.value=openBox.toMap();
-    openBox.close();
   }
 
   @override
@@ -160,20 +159,19 @@ loadQuestion()async{
   _buildSectionTitle() {
     return ToggleButtons(
       children: mainController.sections
-          .map((e) =>
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: AppText(
-              text: getSection(e),
-              color: AppColors.white,
-            ),
-          ))
+          .map((e) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: AppText(
+                  text: getSection(e),
+                  color: AppColors.white,
+                ),
+              ))
           .toList(),
       borderRadius: BorderRadius.circular(15),
       onPressed: (int index) {
         for (int buttonIndex = 0;
-        buttonIndex < mainController.selected.length;
-        buttonIndex++) {
+            buttonIndex < mainController.selected.length;
+            buttonIndex++) {
           if (buttonIndex == index) {
             mainController.selected[buttonIndex] = true;
           } else {
@@ -201,62 +199,75 @@ loadQuestion()async{
                 height: 54,
               ),
               Expanded(
-                child: ListView.builder(
-                    itemCount: mainController.distinctCategory.length,
-                    itemBuilder: (context, index) {
-                      final totalQuestion = mainController.questions.where((
-                          question) => question.level == widget.level && question.categoryId ==
-                          mainController.distinctCategory[index]).toList().length;
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: mainController.distinctCategory.map((e) {
+                    int totalQuestion = RxList<Question>(mainController
+                            .questions
+                            .where((c) => c.categoryId == e)
+                            .toList())
+                        .length;
+                    return WidgetAnimator(
+                      CategoryCard(
+                        totalQuestion: totalQuestion,
+                        index: e,
+                        level: widget.level,
+                        category: e,
+                        onTap: widget.isProgress == false
+                            ? () async {
+                                await mainController
+                                    .loadQuestionFromLevelAndCategory(
+                                        widget.level, e);
 
-
-                      return WidgetAnimator(
-                        FutureBuilder(
-                            future: getScoreOfCate(
-                                mainController.distinctCategory[index]),
-                            builder: (context, snapshot) {
-                              return CategoryCard(
-                                totalQuestion:totalQuestion,
-                                index: index,
-                                level: widget.level,
-                                category:
-                                mainController.distinctCategory[index],
-                                onTap: widget.isProgress == false
-                                    ? () async {
-                                  await mainController
-                                      .loadQuestionFromLevelAndCategory(
-                                      widget.level,
-                                      mainController
-                                          .distinctCategory[index]);
-
-                                  modalBottomSheet(
-                                      getCategory(mainController
-                                          .distinctCategory[index]),
-                                      widget.level,
-                                      mainController
-                                          .distinctCategory[index]);
-                                }
-                                    : () {},
-                                score: Rx<double>((snapshot.data ?? 0)),
-                              );
-
-                              // buildListCategories(
-                              //   context,
-                              //   e,
-                              //   widget.isProgress == false
-                              //       ? () async {
-                              //           await mainController
-                              //               .loadQuestionFromLevelAndCategory(
-                              //                   widget.level, e);
-                              //
-                              //           modalBottomSheet(
-                              //               getCategory(e), widget.level, e);
-                              //         }
-                              //       : () {},
-                              //   Rx<double>((snapshot.data??0.0)*100));
-                            }),
-                      );
-                    }),
+                                modalBottomSheet(
+                                    getCategory(e), widget.level, e);
+                              }
+                            : () {},
+                        testCompleted: Rx<int>(
+                            getTestCompleted(e) ??
+                                0),
+                        score: Rx<double>((getScoreOfCate(e) ?? 0)),
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
+              // Expanded(
+              //   child: ListView.builder(
+              //       itemCount: mainController.distinctCategory.length,
+              //       itemBuilder: (context, index) {
+              //         final totalQuestion = mainController.questions.where((
+              //             question) => question.level == widget.level && question.categoryId ==
+              //             mainController.distinctCategory[index]).toList().length;
+              //
+              //         return WidgetAnimator(
+              //             CategoryCard(
+              //               totalQuestion:totalQuestion,
+              //               index: index,
+              //               level: widget.level,
+              //               category:
+              //               mainController.distinctCategory[index],
+              //               onTap: widget.isProgress == false
+              //                   ? () async {
+              //                 await mainController
+              //                     .loadQuestionFromLevelAndCategory(
+              //                     widget.level,
+              //                     mainController
+              //                         .distinctCategory[index]);
+              //
+              //                 modalBottomSheet(
+              //                     getCategory(mainController
+              //                         .distinctCategory[index]),
+              //                     widget.level,
+              //                     mainController
+              //                         .distinctCategory[index]);
+              //               }
+              //                   : () {},
+              //               score: Rx<double>((getScoreOfCate(mainController.distinctCategory[index]) ?? 0)),
+              //             ),
+              //         );
+              //       }),
+              // ),
             ],
           ),
         );
@@ -295,130 +306,52 @@ loadQuestion()async{
     return widget.isProgress == false
         ? SizedBox()
         : Column(
-      children: <Widget>[
-        Container(
-          margin: EdgeInsets.symmetric(
-              horizontal: Dimens.formPadding, vertical: 15),
-          child: Row(
             children: <Widget>[
-              Expanded(
-                child: Text(
-                  'Delete All At This Level',
-                  style: TextStyle(
-                    color: AppColors.red,
-                    fontSize: Dimens.paragraphHeaderTextSize,
-                  ),
-                ),
-              ),
-              GestureDetector(
-                child: Icon(
-                  Icons.delete,
-                  color: AppColors.red,
-                ),
-                onTap: () {
-                  showCupertinoDialog(
-                      context: context,
-                      builder: (context) {
-                        return IOSDialog(
-                          title: 'WARNING',
-                          content:
-                          "Do you want to reset all question in this level?",
-                          cancel: () {
-                            Get.back();
-                          },
-                          confirm: () async {
-                            Get.offAll(MainScreen());
+              Container(
+                margin: EdgeInsets.symmetric(
+                    horizontal: Dimens.formPadding, vertical: 15),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        'Delete All At This Level',
+                        style: TextStyle(
+                          color: AppColors.red,
+                          fontSize: Dimens.paragraphHeaderTextSize,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      child: Icon(
+                        Icons.delete,
+                        color: AppColors.red,
+                      ),
+                      onTap: () {
+                        showCupertinoDialog(
+                            context: context,
+                            builder: (context) {
+                              return IOSDialog(
+                                title: 'WARNING',
+                                content:
+                                    "Do you want to reset all question in this level?",
+                                cancel: () {
+                                  Get.back();
+                                },
+                                confirm: () async {
+                                  Get.offAll(MainScreen());
 
-                            await restartLevel();
-                          },
-                        );
-                      });
-                },
+                                  await restartLevel();
+                                },
+                              );
+                            });
+                      },
+                    ),
+                  ],
+                ),
               ),
             ],
-          ),
-        ),
-      ],
-    );
+          );
   }
-
-  // Widget buildListCategories(
-  //     BuildContext context, int index, Function onTap, Rx<double> score) {
-  //   return Obx(() {
-  //     return GestureDetector(
-  //       child: Card(
-  //         child: Container(
-  //           height: getScreenHeight(context) / 15,
-  //           padding: EdgeInsets.symmetric(horizontal: Dimens.formPadding),
-  //           child: Row(
-  //             children: <Widget>[
-  //               Expanded(
-  //                 child: AppText(
-  //                   text: getCategory(index),
-  //                   color: AppColors.orangeAccent,
-  //                 ),
-  //               ),
-  //               Dimens.width20,
-  //               CircularPercentIndicator(
-  //                 radius: 35.0,
-  //                 lineWidth: 2.0,
-  //                 animation: true,
-  //                 percent: score.value == null || score.value.isNaN ? 0 : score.value/100.round(),
-  //                 center:  Text(
-  //                   '${score.value == null || score.value.isNaN ? 0 : score.value.round()}%',
-  //                   style:
-  //                    TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
-  //                 ),
-  //                 circularStrokeCap: CircularStrokeCap.round,
-  //                 progressColor: Colors.purple,
-  //               ),
-  //               Dimens.width20,
-  //               widget.isProgress == false
-  //                   ? SizedBox()
-  //                   : GestureDetector(
-  //                       child: Icon(
-  //                         Icons.rotate_left,
-  //                         color: score.value == 0.0
-  //                             ? AppColors.divider
-  //                             : AppColors.green,
-  //                       ),
-  //                       onTap: score.value != 0.0
-  //                           ? () {
-  //                               showCupertinoDialog(
-  //                                   context: context,
-  //                                   builder: (context) {
-  //                                     return IOSDialog(
-  //                                       title: 'WARNING',
-  //                                       content:
-  //                                           "Do you want to restart ${getCategory(index)}?",
-  //                                       cancel: () {
-  //                                         Get.back();
-  //                                       },
-  //                                       confirm: () async {
-  //                                         Get.back();
-  //
-  //                                         restartScoreOfCate(index, score);
-  //                                       },
-  //                                     );
-  //                                   });
-  //                             }
-  //                           : () {},
-  //                     ),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //       onTap: () async {
-  //         SoundsHelper.checkAudio(Sounds.touch);
-  //         onTap();
-  //       },
-  //     );
-  //   });
-  // }
-
-  restartLevel() async{
-    final openBox = await Hive.openBox(
-        'Table_${widget.level}');
 
   restartLevel() async {
     final openBox = await Hive.openBox('Table_${widget.level}');
@@ -428,25 +361,42 @@ loadQuestion()async{
     final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
     openBoxScore.deleteFromDisk();
     openBoxScore.close();
-
-    score.value = 0.0;
   }
 
   getScoreOfCate(int index) {
     double score = 0;
     Map scoreCate = new Map();
-    int length=RxList<Question>(
-        mainController.questions.where((c) => c.categoryId == index).toList()).length;
-    if (mainController.scoreOfCate.value.containsKey('${widget.level}_$index')) {
-      if(mainController.scoreOfCate.value['${widget.level}_$index']!=null){
-        scoreCate.addAll(mainController.scoreOfCate.value['${widget.level}_$index']);
+    if (mainController.scoreOfCate.value
+        .containsKey('${widget.level}_$index')) {
+      if (mainController.scoreOfCate.value['${widget.level}_$index'] != null ||
+          mainController.scoreOfCate.value['${widget.level}_$index'] == '0_0') {
+        scoreCate
+            .addAll(mainController.scoreOfCate.value['${widget.level}_$index']);
         scoreCate.forEach((key, value) {
           List<String> split = value.toString().split('_');
-          score+=double.tryParse(split[0]);
+          score += double.tryParse(split[0]);
         });
       }
     }
     return score;
+  }
+
+  getTestCompleted(int index) {
+    int countTest = 0;
+    Map scoreCate = new Map();
+    if (mainController.scoreOfCate.value
+        .containsKey('${widget.level}_$index')) {
+      if (mainController.scoreOfCate.value['${widget.level}_$index'] != null ||
+          mainController.scoreOfCate.value['${widget.level}_$index'] == '0_0') {
+        scoreCate
+            .addAll(mainController.scoreOfCate.value['${widget.level}_$index']);
+        scoreCate.forEach((key, value) {
+          if(value!='0_0')
+            countTest++;
+        });
+      }
+    }
+    return countTest;
   }
 
   modalBottomSheet(String cateName, int level, int categoryId) async {
