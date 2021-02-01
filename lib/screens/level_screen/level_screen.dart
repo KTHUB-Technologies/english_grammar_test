@@ -391,6 +391,8 @@ class _LevelScreenState extends State<LevelScreen> {
         'Table_Score_${widget.level}');
     openBoxScore.put(
         '${widget.level}_$index', null);
+
+    mainController.scoreOfCate.value=openBoxScore.toMap();
     openBoxScore.close();
 
     score.value = 0.0;
@@ -414,11 +416,13 @@ class _LevelScreenState extends State<LevelScreen> {
     int length=RxList<Question>(
         mainController.questions.where((c) => c.categoryId == index).toList()).length;
     if (mainController.scoreOfCate.value.containsKey('${widget.level}_$index')) {
-      scoreCate.addAll(mainController.scoreOfCate.value['${widget.level}_$index']);
-      scoreCate.forEach((key, value) {
-        List<String> split = value.toString().split('_');
-        score+=double.tryParse(split[0]);
-      });
+      if(mainController.scoreOfCate.value['${widget.level}_$index']!=null){
+        scoreCate.addAll(mainController.scoreOfCate.value['${widget.level}_$index']);
+        scoreCate.forEach((key, value) {
+          List<String> split = value.toString().split('_');
+          score+=double.tryParse(split[0]);
+        });
+      }
     }
     return score / length;
   }
