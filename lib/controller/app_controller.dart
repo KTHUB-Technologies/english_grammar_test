@@ -61,40 +61,40 @@ class AppController extends GetxController {
     locale.value = Locale("en", 'US');
   }
 
-  loginWithMicrosoft() async {
-    isShowLoading.value = true;
-    try {
-      await ConfigMicrosoft.oauth.login();
-      var accessToken = await ConfigMicrosoft.oauth.getAccessToken();
-      final response = await Dio().get(ConfigMicrosoft.userProfileBaseUrl,
-          options: Options(headers: {
-            ConfigMicrosoft.authorization: ConfigMicrosoft.bearer + accessToken
-          }));
-      Map profile = jsonDecode(response.toString());
-      print(profile);
-      user.value = profile;
-      final openBox = await Hive.openBox('accessToken');
-      await openBox.put('accessToken', accessToken);
-      await openBox.put('id',profile['id']);
-      openBox.close();
-    } catch (e) {
-      print(e);
-    }
+  // loginWithMicrosoft() async {
+  //   isShowLoading.value = true;
+  //   try {
+  //     await ConfigMicrosoft.oauth.login();
+  //     var accessToken = await ConfigMicrosoft.oauth.getAccessToken();
+  //     final response = await Dio().get(ConfigMicrosoft.userProfileBaseUrl,
+  //         options: Options(headers: {
+  //           ConfigMicrosoft.authorization: ConfigMicrosoft.bearer + accessToken
+  //         }));
+  //     Map profile = jsonDecode(response.toString());
+  //     print(profile);
+  //     user.value = profile;
+  //     final openBox = await Hive.openBox('accessToken');
+  //     await openBox.put('accessToken', accessToken);
+  //     await openBox.put('id',profile['id']);
+  //     openBox.close();
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  //
+  //   isShowLoading.value = false;
+  // }
 
-    isShowLoading.value = false;
-  }
-
-  signOut()async {
-    isShowLoading.value = true;
-    try {
-      await ConfigMicrosoft.oauth.logout();
-      user.value = null;
-      final openBox = await Hive.openBox('accessToken');
-      await openBox.clear();
-      openBox.close();
-    } catch (e) {
-      print(e);
-    }
-    isShowLoading.value = false;
-  }
+  // signOut()async {
+  //   isShowLoading.value = true;
+  //   try {
+  //     await ConfigMicrosoft.oauth.logout();
+  //     user.value = null;
+  //     final openBox = await Hive.openBox('accessToken');
+  //     await openBox.clear();
+  //     openBox.close();
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  //   isShowLoading.value = false;
+  // }
 }

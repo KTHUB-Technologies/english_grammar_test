@@ -143,20 +143,20 @@ class _MainScreenState extends State<MainScreen> {
         labelType: NavigationRailLabelType.all,
         trailing: Column(
           children: [
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 0),
-              child: IconButton(
-                  icon: appController.user.value == null
-                      ? Icon(Icons.person)
-                      : CircleAvatar(
-                          child: AppText(
-                              text: shortUserName(
-                                  appController.user.value['displayName'])),
-                        ),
-                  onPressed: () async {
-                    await appController.loginWithMicrosoft();
-                  }),
-            ),
+            // Padding(
+            //   padding: EdgeInsets.symmetric(vertical: 0),
+            //   child: IconButton(
+            //       icon: appController.user.value == null
+            //           ? Icon(Icons.person)
+            //           : CircleAvatar(
+            //               child: AppText(
+            //                   text: shortUserName(
+            //                       appController.user.value['displayName'])),
+            //             ),
+            //       onPressed: () async {
+            //         await appController.loginWithMicrosoft();
+            //       }),
+            // ),
             Padding(
               padding: EdgeInsets.symmetric(vertical: 0),
               child: IconButton(
@@ -197,8 +197,9 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget buildAppButtonLevel(int level) {
-    return Stack(
-      children: <Widget>[
+    return
+      // Stack(
+      // children: <Widget>[
         AppButton(
           "Let's Start",
           onTap: () async {
@@ -218,24 +219,24 @@ class _MainScreenState extends State<MainScreen> {
                 transition: Transition.rightToLeftWithFade,
                 duration: Duration(milliseconds: 500));
           },
-        ),
-        appController.user.value == null
-            ? level != 1
-                ? Container(
-                    width: getScreenWidth(context) / 1.8,
-                    height: getScreenWidth(context) / 8,
-                    decoration: BoxDecoration(
-                        color: AppColors.black.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(15)),
-                    child: Icon(
-                      Icons.lock_outline,
-                      color: AppColors.white,
-                    ),
-                  )
-                : SizedBox()
-            : SizedBox(),
-      ],
-    );
+        );
+        // appController.user.value == null
+        //     ? level != 1
+        //         ? Container(
+        //             width: getScreenWidth(context) / 1.8,
+        //             height: getScreenWidth(context) / 8,
+        //             decoration: BoxDecoration(
+        //                 color: AppColors.black.withOpacity(0.5),
+        //                 borderRadius: BorderRadius.circular(15)),
+        //             child: Icon(
+        //               Icons.lock_outline,
+        //               color: AppColors.white,
+        //             ),
+        //           )
+        //         : SizedBox()
+        //     : SizedBox(),
+      // ],
+    // );
   }
 
   _navigateToFacebookApp() async {

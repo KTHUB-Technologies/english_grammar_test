@@ -80,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // await checkDarkMode();
     /// Delay 3 seconds, then navigate to Login screen
     timer = Timer.periodic(Duration(seconds: 2), (timer) async {
-      await _loadUserData();
+      // await _loadUserData();
       _navigateToMainScreen();
       //  await checkFirstLoad();
     });
@@ -109,26 +109,26 @@ class _SplashScreenState extends State<SplashScreen> {
   //   openBox.close();
   // }
 
-  _loadUserData() async {
-    Dio dio = Dio();
-    final openBox = await Hive.openBox('accessToken');
-
-    try{
-      if (openBox.get('accessToken') != null) {
-        final response = await dio.get(ConfigMicrosoft.userProfileBaseUrl,
-            options: Options(headers: {
-              ConfigMicrosoft.authorization:
-              ConfigMicrosoft.bearer + openBox.get('accessToken')
-            }));
-        Map profile = jsonDecode(response.toString());
-        print(profile);
-        appController.user.value = profile;
-      }
-      openBox.close();
-    }catch (e){
-      print(e);
-    }
-  }
+  // _loadUserData() async {
+  //   Dio dio = Dio();
+  //   final openBox = await Hive.openBox('accessToken');
+  //
+  //   try{
+  //     if (openBox.get('accessToken') != null) {
+  //       final response = await dio.get(ConfigMicrosoft.userProfileBaseUrl,
+  //           options: Options(headers: {
+  //             ConfigMicrosoft.authorization:
+  //             ConfigMicrosoft.bearer + openBox.get('accessToken')
+  //           }));
+  //       Map profile = jsonDecode(response.toString());
+  //       print(profile);
+  //       appController.user.value = profile;
+  //     }
+  //     openBox.close();
+  //   }catch (e){
+  //     print(e);
+  //   }
+  // }
 
   _navigateToMainScreen() {
     Get.offAll(MainScreen());
