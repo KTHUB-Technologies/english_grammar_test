@@ -1,7 +1,7 @@
 name: the_enest_english_grammar_test
 description: The Enest English Grammar Test With Explanation
 
-version: 1.0.1+1
+version: 1.0.2+2
 
 environment:
   sdk: ">=2.8.0 <3.0.0"
