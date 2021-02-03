@@ -44,7 +44,6 @@ class _LevelScreenState extends State<LevelScreen> {
   loadAllScoreOfLevel() async {
     final openBox = await Hive.openBox('Table_Score_${widget.level}');
     mainController.scoreOfCate.value = openBox.toMap();
-    print(mainController.scoreOfCate.value);
     openBox.close();
   }
 

@@ -21,8 +21,16 @@ class CategoryCard extends StatefulWidget {
   final Rx<int> testCompleted;
   final num questionComplete;
 
-
-  const CategoryCard({Key key, this.index, this.onTap, this.score, this.level, this.category, this.totalQuestion, this.testCompleted, this.questionComplete})
+  const CategoryCard(
+      {Key key,
+      this.index,
+      this.onTap,
+      this.score,
+      this.level,
+      this.category,
+      this.totalQuestion,
+      this.testCompleted,
+      this.questionComplete})
       : super(key: key);
 
   @override
@@ -32,12 +40,11 @@ class CategoryCard extends StatefulWidget {
 class _CategoryCardState extends State<CategoryCard> {
   @override
   void initState() {
-
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-
     final totalTest = getTotalTest(widget.totalQuestion);
     return Obx(() {
       return GestureDetector(
@@ -46,8 +53,8 @@ class _CategoryCardState extends State<CategoryCard> {
           child: Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25),
-                  gradient:
-                      LinearGradient(colors: categoryColorCard(widget.index-1))),
+                  gradient: LinearGradient(
+                      colors: categoryColorCard(widget.index - 1))),
               padding: EdgeInsets.symmetric(horizontal: Dimens.formPadding),
               child: Row(
                 children: <Widget>[
@@ -74,28 +81,51 @@ class _CategoryCardState extends State<CategoryCard> {
                                 percent: widget.score.value == null ||
                                         widget.score.value.isNaN
                                     ? 0
-                                    : widget.score.value/widget.totalQuestion),
+                                    : widget.score.value /
+                                        widget.totalQuestion),
                           ),
                           Dimens.height10,
                           Row(
                             children: [
-                              _buildProgress('Question', widget.totalQuestion, widget.score.value.round()),
+                              _buildProgress('Question', widget.totalQuestion,
+                                  widget.score.value.round()),
                               Dimens.width30,
-                              _buildProgress('Test', totalTest, widget.testCompleted.value),
+                              _buildProgress('Test', totalTest,
+                                  widget.testCompleted.value),
                             ],
                           )
                         ],
                       ),
                     ),
                   ),
-                  Container(
-                    child: AppText(
-                      text: '${((widget.score.value.round()/widget.totalQuestion)*100).round()}%',
+                  Transform.rotate(
+                    angle: 0.8,
+                    child: Container(
+                      clipBehavior: Clip.antiAlias,
+                      height: 60,
+                      width: 60,
+                      decoration: BoxDecoration(
+                        border:
+                            Border.all(width: 3, color: Colors.deepOrange[800]),
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        color: AppColors.white,
+                      ),
+                      child: Transform.rotate(
+                        angle: -0.8,
+                        child: Center(
+                          child: AppText(
+                            text:
+                                '${((widget.score.value.round() / widget.totalQuestion) * 100).round()}%',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepOrange[800],
+                          ),
+                        ),
+                      ),
                     ),
                   ),
+                  Dimens.width10,
                 ],
-              )
-              ),
+              )),
         ),
         onTap: () async {
           SoundsHelper.checkAudio(Sounds.touch);
@@ -108,15 +138,15 @@ class _CategoryCardState extends State<CategoryCard> {
   _buildProgress(String section, num total, num currentReach) {
     return Column(
       children: [
-    AppText(
-      text: '$currentReach/$total',
-      color: AppColors.white,
-    ),
-    AppText(
-      text: section,
-      color: AppColors.white,
-      textSize: Dimens.errorTextSize,
-    )
+        AppText(
+          text: '$currentReach/$total',
+          color: AppColors.white,
+        ),
+        AppText(
+          text: section,
+          color: AppColors.white,
+          textSize: Dimens.errorTextSize,
+        )
       ],
     );
   }
