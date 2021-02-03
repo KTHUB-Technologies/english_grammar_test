@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:the_enest_english_grammar_test/commons/android_dialog.dart';
+import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
 import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 
@@ -125,6 +130,40 @@ getSection(int sectionSelected) {
 shortUserName(String displayName) {
   return displayName.split(' ').map((e) => e.substring(0, 1)).toList().join("");
 }
+
+showConfirmDialog(BuildContext context,
+    {String title, String content, Function cancel, Function confirm}) {
+  if (Platform.isIOS) {
+    showCupertinoDialog(
+        context: context,
+        builder: (context) {
+          return IOSDialog(
+            title: title,
+            content: content,
+            cancel: cancel,
+            confirm: () {
+              Navigator.pop(context);
+              confirm();
+            },
+          );
+        });
+  } else {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AndroidDialog(
+            title: title,
+            content: content,
+            cancel: cancel,
+            confirm: () {
+              Navigator.pop(context);
+              confirm();
+            },
+          );
+        });
+  }
+}
+
 categoryColorCard(int index){
   var position = index%4;
 
@@ -149,4 +188,3 @@ getTotalTest(int totalQuestion){
   }
   return totalTest;
 }
-

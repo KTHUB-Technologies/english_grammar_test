@@ -61,17 +61,6 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: mainController.listChunkQuestions.map((e) {
-        double scorePercent;
-        if (mainController.score
-                .value['${mainController.listChunkQuestions.indexOf(e) + 1}'] !=
-            null) {
-          List<String> splitScore =
-              '${mainController.score.value['${mainController.listChunkQuestions.indexOf(e) + 1}']}'
-                  .split('_');
-          scorePercent = (double.tryParse(splitScore[0]) /
-                  double.tryParse(splitScore[1])) *
-              100;
-        }
         return GestureDetector(
           child: Card(
             child: ListTile(
@@ -84,11 +73,11 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                 lineWidth: 2.0,
                 animation: true,
                 percent:
-                    scorePercent == null || scorePercent.isNaN
+                    getScoreOfTest(e) == null || getScoreOfTest(e).isNaN
                         ? 0
-                        : scorePercent / 100.round(),
+                        : getScoreOfTest(e) / 100.round(),
                 center:  Text(
-                  '${scorePercent == null || scorePercent.isNaN ? 0 : scorePercent.round()}%',
+                  '${getScoreOfTest(e) == null || getScoreOfTest(e).isNaN ? 0 : getScoreOfTest(e).round()}%',
                   style:  TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 10.0),
                 ),
@@ -127,6 +116,19 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
         );
       }).toList(),
     );
+  }
+
+  getScoreOfTest(List<Question> index){
+    if (mainController.score
+        .value['${mainController.listChunkQuestions.indexOf(index) + 1}'] !=
+        null) {
+      List<String> splitScore =
+      '${mainController.score.value['${mainController.listChunkQuestions.indexOf(index) + 1}']}'
+          .split('_');
+      return (double.tryParse(splitScore[0]) /
+          double.tryParse(splitScore[1])) *
+          100;
+    }
   }
 
   checkExistTable(int testNumber) async {

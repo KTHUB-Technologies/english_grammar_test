@@ -2,6 +2,11 @@
   "welcome": "Xin Chào",
   "confirm": "Xác Nhận",
   "cancel":"Huỷ Bỏ",
+  "language": "Ngôn ngữ",
+  "change_language": "Đổi ngôn ngữ ",
+  "vietnamese": "Vietnamese",
+  "english": "English",
+  "change_language_confirm": "Xác nhận đổi ngôn ngữ",
   "beginning_intro": "You can use English for everyday tasks and activities. You can also understand common phrases related to topics such as personal information and employment.",
   "intermediate_intro": "You can communicate confidently about many topics. You can also understand the main ideas of texts within your field of specialization.",
   "advanced_intro": "You can express yourself fluently in almost any situation. You are able to perform complex tasks related to work and study. You can also produce clear, detailed texts on challenging subjects."

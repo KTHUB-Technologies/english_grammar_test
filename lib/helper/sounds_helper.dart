@@ -3,9 +3,12 @@ import 'dart:io';
 
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:get/get.dart';
+import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 
 class SoundsHelper {
+  static final AppController appController=Get.find();
   static final audioCache =
       AudioCache(prefix: 'assets/sounds/',fixedPlayer: audioPlayer);
   static AudioPlayer audioPlayer;
@@ -29,16 +32,18 @@ class SoundsHelper {
   }
 
   static void checkAudio(String audio) async {
-    try {
-      if(Platform.isIOS){
-        if (audioPlayer.state == AudioPlayerState.PLAYING)
-          stop();
-        else
+    if(appController.sound.value==true){
+      try {
+        if(Platform.isIOS){
+          if (audioPlayer.state == AudioPlayerState.PLAYING)
+            stop();
+          else
+            play(audio);
+        }else if(Platform.isAndroid)
           play(audio);
-      }else if(Platform.isAndroid)
+      } catch (e) {
         play(audio);
-    } catch (e) {
-      play(audio);
+      }
     }
   }
 }

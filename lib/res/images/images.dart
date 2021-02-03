@@ -4,4 +4,6 @@ class Images {
   static const arrow_back = 'lib/res/images/arrow_back.png';
   static const arrow_forward = 'lib/res/images/arrow_forward.png';
   static const finish_flag = 'lib/res/images/finish_flag.png';
+  static const vn_flag = 'lib/res/images/vn-flag.png';
+  static const us_flag = 'lib/res/images/us-flag.png';
 }

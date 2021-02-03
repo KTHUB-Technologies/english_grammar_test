@@ -15,15 +15,14 @@ import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/screens/about_screen/about_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 
-
 class SplashScreen extends StatefulWidget {
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>{
-  final MainController mainController=Get.find();
-  final AppController appController=Get.find();
+class _SplashScreenState extends State<SplashScreen> {
+  final MainController mainController = Get.find();
+  final AppController appController = Get.find();
   Timer timer;
 
   ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~///
@@ -77,50 +76,60 @@ class _SplashScreenState extends State<SplashScreen>{
   ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~///
   onBuildDone() async {
     await mainController.getAllQuestions();
-    await _loadUserData();
     await SoundsHelper.load();
-    await checkDarkMode();
+    // await checkDarkMode();
     /// Delay 3 seconds, then navigate to Login screen
-    timer=Timer.periodic(Duration(seconds: 2), (timer) async {
+    timer = Timer.periodic(Duration(seconds: 2), (timer) async {
       await _loadUserData();
       _navigateToMainScreen();
-    //  await checkFirstLoad();
+      //  await checkFirstLoad();
     });
   }
 
-  checkDarkMode() async{
-    final openBox=await Hive.openBox('Dark_Mode');
-    if(openBox.get('isDark')!=null)
-      appController.isDark.value=openBox.get('isDark');
+  checkSound() async {
+    final openBox = await Hive.openBox('Sound');
+    if (openBox.get('isSound') != null)
+      appController.isDark.value = openBox.get('isSound');
     openBox.close();
   }
 
-  checkFirstLoad()async{
-    final openBox=await Hive.openBox('First_Load');
-    if(openBox.get('isFirst')!=null)
-      _navigateToMainScreen();
-    else
-      Get.to(AboutScreen());
-    openBox.close();
-  }
+  // checkDarkMode() async{
+  //   final openBox=await Hive.openBox('Dark_Mode');
+  //   if(openBox.get('isDark')!=null)
+  //     appController.isDark.value=openBox.get('isDark');
+  //   openBox.close();
+  // }
+
+  // checkFirstLoad()async{
+  //   final openBox=await Hive.openBox('First_Load');
+  //   if(openBox.get('isFirst')!=null)
+  //     _navigateToMainScreen();
+  //   else
+  //     Get.to(AboutScreen());
+  //   openBox.close();
+  // }
 
   _loadUserData() async {
-    // final openBox=await Hive.openBox('accessToken');
-    // try{
-    //   if(openBox.get('accessToken')!=null){
-    //     final response = await Dio().get(ConfigMicrosoft.userProfileBaseUrl,
-    //         options: Options(headers: {
-    //           ConfigMicrosoft.authorization: ConfigMicrosoft.bearer + openBox.get('accessToken')
-    //         }));
-    //     Map profile = jsonDecode(response.toString());
-    //     print(profile);
-    //     appController.user.value = profile;
-    //   }
-    //   openBox.close();
-    // }catch (e){
-    //   print(e);
-    // }
+    Dio dio = Dio();
+    final openBox = await Hive.openBox('accessToken');
+
+    try{
+      if (openBox.get('accessToken') != null) {
+        final response = await dio.get(ConfigMicrosoft.userProfileBaseUrl,
+            options: Options(headers: {
+              ConfigMicrosoft.authorization:
+              ConfigMicrosoft.bearer + openBox.get('accessToken')
+            }));
+        Map profile = jsonDecode(response.toString());
+        print(profile);
+        appController.user.value = profile;
+      }
+      openBox.close();
+    }catch (e){
+      print(e);
+    }
   }
+
   _navigateToMainScreen() {
     Get.offAll(MainScreen());
   }

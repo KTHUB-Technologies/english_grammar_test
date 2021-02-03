@@ -18,10 +18,11 @@ class CategoryCard extends StatefulWidget {
   final Function onTap;
   final Rx<double> score;
   final num totalQuestion;
+  final Rx<int> testCompleted;
   final num questionComplete;
 
 
-  const CategoryCard({Key key, this.index, this.onTap, this.score, this.level, this.category, this.totalQuestion, this.questionComplete})
+  const CategoryCard({Key key, this.index, this.onTap, this.score, this.level, this.category, this.totalQuestion, this.testCompleted, this.questionComplete})
       : super(key: key);
 
   @override
@@ -42,114 +43,59 @@ class _CategoryCardState extends State<CategoryCard> {
       return GestureDetector(
         child: Padding(
           padding: const EdgeInsets.all(15.0),
-          child: Stack(
-            children: [
-              Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      gradient:
-                          LinearGradient(colors: categoryColorCard(widget.index-1))),
-                  padding: EdgeInsets.symmetric(horizontal: Dimens.formPadding),
-                  child: ListTile(
-                    title: Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: AppText(
-                        text: getCategory(widget.category),
-                        textSize: Dimens.paragraphHeaderTextSize,
-                        color: AppColors.white,
+          child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  gradient:
+                      LinearGradient(colors: categoryColorCard(widget.index-1))),
+              padding: EdgeInsets.symmetric(horizontal: Dimens.formPadding),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: ListTile(
+                      title: Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: AppText(
+                          text: getCategory(widget.category),
+                          textSize: Dimens.paragraphHeaderTextSize,
+                          color: AppColors.white,
+                        ),
+                      ),
+                      subtitle: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Dimens.height10,
+                          Padding(
+                            padding: const EdgeInsets.all(3.0),
+                            child: LinearPercentIndicator(
+                                width: getScreenWidth(context) / 2,
+                                backgroundColor: Colors.blueGrey,
+                                progressColor: AppColors.green,
+                                percent: widget.score.value == null ||
+                                        widget.score.value.isNaN
+                                    ? 0
+                                    : widget.score.value/widget.totalQuestion),
+                          ),
+                          Dimens.height10,
+                          Row(
+                            children: [
+                              _buildProgress('Question', widget.totalQuestion, widget.score.value.round()),
+                              Dimens.width30,
+                              _buildProgress('Test', totalTest, widget.testCompleted.value),
+                            ],
+                          )
+                        ],
                       ),
                     ),
-                    subtitle: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Dimens.height10,
-                        Padding(
-                          padding: const EdgeInsets.all(3.0),
-                          child: LinearPercentIndicator(
-                              width: getScreenWidth(context) / 2,
-                              backgroundColor: Colors.blueGrey,
-                              progressColor: AppColors.green,
-                              percent: widget.score.value == null ||
-                                      widget.score.value.isNaN
-                                  ? 0
-                                  : widget.score.value/widget.totalQuestion),
-                        ),
-                        Dimens.height10,
-                        Row(
-                          children: [
-                            Expanded(child: SizedBox()),
-                            _buildProgress('Question', widget.totalQuestion, widget.score.value.round()),
-                            _buildProgress('Test', totalTest, 0),
-                            Expanded(child: SizedBox()),
-                          ],
-                        )
-                      ],
-                    ),
-                  )
-                  // Row(
-                  //   children: <Widget>[
-                  //     Expanded(
-                  //       child: AppText(
-                  //         text: getCategory(widget.index),
-                  //         color: AppColors.orangeAccent,
-                  //       ),
-                  //     ),
-                  //     Dimens.width20,
-                  //     CircularPercentIndicator(
-                  //       radius: 35.0,
-                  //       lineWidth: 2.0,
-                  //       animation: true,
-                  //       percent:
-                  //           widget.score.value == null || widget.score.value.isNaN
-                  //               ? 0
-                  //               : widget.score.value / 100.round(),
-                  //       center: Text(
-                  //         '${widget.score.value == null || widget.score.value.isNaN ? 0 : widget.score.value.round()}%',
-                  //         style:
-                  //             TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
-                  //       ),
-                  //       circularStrokeCap: CircularStrokeCap.round,
-                  //       progressColor: Colors.purple,
-                  //     ),
-                  //     Dimens.width20,
-                  //
-                  //     ///
-                  //     // widget.isProgress == false
-                  //     //     ? SizedBox()
-                  //     //     : GestureDetector(
-                  //     //         child: Icon(
-                  //     //           Icons.rotate_left,
-                  //     //           color: widget.score.value == 0.0
-                  //     //               ? AppColors.divider
-                  //     //               : AppColors.green,
-                  //     //         ),
-                  //     //         onTap: () {
-                  //     //           if (widget.score.value != 0.0) {
-                  //     //             showCupertinoDialog(
-                  //     //                 context: context,
-                  //     //                 builder: (context) {
-                  //     //                   return IOSDialog(
-                  //     //                     title: 'WARNING',
-                  //     //                     content:
-                  //     //                         "Do you want to restart ${getCategory(index)}?",
-                  //     //                     cancel: () {
-                  //     //                       Get.back();
-                  //     //                     },
-                  //     //                     confirm: () async {
-                  //     //                       Get.back();
-                  //     //
-                  //     //                       restartScoreOfCate(index, score);
-                  //     //                     },
-                  //     //                   );
-                  //     //                 });
-                  //     //           }
-                  //     //         },
-                  //     //       ),
-                  //   ],
-                  // ),
                   ),
-            ],
-          ),
+                  Container(
+                    child: AppText(
+                      text: '${((widget.score.value.round()/widget.totalQuestion)*100).round()}%',
+                    ),
+                  ),
+                ],
+              )
+              ),
         ),
         onTap: () async {
           SoundsHelper.checkAudio(Sounds.touch);
@@ -160,20 +106,19 @@ class _CategoryCardState extends State<CategoryCard> {
   }
 
   _buildProgress(String section, num total, num currentReach) {
-    return Expanded(
-        child: Column(
+    return Column(
       children: [
-        AppText(
-          text: '$currentReach/$total',
-          color: AppColors.white,
-        ),
-        AppText(
-          text: section,
-          color: AppColors.white,
-          textSize: Dimens.errorTextSize,
-        )
+    AppText(
+      text: '$currentReach/$total',
+      color: AppColors.white,
+    ),
+    AppText(
+      text: section,
+      color: AppColors.white,
+      textSize: Dimens.errorTextSize,
+    )
       ],
-    ));
+    );
   }
 
   restartScoreOfCate(int category, Rx<double> score) async {

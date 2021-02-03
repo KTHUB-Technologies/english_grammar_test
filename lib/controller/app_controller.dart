@@ -31,6 +31,7 @@ class AppController extends GetxController {
   }
 
   Rx<bool> isDark = Rx<bool>(false);
+  Rx<bool> sound=Rx<bool>(true);
 
   getDefaultLanguage() async {
     String languageCode = await SharedPreferencesHelper.getStringValue(
@@ -74,6 +75,7 @@ class AppController extends GetxController {
       user.value = profile;
       final openBox = await Hive.openBox('accessToken');
       await openBox.put('accessToken', accessToken);
+      await openBox.put('id',profile['id']);
       openBox.close();
     } catch (e) {
       print(e);

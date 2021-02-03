@@ -14,7 +14,7 @@ class ListQuestion{
       .toList();
 
   Map<dynamic, dynamic> toJson() => {
-    "questions": questions.map((e) => e.toJson()).toList()?? '',
+    "questions": questions.map((e) => e.toJson()).toList()?? [],
   };
 }
 
@@ -257,3 +257,39 @@ class Question extends HiveObject{
 //     );
 //   }
 // }
+
+class QuestionNew{
+  final int level;
+  final List<CategoryNew> categoryNews;
+
+  QuestionNew({this.level, this.categoryNews});
+
+  QuestionNew.fromJson(Map<dynamic, dynamic> json)
+      :level = json['level'],
+        categoryNews = (json['categoryNews'] as List ?? [])
+            .map((f) => CategoryNew.fromJson(f))
+            .toList();
+
+  Map<dynamic, dynamic> toJson() => {
+    "level": level?? '',
+    "categoryNews": categoryNews.map((e) => e.toJson()).toList()?? []
+  };
+}
+
+class CategoryNew{
+  final int categoryId;
+  final List<Question> questions;
+
+  CategoryNew({this.categoryId, this.questions});
+
+  CategoryNew.fromJson(Map<dynamic, dynamic> json)
+      :categoryId = json['categoryId'],
+        questions = (json['questions'] as List ?? [])
+            .map((f) => Question.fromJson(f))
+            .toList();
+
+  Map<dynamic, dynamic> toJson() => {
+    "categoryId": categoryId?? '',
+    "questions": questions.map((e) => e.toJson()).toList()?? []
+  };
+}
