@@ -9,6 +9,7 @@ import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
@@ -33,6 +34,7 @@ class LevelScreen extends StatefulWidget {
 class _LevelScreenState extends State<LevelScreen> {
   final MainController mainController = Get.find();
   final AppController appController = Get.put(AppController());
+  final UserController userController=Get.find();
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
 
   @override
@@ -42,9 +44,15 @@ class _LevelScreenState extends State<LevelScreen> {
   }
 
   loadAllScoreOfLevel() async {
-    final openBox = await Hive.openBox('Table_Score_${widget.level}');
-    mainController.scoreOfCate.value = openBox.toMap();
-    openBox.close();
+    var data =await userController.getDataScore(userController.user.value.uid);
+    if(data['${widget.level}']!=null){
+      mainController.scoreOfCate.value=data['${widget.level}'];
+    }else{
+      final openBox = await Hive.openBox('Table_Score_${widget.level}');
+      mainController.scoreOfCate.value = openBox.toMap();
+      print(openBox.toMap());
+      openBox.close();
+    }
   }
 
   @override

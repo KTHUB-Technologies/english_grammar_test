@@ -100,7 +100,7 @@ class UserController extends GetxController{
       setDataScore(uid);
     }
 
-    print(doc.data());
+    return doc.data()['scores'];
   }
 
   updateDataScore(String uid, var data) async{

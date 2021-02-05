@@ -358,9 +358,9 @@ class _QuestionScreenState extends State<QuestionScreen>
     mainController.scoreOfCate.value=openBox.toMap();
     openBox.close();
 
-    var data ={'scores.${widget.level}.${widget.categoryId}.${widget.testNumber}':'${countTrue.value}_${widget.question.length}'};
-
-    userController.updateDataScore(userController.user.value.uid, data);
+    // var data ={'scores.${widget.level}.${widget.level}_${widget.categoryId}.${widget.testNumber}':'${countTrue.value}_${widget.question.length}'};
+    //
+    // userController.updateDataScore(userController.user.value.uid, data);
   }
 
   deleteResult() async {
