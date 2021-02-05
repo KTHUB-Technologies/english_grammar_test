@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/button_list.dart';
+import 'package:flutter_signin_button/button_view.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/app_button.dart';
@@ -9,6 +11,7 @@ import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
@@ -25,6 +28,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  final UserController userController = Get.find();
   final MainController levelController = Get.find();
   final AppController appController = Get.find();
 
@@ -142,21 +146,22 @@ class _MainScreenState extends State<MainScreen> {
         },
         labelType: NavigationRailLabelType.all,
         trailing: Column(
-          children: [
-            // Padding(
-            //   padding: EdgeInsets.symmetric(vertical: 0),
-            //   child: IconButton(
-            //       icon: appController.user.value == null
-            //           ? Icon(Icons.person)
-            //           : CircleAvatar(
-            //               child: AppText(
-            //                   text: shortUserName(
-            //                       appController.user.value['displayName'])),
-            //             ),
-            //       onPressed: () async {
-            //         await appController.loginWithMicrosoft();
-            //       }),
-            // ),
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 0),
+              child: IconButton(
+                  icon: userController.user.value == null
+                      ? Icon(Icons.person)
+                      : CircleAvatar(
+                          child: AppText(
+                              text: shortUserName(
+                                  userController.user.value['name'])),
+                        ),
+                  onPressed: () async {
+                    // await appController.loginWithMicrosoft();
+                    _buildChooseLogin();
+                  }),
+            ),
             Padding(
               padding: EdgeInsets.symmetric(vertical: 0),
               child: IconButton(
@@ -198,44 +203,44 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget buildAppButtonLevel(int level) {
     return
-      // Stack(
-      // children: <Widget>[
+        // Stack(
+        // children: <Widget>[
         AppButton(
-          "Let's Start",
-          onTap: () async {
-            SoundsHelper.checkAudio(Sounds.touch);
-            await levelController.loadQuestionFromLevel(level);
-            levelController.categories =
-                levelController.questions.map((e) => e.categoryId).toList();
-            levelController.distinctCategory =
-                levelController.categories.toSet().toList();
-            levelController.distinctCategory.sort();
+      "Let's Start",
+      onTap: () async {
+        SoundsHelper.checkAudio(Sounds.touch);
+        await levelController.loadQuestionFromLevel(level);
+        levelController.categories =
+            levelController.questions.map((e) => e.categoryId).toList();
+        levelController.distinctCategory =
+            levelController.categories.toSet().toList();
+        levelController.distinctCategory.sort();
 
-            Get.to(
-                LevelScreen(
-                  level: level,
-                  isProgress: false,
-                ),
-                transition: Transition.rightToLeftWithFade,
-                duration: Duration(milliseconds: 500));
-          },
-        );
-        // appController.user.value == null
-        //     ? level != 1
-        //         ? Container(
-        //             width: getScreenWidth(context) / 1.8,
-        //             height: getScreenWidth(context) / 8,
-        //             decoration: BoxDecoration(
-        //                 color: AppColors.black.withOpacity(0.5),
-        //                 borderRadius: BorderRadius.circular(15)),
-        //             child: Icon(
-        //               Icons.lock_outline,
-        //               color: AppColors.white,
-        //             ),
-        //           )
-        //         : SizedBox()
-        //     : SizedBox(),
-      // ],
+        Get.to(
+            LevelScreen(
+              level: level,
+              isProgress: false,
+            ),
+            transition: Transition.rightToLeftWithFade,
+            duration: Duration(milliseconds: 500));
+      },
+    );
+    // appController.user.value == null
+    //     ? level != 1
+    //         ? Container(
+    //             width: getScreenWidth(context) / 1.8,
+    //             height: getScreenWidth(context) / 8,
+    //             decoration: BoxDecoration(
+    //                 color: AppColors.black.withOpacity(0.5),
+    //                 borderRadius: BorderRadius.circular(15)),
+    //             child: Icon(
+    //               Icons.lock_outline,
+    //               color: AppColors.white,
+    //             ),
+    //           )
+    //         : SizedBox()
+    //     : SizedBox(),
+    // ],
     // );
   }
 
@@ -269,5 +274,37 @@ class _MainScreenState extends State<MainScreen> {
     final openBox = await Hive.openBox('First_Load');
     await openBox.put('isFirst', true);
     openBox.close();
+  }
+
+  _buildChooseLogin() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            elevation: 0,
+            backgroundColor: AppColors.transparent,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                if (Platform.isIOS)
+                  SignInButton(
+                    Buttons.Apple,
+                    onPressed: () async {
+                      await userController.signInWithApple();
+                      Get.back();
+                    },
+                  ),
+                SignInButton(Buttons.Facebook, onPressed: () async {
+                  await userController.signInWithFaceBook();
+                  Get.back();
+                }),
+                SignInButton(Buttons.Google, onPressed: () async {
+                  await userController.signInWithGoogle();
+                  Get.back();
+                }),
+              ],
+            ),
+          );
+        });
   }
 }

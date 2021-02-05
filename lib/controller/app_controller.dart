@@ -14,8 +14,6 @@ class AppController extends GetxController {
 
   Rx<Locale> locale = Rx<Locale>();
 
-  Rx<Map> user = Rx<Map>(null);
-
   Rx<bool> isShowLoading = Rx<bool>(false);
 
   void reset() {

@@ -38,6 +38,11 @@ dependencies:
   aad_oauth: ^0.2.1
   rxdart: ^0.21.0
   confetti: ^0.5.4+1
+  flutter_signin_button: ^1.1.0
+  google_sign_in: ^4.5.9
+  flutter_facebook_login: ^3.0.0
+  sign_in_with_apple: ^2.5.4
+  crypto: ^2.1.5
   dio: ^3.0.10
 
 

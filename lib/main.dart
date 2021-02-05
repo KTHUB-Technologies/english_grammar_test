@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:the_enest_english_grammar_test/app/app.dart';
+import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 
 void main() async {

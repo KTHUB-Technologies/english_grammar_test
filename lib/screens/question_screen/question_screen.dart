@@ -12,9 +12,11 @@ import 'package:the_enest_english_grammar_test/commons/backdrop_container.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
 import 'package:the_enest_english_grammar_test/commons/slide_up_container.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
+import 'package:the_enest_english_grammar_test/model/user_score_model.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/check_answer/check_answer_screen.dart';
@@ -49,6 +51,7 @@ class QuestionScreen extends StatefulWidget {
 class _QuestionScreenState extends State<QuestionScreen>
     with SingleTickerProviderStateMixin {
   final MainController mainController = Get.find();
+  final UserController userController= Get.find();
   AnimationController _formController;
   Rx<int> countTrue = Rx<int>();
   ConfettiController _controllerCenter;
@@ -349,6 +352,10 @@ class _QuestionScreenState extends State<QuestionScreen>
       score['${widget.testNumber}'] =
           '${countTrue.value}_${widget.question.length}';
     }
+
+    var data ={'scores':{'${widget.level}':{'${widget.categoryId}':{'${widget.testNumber}': '${countTrue.value}_${widget.question.length}'}}}};
+
+    userController.updateDataScore(userController.user.value['id'], data);
 
     await openBox.put('${widget.level}_${widget.categoryId}', score);
 
