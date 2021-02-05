@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -15,55 +15,32 @@ import 'package:the_enest_english_grammar_test/helper/firebase_helper.dart';
 
 class UserController extends GetxController{
   Rx<bool> isShowLoading = Rx<bool>(false);
-  Rx<Map> user = Rx<Map>(null);
-  final GoogleSignIn googleSignIn=GoogleSignIn(scopes: ['email']);
-  final FacebookLogin facebookLogin=FacebookLogin();
+  Rx<User> user = Rx<User>(null);
 
   ///Login with GOOGLE
-  signInWithGoogle() async{
-    try{
-      isShowLoading.value=true;
-      final googleSignInAccount =await googleSignIn.signIn();
-      if(googleSignIn.currentUser==null){
-        isShowLoading.value=false;
-        return false;
-      }
-      else{
-        user.value={'id':googleSignInAccount.id,'name':googleSignInAccount.displayName};
-        getDataScore(user.value['id']);
+  signInWithGoogle() async {
+    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    var userGoogle= await FirebaseAuth.instance.signInWithCredential(credential);
 
-        print(user.value);
-        isShowLoading.value=false;
-      }
-    }
-    catch(err){
-      print(err);
-    }
+    user.value=userGoogle.user;
+    getDataScore(user.value.uid);
   }
 
 
   ///Login with FACEBOOK
-  signInWithFaceBook() async{
-    final FacebookLoginResult result=await facebookLogin.logIn(['email']);
+  signInWithFacebook() async {
+    final AccessToken accessToken = await FacebookAuth.instance.login();
+    final FacebookAuthCredential facebookAuthCredential =
+    FacebookAuthProvider.credential(accessToken.token);
+    var userFacebook= await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
 
-    switch(result.status){
-      case FacebookLoginStatus.loggedIn:
-        isShowLoading.value=true;
-        final String token=result.accessToken.token;
-        final graphResponse = await Dio().get(
-            'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=$token');
-        Map facebookUser = jsonDecode(graphResponse.toString());
-        user.value={'id':facebookUser['id'],'name':facebookUser['name']};
-        getDataScore(user.value['id']);
-
-        print(user.value);
-        isShowLoading.value=false;
-        break;
-      case FacebookLoginStatus.cancelledByUser:
-        break;
-      case FacebookLoginStatus.error:
-        break;
-    }
+    user.value=userFacebook.user;
+    getDataScore(user.value.uid);
   }
 
 
@@ -71,8 +48,6 @@ class UserController extends GetxController{
   logout() async {
     isShowLoading.value = true;
     await FireBaseHelper.fireBaseAuth.signOut();
-    await googleSignIn.signOut();
-    await facebookLogin.logOut();
     user.value=null;
     isShowLoading.value = false;
   }
@@ -107,28 +82,28 @@ class UserController extends GetxController{
       rawNonce: rawNonce,
     );
     var userApple = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-    user.value={'id':userApple.user.uid,'name':userApple.user.email};
-    getDataScore(user.value['id']);
 
-    print(user.value);
+    user.value=userApple.user;
+    getDataScore(user.value.uid);
   }
 
   ///Fire store
-  setDataScore(String userId) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS_SCORES).doc(userId).set({'scores':[]});
+  setDataScore(String uid) async{
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.SCORES).doc('ALL_SCORES').set({'scores':[]});
   }
 
-  getDataScore(String userId) async{
+  getDataScore(String uid) async{
     DocumentSnapshot doc = await FireBaseHelper.fireStoreReference
-        .collection(Constants.USERS_SCORES)
-        .doc(userId)
+        .collection(Constants.USERS).doc(uid).collection(Constants.SCORES).doc('ALL_SCORES')
         .get();
     if(doc.data()==null){
-      setDataScore(userId);
+      setDataScore(uid);
     }
+
+    print(doc.data());
   }
 
-  updateDataScore(String userId, var data) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS_SCORES).doc(userId).update(data);
+  updateDataScore(String uid, var data) async{
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.SCORES).doc('ALL_SCORES').update(data);
   }
 }

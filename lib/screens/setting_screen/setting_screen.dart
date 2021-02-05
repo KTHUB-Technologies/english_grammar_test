@@ -98,7 +98,7 @@ class _SettingScreenState extends State<SettingScreen> {
             title: AppText(
               text: userController.user.value == null
                   ? 'Sign In With Social'
-                  : userController.user.value['name'],
+                  : userController.user.value.displayName??'Unknown Name',
             ),
             onTap: () async {
               userController.user.value == null

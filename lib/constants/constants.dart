@@ -6,5 +6,9 @@ class Constants {
   ];
 
   static const String QUESTIONS_DATA='QUESTIONS_DATA';
-  static const String USERS_SCORES='USERS_SCORES';
+
+  ///Fire store
+  static const String USERS='USERS';
+  static const String SCORES='SCORES';
+  static const String QUESTIONS='QUESTIONS';
 }

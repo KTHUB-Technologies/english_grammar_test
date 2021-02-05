@@ -155,10 +155,11 @@ class _MainScreenState extends State<MainScreen> {
                       : CircleAvatar(
                           child: AppText(
                               text: shortUserName(
-                                  userController.user.value['name'])),
+                                  userController.user.value.displayName??'Unknown Name')),
                         ),
                   onPressed: () async {
                     // await appController.loginWithMicrosoft();
+
                     _buildChooseLogin();
                   }),
             ),
@@ -290,17 +291,35 @@ class _MainScreenState extends State<MainScreen> {
                   SignInButton(
                     Buttons.Apple,
                     onPressed: () async {
-                      await userController.signInWithApple();
-                      Get.back();
+                      try{
+                        await userController.signInWithApple();
+                        Get.back();
+                      }catch (e){
+                        showConfirmDialog(context,title: 'WARNING!!!',content: '$e',confirm: (){
+                          Get.back();
+                        });
+                      }
                     },
                   ),
                 SignInButton(Buttons.Facebook, onPressed: () async {
-                  await userController.signInWithFaceBook();
-                  Get.back();
+                  try{
+                    await userController.signInWithFacebook();
+                    Get.back();
+                  }catch (e){
+                    showConfirmDialog(context,title: 'WARNING!!!',content: '$e',confirm: (){
+                      Get.back();
+                    });
+                  }
                 }),
                 SignInButton(Buttons.Google, onPressed: () async {
-                  await userController.signInWithGoogle();
-                  Get.back();
+                  try{
+                    await userController.signInWithGoogle();
+                    Get.back();
+                  }catch (e){
+                    showConfirmDialog(context,title: 'WARNING!!!',content: '$e',confirm: (){
+                      Get.back();
+                    });
+                  }
                 }),
               ],
             ),
