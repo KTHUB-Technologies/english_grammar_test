@@ -100,10 +100,16 @@ class UserController extends GetxController{
       setDataScore(uid);
     }
 
-    return doc.data()['scores'];
+    print(doc.data()['scores']);
+
+    return doc.data()['scores']??{};
   }
 
   updateDataScore(String uid, var data) async{
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.SCORES).doc('ALL_SCORES').update(data);
+  }
+
+  deleteDataScore(String uid, var data) async{
     await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.SCORES).doc('ALL_SCORES').update(data);
   }
 }

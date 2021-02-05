@@ -44,15 +44,23 @@ class _LevelScreenState extends State<LevelScreen> {
   }
 
   loadAllScoreOfLevel() async {
-    var data =await userController.getDataScore(userController.user.value.uid);
-    if(data['${widget.level}']!=null){
-      mainController.scoreOfCate.value=data['${widget.level}'];
-    }else{
-      final openBox = await Hive.openBox('Table_Score_${widget.level}');
-      mainController.scoreOfCate.value = openBox.toMap();
-      print(openBox.toMap());
-      openBox.close();
-    }
+    // if(userController.user.value!=null){
+    //   var data =await userController.getDataScore(userController.user.value.uid);
+    //   if(data['${widget.level}']!=null)
+    //     mainController.scoreOfCate.value=data['${widget.level}'];
+    //   else
+    //     mainController.scoreOfCate.value={};
+    // }else{
+    //   final openBox = await Hive.openBox('Table_Score_${widget.level}');
+    //   mainController.scoreOfCate.value = openBox.toMap();
+    //   print(openBox.toMap());
+    //   openBox.close();
+    // }
+
+    final openBox = await Hive.openBox('Table_Score_${widget.level}');
+    mainController.scoreOfCate.value = openBox.toMap();
+    print(openBox.toMap());
+    openBox.close();
   }
 
   @override

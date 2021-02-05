@@ -1,4 +1,5 @@
 import 'package:animated_widgets/animated_widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -377,6 +378,10 @@ class _QuestionScreenState extends State<QuestionScreen>
     mainController.score.value.clear();
 
     mainController.scoreOfCate.value=openBoxScore.toMap();
+
+    // var data ={'scores.${widget.level}.${widget.level}_${widget.categoryId}.${widget.testNumber}':'0_0'};
+    //
+    // userController.deleteDataScore(userController.user.value.uid, data);
 
     Get.close(2);
     openBoxScore.close();
