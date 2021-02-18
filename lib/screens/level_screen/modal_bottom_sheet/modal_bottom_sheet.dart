@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/screens/question_screen/question_screen.dart';
@@ -25,6 +26,7 @@ class ModalBottomSheet extends StatefulWidget {
 
 class _ModalBottomSheetState extends State<ModalBottomSheet> {
   final MainController mainController = Get.find();
+  final UserController userController= Get.find();
 
   @override
   void initState() {
@@ -132,21 +134,33 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
   }
 
   checkExistTable(int testNumber) async {
-    final openBox = await Hive.openBox('Table_${widget.level}');
-    if (openBox.containsKey('${widget.categoryId}')) {
-      Map getCate = openBox.get('${widget.categoryId}');
-      if (getCate != null) {
-        List<dynamic> questions = getCate['$testNumber'];
-        if (questions != null) {
-          mainController.questionsFromHive = RxList<Question>(
-              questions.map((e) => Question.fromJson(e)).toList());
-        } else {
+    if(userController.user.value!=null){
+      if(mainController.allQuestionsFromFS.value['${widget.categoryId}']!=null){
+        if(mainController.allQuestionsFromFS.value['${widget.categoryId}']['$testNumber']!=null){
+          List<dynamic> questions = mainController.allQuestionsFromFS.value['${widget.categoryId}']['$testNumber'];
+          mainController.questionsFromHive=RxList<Question>(questions.map((e) => Question.fromJson(e)).toList());
+        }else
           mainController.questionsFromHive.clear();
-        }
+      }else{
+        mainController.questionsFromHive.clear();
       }
-    } else {
-      mainController.questionsFromHive.clear();
+    }else{
+      final openBox = await Hive.openBox('Table_${widget.level}');
+      if (openBox.containsKey('${widget.categoryId}')) {
+        Map getCate = openBox.get('${widget.categoryId}');
+        if (getCate != null) {
+          List<dynamic> questions = getCate['$testNumber'];
+          if (questions != null) {
+            mainController.questionsFromHive = RxList<Question>(
+                questions.map((e) => Question.fromJson(e)).toList());
+          } else {
+            mainController.questionsFromHive.clear();
+          }
+        }
+      } else {
+        mainController.questionsFromHive.clear();
+      }
+      openBox.close();
     }
-    openBox.close();
   }
 }

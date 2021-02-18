@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:animated_widgets/animated_widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:confetti/confetti.dart';
@@ -17,7 +19,6 @@ import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
-import 'package:the_enest_english_grammar_test/model/user_score_model.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/check_answer/check_answer_screen.dart';
@@ -334,15 +335,19 @@ class _QuestionScreenState extends State<QuestionScreen>
   saveResult() async {
     var listQuestions = widget.question.map((e) => e.toJson()).toList();
     if(userController.user.value!=null){
-      var data ={'scores.${widget.level}.${widget.level}_${widget.categoryId}.${widget.testNumber}':'${countTrue.value}_${widget.question.length}'};
+      var score ={'scores.${widget.level}.${widget.level}_${widget.categoryId}.${widget.testNumber}':'${countTrue.value}_${widget.question.length}'};
 
-      userController.updateDataScore(userController.user.value.uid, data);
+      userController.updateDataScore(userController.user.value.uid, score);
 
       var dataScore =await userController.getDataScore(userController.user.value.uid);
       if(dataScore['${widget.level}']!=null)
         mainController.scoreOfCate.value=dataScore['${widget.level}'];
       else
         mainController.scoreOfCate.value={};
+
+      var question={'questions.${widget.level}.${widget.categoryId}.${widget.testNumber}':listQuestions};
+
+      userController.updateDataQuestion(userController.user.value.uid, question);
     }else{
       final openBoxLevel = await Hive.openBox('Table_${widget.level}');
       Map level = await openBoxLevel.get('${widget.categoryId}');
@@ -384,6 +389,18 @@ class _QuestionScreenState extends State<QuestionScreen>
         mainController.scoreOfCate.value=dataScore['${widget.level}'];
       else
         mainController.scoreOfCate.value={};
+
+      var questions={'questions.${widget.level}.${widget.categoryId}.${widget.testNumber}':FieldValue.delete()};
+
+      userController.deleteDataQuestion(userController.user.value.uid, questions);
+
+      var dataQuestion =await userController.getDataQuestion(userController.user.value.uid);
+      if(dataQuestion!=null){
+        if(dataQuestion['${widget.level}']!=null)
+          mainController.allQuestionsFromFS.value=HashMap.from(dataQuestion['${widget.level}']);
+        else
+          mainController.allQuestionsFromFS.value={};
+      }
     }else{
       final openBox = await Hive.openBox('Table_${widget.level}');
       Map level = await openBox.get('${widget.categoryId}');

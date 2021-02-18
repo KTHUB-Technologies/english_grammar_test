@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,6 +9,7 @@ import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/fade_container.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
@@ -22,6 +24,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final MainController mainController = Get.find();
+  final UserController userController = Get.find();
   final AppController appController = Get.find();
   Timer timer;
 
@@ -80,7 +83,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // await checkDarkMode();
     /// Delay 3 seconds, then navigate to Login screen
     timer = Timer.periodic(Duration(seconds: 2), (timer) async {
-      // await _loadUserData();
+      await _loadUserData();
       _navigateToMainScreen();
       //  await checkFirstLoad();
     });
@@ -109,26 +112,17 @@ class _SplashScreenState extends State<SplashScreen> {
   //   openBox.close();
   // }
 
-  // _loadUserData() async {
-  //   Dio dio = Dio();
-  //   final openBox = await Hive.openBox('accessToken');
-  //
-  //   try{
-  //     if (openBox.get('accessToken') != null) {
-  //       final response = await dio.get(ConfigMicrosoft.userProfileBaseUrl,
-  //           options: Options(headers: {
-  //             ConfigMicrosoft.authorization:
-  //             ConfigMicrosoft.bearer + openBox.get('accessToken')
-  //           }));
-  //       Map profile = jsonDecode(response.toString());
-  //       print(profile);
-  //       appController.user.value = profile;
-  //     }
-  //     openBox.close();
-  //   }catch (e){
-  //     print(e);
-  //   }
-  // }
+  _loadUserData() async {
+    // String userData;
+    // final openBox = await Hive.openBox('user');
+    // if(openBox.get('user')!=null){
+    //   userData=await openBox.get('user');
+    //   print(userData);
+    //   userController.user.value=userData as User;
+    //   print(userController.user.value);
+    // }
+    // openBox.close();
+  }
 
   _navigateToMainScreen() {
     Get.offAll(MainScreen());

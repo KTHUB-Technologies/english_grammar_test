@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hive/hive.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/helper/firebase_helper.dart';
@@ -16,6 +17,12 @@ import 'package:the_enest_english_grammar_test/helper/firebase_helper.dart';
 class UserController extends GetxController{
   Rx<bool> isShowLoading = Rx<bool>(false);
   Rx<User> user = Rx<User>(null);
+
+  saveUser(User user) async{
+    final openBox= await Hive.openBox('user');
+    await openBox.put('user', user);
+    openBox.close();
+  }
 
   ///Login with GOOGLE
   signInWithGoogle() async {
@@ -29,6 +36,7 @@ class UserController extends GetxController{
 
     user.value=userGoogle.user;
     getDataScore(user.value.uid);
+    saveUser(user.value);
   }
 
 
@@ -41,12 +49,18 @@ class UserController extends GetxController{
 
     user.value=userFacebook.user;
     getDataScore(user.value.uid);
+    saveUser(user.value);
   }
 
 
   ///Log Out
   logout() async {
     isShowLoading.value = true;
+
+    final openBox=await Hive.openBox('user');
+    await openBox.deleteFromDisk();
+    openBox.close();
+
     await FireBaseHelper.fireBaseAuth.signOut();
     user.value=null;
     isShowLoading.value = false;
@@ -85,32 +99,61 @@ class UserController extends GetxController{
 
     user.value=userApple.user;
     getDataScore(user.value.uid);
+    saveUser(user.value);
   }
 
   ///Fire store
+  ///Scores
   setDataScore(String uid) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.SCORES).doc('ALL_SCORES').set({'scores':[]});
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_SCORES').set({'scores':[]});
   }
 
   getDataScore(String uid) async{
     DocumentSnapshot doc = await FireBaseHelper.fireStoreReference
-        .collection(Constants.USERS).doc(uid).collection(Constants.SCORES).doc('ALL_SCORES')
+        .collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_SCORES')
         .get();
     if(doc.data()==null){
-      setDataScore(uid);
+      await setDataScore(uid);
+    }else{
+      if(doc.data()['scores']!=null)
+        return doc.data()['scores'];
+      else
+        return [];
     }
-
-    if(doc.data()['scores']!=null)
-      return doc.data()['scores'];
-    else
-      return [];
   }
 
   updateDataScore(String uid, var data) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.SCORES).doc('ALL_SCORES').update(data);
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_SCORES').update(data);
   }
 
   deleteDataScore(String uid, var data) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.SCORES).doc('ALL_SCORES').update(data);
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_SCORES').update(data);
+  }
+
+  ///Questions
+  setDataQuestion(String uid) async{
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_QUESTIONS').set({'questions':[]});
+  }
+
+  getDataQuestion(String uid) async{
+    DocumentSnapshot doc = await FireBaseHelper.fireStoreReference
+        .collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_QUESTIONS')
+        .get();
+    if(doc.data()==null){
+      await setDataQuestion(uid);
+    }else{
+      if(doc.data()['questions']!=null)
+        return doc.data()['questions'];
+      else
+        return [];
+    }
+  }
+
+  updateDataQuestion(String uid, var data) async{
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_QUESTIONS').update(data);
+  }
+
+  deleteDataQuestion(String uid, var data) async{
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_QUESTIONS').update(data);
   }
 }

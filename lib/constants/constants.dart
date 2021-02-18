@@ -9,6 +9,5 @@ class Constants {
 
   ///Fire store
   static const String USERS='USERS';
-  static const String SCORES='SCORES';
-  static const String QUESTIONS='QUESTIONS';
+  static const String DATA='DATA';
 }

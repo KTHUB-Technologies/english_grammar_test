@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
@@ -295,9 +296,7 @@ class _MainScreenState extends State<MainScreen> {
                         await userController.signInWithApple();
                         Get.back();
                       }catch (e){
-                        showConfirmDialog(context,title: 'WARNING!!!',content: '$e',confirm: (){
-                          Get.back();
-                        });
+                        print(e);
                       }
                     },
                   ),
@@ -306,9 +305,7 @@ class _MainScreenState extends State<MainScreen> {
                     await userController.signInWithFacebook();
                     Get.back();
                   }catch (e){
-                    showConfirmDialog(context,title: 'WARNING!!!',content: '$e',confirm: (){
-                      Get.back();
-                    });
+                    print(e);
                   }
                 }),
                 SignInButton(Buttons.Google, onPressed: () async {
@@ -316,9 +313,7 @@ class _MainScreenState extends State<MainScreen> {
                     await userController.signInWithGoogle();
                     Get.back();
                   }catch (e){
-                    showConfirmDialog(context,title: 'WARNING!!!',content: '$e',confirm: (){
-                      Get.back();
-                    });
+                    print(e);
                   }
                 }),
               ],
