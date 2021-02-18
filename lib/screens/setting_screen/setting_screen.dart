@@ -20,8 +20,8 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  final AppController appController=Get.find();
-  final UserController userController=Get.find();
+  final AppController appController = Get.find();
+  final UserController userController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -98,12 +98,18 @@ class _SettingScreenState extends State<SettingScreen> {
             title: AppText(
               text: userController.user.value == null
                   ? 'Sign In With Social'
-                  : userController.user.value.displayName??'Unknown Name',
+                  : userController.user.value.displayName ?? 'Unknown Name',
             ),
             onTap: () async {
               userController.user.value == null
                   ? Get.offAll(MainScreen())
-                  : userController.logout();
+                  : showConfirmDialog(context,
+                      title: 'WARNING!!!',
+                      content: 'Do you want to LOG OUT?', confirm: () async {
+                      await userController.logout();
+                    }, cancel: () {
+                      Get.back();
+                    });
             },
           ),
         ));
@@ -130,7 +136,7 @@ class _SettingScreenState extends State<SettingScreen> {
     });
   }
 
-  _buildLanguageSetting(){
+  _buildLanguageSetting() {
     return Card(
       child: ListTile(
         leading: Container(
@@ -138,10 +144,9 @@ class _SettingScreenState extends State<SettingScreen> {
           padding: EdgeInsets.symmetric(horizontal: 17),
         ),
         title: AppText(
-          text: FlutterLocalizations.of(context)
-              .getString(context, 'language'),
+          text: FlutterLocalizations.of(context).getString(context, 'language'),
         ),
-        onTap: (){
+        onTap: () {
           Get.to(ChangeLanguageScreen());
         },
       ),
