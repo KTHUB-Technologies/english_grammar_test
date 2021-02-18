@@ -1,11 +1,9 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
-import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -17,12 +15,6 @@ import 'package:the_enest_english_grammar_test/helper/firebase_helper.dart';
 class UserController extends GetxController{
   Rx<bool> isShowLoading = Rx<bool>(false);
   Rx<User> user = Rx<User>(null);
-
-  saveUser(User user) async{
-    final openBox= await Hive.openBox('user');
-    await openBox.put('user', user);
-    openBox.close();
-  }
 
   ///Login with GOOGLE
   signInWithGoogle() async {
@@ -36,7 +28,6 @@ class UserController extends GetxController{
 
     user.value=userGoogle.user;
     getDataScore(user.value.uid);
-    saveUser(user.value);
   }
 
 
@@ -49,7 +40,6 @@ class UserController extends GetxController{
 
     user.value=userFacebook.user;
     getDataScore(user.value.uid);
-    saveUser(user.value);
   }
 
 
@@ -99,7 +89,6 @@ class UserController extends GetxController{
 
     user.value=userApple.user;
     getDataScore(user.value.uid);
-    saveUser(user.value);
   }
 
   ///Fire store

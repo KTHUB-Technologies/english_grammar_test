@@ -118,7 +118,7 @@ class _SettingScreenState extends State<SettingScreen> {
               onChanged: (bool value) async {
                 final openBox = await Hive.openBox('Sound');
                 appController.sound.value = value;
-                await openBox.put('isSound', appController.isDark.value);
+                await openBox.put('isSound', appController.sound.value);
                 openBox.close();
               }),
           title: AppText(

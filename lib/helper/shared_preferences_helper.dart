@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesHelper {
   static const String LANGUAGE_CODE = 'languageCode';
+  static const String USER = 'user';
 
   static saveStringValue(String key, String value) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();

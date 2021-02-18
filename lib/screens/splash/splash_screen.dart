@@ -11,6 +11,7 @@ import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
+import 'package:the_enest_english_grammar_test/helper/firebase_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
@@ -80,7 +81,7 @@ class _SplashScreenState extends State<SplashScreen> {
   onBuildDone() async {
     await mainController.getAllQuestions();
     await SoundsHelper.load();
-    // await checkDarkMode();
+    await checkSound();
     /// Delay 3 seconds, then navigate to Login screen
     timer = Timer.periodic(Duration(seconds: 2), (timer) async {
       await _loadUserData();
@@ -92,7 +93,7 @@ class _SplashScreenState extends State<SplashScreen> {
   checkSound() async {
     final openBox = await Hive.openBox('Sound');
     if (openBox.get('isSound') != null)
-      appController.isDark.value = openBox.get('isSound');
+      appController.sound.value = openBox.get('isSound');
     openBox.close();
   }
 
@@ -113,15 +114,8 @@ class _SplashScreenState extends State<SplashScreen> {
   // }
 
   _loadUserData() async {
-    // String userData;
-    // final openBox = await Hive.openBox('user');
-    // if(openBox.get('user')!=null){
-    //   userData=await openBox.get('user');
-    //   print(userData);
-    //   userController.user.value=userData as User;
-    //   print(userController.user.value);
-    // }
-    // openBox.close();
+    if(FireBaseHelper.fireBaseAuth.currentUser!=null)
+      userController.user.value= FireBaseHelper.fireBaseAuth.currentUser;
   }
 
   _navigateToMainScreen() {
