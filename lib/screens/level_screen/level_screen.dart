@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -39,28 +40,25 @@ class _LevelScreenState extends State<LevelScreen> {
 
   @override
   void initState() {
-    loadAllScoreOfLevel();
     super.initState();
+    loadAllScoreOfLevel();
   }
 
   loadAllScoreOfLevel() async {
-    // if(userController.user.value!=null){
-    //   var data =await userController.getDataScore(userController.user.value.uid);
-    //   if(data['${widget.level}']!=null)
-    //     mainController.scoreOfCate.value=data['${widget.level}'];
-    //   else
-    //     mainController.scoreOfCate.value={};
-    // }else{
-    //   final openBox = await Hive.openBox('Table_Score_${widget.level}');
-    //   mainController.scoreOfCate.value = openBox.toMap();
-    //   print(openBox.toMap());
-    //   openBox.close();
-    // }
-
-    final openBox = await Hive.openBox('Table_Score_${widget.level}');
-    mainController.scoreOfCate.value = openBox.toMap();
-    print(openBox.toMap());
-    openBox.close();
+    if(userController.user.value!=null){
+      var data =await userController.getDataScore(userController.user.value.uid);
+      if(data!=null){
+        if(data['${widget.level}']!=null)
+          mainController.scoreOfCate.value=data['${widget.level}'];
+        else
+          mainController.scoreOfCate.value={};
+      }
+    }else{
+      final openBox = await Hive.openBox('Table_Score_${widget.level}');
+      mainController.scoreOfCate.value = openBox.toMap();
+      print(openBox.toMap());
+      openBox.close();
+    }
   }
 
   @override
@@ -333,13 +331,19 @@ class _LevelScreenState extends State<LevelScreen> {
   }
 
   restartLevel() async {
-    final openBox = await Hive.openBox('Table_${widget.level}');
-    openBox.deleteFromDisk();
-    openBox.close();
+    if(userController.user.value!=null){
+      var data ={'scores.${widget.level}':FieldValue.delete()};
 
-    final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
-    openBoxScore.deleteFromDisk();
-    openBoxScore.close();
+      userController.deleteDataScore(userController.user.value.uid, data);
+    }else{
+      final openBox = await Hive.openBox('Table_${widget.level}');
+      openBox.deleteFromDisk();
+      openBox.close();
+
+      final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
+      openBoxScore.deleteFromDisk();
+      openBoxScore.close();
+    }
   }
 
   getScoreOfCate(int index) {
@@ -380,16 +384,29 @@ class _LevelScreenState extends State<LevelScreen> {
 
   modalBottomSheet(String cateName, int level, int categoryId) async {
     mainController.score.value.clear();
-    final openBox = await Hive.openBox('Table_Score_${widget.level}');
-    if (openBox.containsKey('$level' '_' '$categoryId')) {
-      if (openBox.get('$level' '_' '$categoryId') != null) {
-        mainController.score.value
-            .addAll(openBox.get('$level' '_' '$categoryId'));
+    if(userController.user.value!=null){
+      if (mainController.scoreOfCate.value.containsKey('$level' '_' '$categoryId')) {
+        if (mainController.scoreOfCate.value['$level' '_' '$categoryId'] != null) {
+          mainController.score.value
+              .addAll(mainController.scoreOfCate.value['$level' '_' '$categoryId']);
+        } else {
+          mainController.score.value.clear();
+        }
       } else {
         mainController.score.value.clear();
       }
-    } else {
-      mainController.score.value.clear();
+    }else{
+      final openBox = await Hive.openBox('Table_Score_${widget.level}');
+      if (openBox.containsKey('$level' '_' '$categoryId')) {
+        if (openBox.get('$level' '_' '$categoryId') != null) {
+          mainController.score.value
+              .addAll(openBox.get('$level' '_' '$categoryId'));
+        } else {
+          mainController.score.value.clear();
+        }
+      } else {
+        mainController.score.value.clear();
+      }
     }
     await showModalBottomSheet(
         backgroundColor: AppColors.transparent,
