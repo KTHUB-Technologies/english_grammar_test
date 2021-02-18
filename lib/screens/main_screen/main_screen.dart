@@ -160,8 +160,16 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                   onPressed: () async {
                     // await appController.loginWithMicrosoft();
+                    userController.user.value == null
+                        ? _buildChooseLogin()
+                        : showConfirmDialog(context,
+                        title: 'WARNING!!!',
+                        content: 'Do you want to LOG OUT?', confirm: () async {
+                          await userController.logout();
+                        }, cancel: () {
+                          Get.back();
+                        });
 
-                    _buildChooseLogin();
                   }),
             ),
             Padding(
