@@ -50,19 +50,19 @@ class _LevelScreenState extends State<LevelScreen> {
     mainController.scoreOfCate.value.clear();
     mainController.allQuestionsFromFS.value.clear();
     if (userController.user.value != null) {
-      var data =
+      Map data =
           await userController.getDataScore(userController.user.value.uid);
-      var question =
+      Map question =
           await userController.getDataQuestion(userController.user.value.uid);
 
-      if (data != null) {
+      if (data.isNotEmpty) {
         if (data['${widget.level}'] != null)
           mainController.scoreOfCate.value = data['${widget.level}'];
         else
           mainController.scoreOfCate.value = {};
       }
 
-      if (question != null) {
+      if (question.isNotEmpty) {
         if (question['${widget.level}'] != null)
           mainController.allQuestionsFromFS.value =
               HashMap.from(question['${widget.level}']);
