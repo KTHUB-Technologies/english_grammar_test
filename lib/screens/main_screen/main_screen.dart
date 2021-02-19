@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
@@ -13,7 +11,6 @@ import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
-import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
@@ -243,23 +240,6 @@ class _MainScreenState extends State<MainScreen> {
             duration: Duration(milliseconds: 500));
       },
     );
-    // appController.user.value == null
-    //     ? level != 1
-    //         ? Container(
-    //             width: getScreenWidth(context) / 1.8,
-    //             height: getScreenWidth(context) / 8,
-    //             decoration: BoxDecoration(
-    //                 color: AppColors.black.withOpacity(0.5),
-    //                 borderRadius: BorderRadius.circular(15)),
-    //             child: Icon(
-    //               Icons.lock_outline,
-    //               color: AppColors.white,
-    //             ),
-    //           )
-    //         : SizedBox()
-    //     : SizedBox(),
-    // ],
-    // );
   }
 
   _navigateToFacebookApp() async {
