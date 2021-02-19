@@ -19,6 +19,7 @@ import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/category_card.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
+import 'package:the_enest_english_grammar_test/screens/progress_screen/progress_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/question_screen/question_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/setting_screen/setting_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
@@ -26,9 +27,8 @@ import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 class LevelScreen extends StatefulWidget {
   final int level;
-  final bool isProgress;
 
-  const LevelScreen({Key key, this.level, this.isProgress}) : super(key: key);
+  const LevelScreen({Key key, this.level}) : super(key: key);
 
   @override
   _LevelScreenState createState() => _LevelScreenState();
@@ -138,18 +138,7 @@ class _LevelScreenState extends State<LevelScreen> {
                       color: AppColors.white,
                     ),
                     onPressed: () {
-                      if (!widget.isProgress) {
-                        Navigator.pop(context);
-                      } else {
                         Get.back();
-                        Get.to(
-                            LevelScreen(
-                              level: widget.level,
-                              isProgress: false,
-                            ),
-                            transition: Transition.rightToLeftWithFade,
-                            duration: Duration(milliseconds: 500));
-                      }
                     },
                   ),
                   title: AppText(
@@ -160,6 +149,7 @@ class _LevelScreenState extends State<LevelScreen> {
                   ),
                   trailing: PopupMenuButton(
                       elevation: 20,
+                      icon: Icon(Icons.menu,color: AppColors.white,),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15)),
                       onSelected: choiceAction,
@@ -243,16 +233,14 @@ class _LevelScreenState extends State<LevelScreen> {
                         index: e,
                         level: widget.level,
                         category: e,
-                        onTap: widget.isProgress == false
-                            ? () async {
+                        onTap: () async {
                                 await mainController
                                     .loadQuestionFromLevelAndCategory(
                                         widget.level, e);
 
                                 modalBottomSheet(
                                     getCategory(e), widget.level, e);
-                              }
-                            : () {},
+                              },
                         testCompleted: Rx<int>(getTestCompleted(e) ?? 0),
                         score: Rx<double>((getScoreOfCate(e) ?? 0)),
                       ),
@@ -295,8 +283,7 @@ class _LevelScreenState extends State<LevelScreen> {
   }
 
   _buildProgress() {
-    return widget.isProgress == false
-        ? Container(
+    return Container(
             margin: EdgeInsets.symmetric(
                 horizontal: Dimens.formPadding, vertical: 15),
             child: AppText(
@@ -304,51 +291,7 @@ class _LevelScreenState extends State<LevelScreen> {
               fontWeight: FontWeight.bold,
               color: AppColors.blue,
               textSize: Dimens.paragraphHeaderTextSize,
-            ))
-        : Column(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.symmetric(
-                    horizontal: Dimens.formPadding, vertical: 15),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: AppText(
-                        text: 'Delete All At This Level',
-                        color: AppColors.red,
-                        textSize: Dimens.paragraphHeaderTextSize,
-                      ),
-                    ),
-                    GestureDetector(
-                      child: Icon(
-                        Icons.delete,
-                        color: AppColors.red,
-                      ),
-                      onTap: () {
-                        showCupertinoDialog(
-                            context: context,
-                            builder: (context) {
-                              return IOSDialog(
-                                title: 'WARNING',
-                                content:
-                                    "Do you want to reset all question in this level?",
-                                cancel: () {
-                                  Get.back();
-                                },
-                                confirm: () async {
-                                  Get.offAll(MainScreen());
-
-                                  await restartLevel();
-                                },
-                              );
-                            });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
+            ));
   }
 
   restartLevel() async {
@@ -473,16 +416,12 @@ class _LevelScreenState extends State<LevelScreen> {
             duration: Duration(milliseconds: 500));
         return;
       case 'Progress':
-        if (!widget.isProgress) {
-          Get.back();
           Get.to(
-              LevelScreen(
+              ProgressScreen(
                 level: widget.level,
-                isProgress: true,
               ),
               transition: Transition.rightToLeftWithFade,
               duration: Duration(milliseconds: 500));
-        }
         return;
       case 'Settings':
         Get.to(SettingScreen(),

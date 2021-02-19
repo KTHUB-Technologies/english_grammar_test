@@ -237,7 +237,6 @@ class _MainScreenState extends State<MainScreen> {
         Get.to(
             LevelScreen(
               level: level,
-              isProgress: false,
             ),
             transition: Transition.rightToLeftWithFade,
             duration: Duration(milliseconds: 500));
