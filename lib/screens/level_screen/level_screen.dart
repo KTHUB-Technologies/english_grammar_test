@@ -1,3 +1,6 @@
+import 'dart:collection';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,6 +12,7 @@ import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
@@ -33,18 +37,45 @@ class LevelScreen extends StatefulWidget {
 class _LevelScreenState extends State<LevelScreen> {
   final MainController mainController = Get.find();
   final AppController appController = Get.put(AppController());
+  final UserController userController = Get.find();
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
-    loadAllScoreOfLevel();
     super.initState();
+    loadAllScoreOfLevel();
   }
 
   loadAllScoreOfLevel() async {
-    final openBox = await Hive.openBox('Table_Score_${widget.level}');
-    mainController.scoreOfCate.value = openBox.toMap();
-    openBox.close();
+    mainController.scoreOfCate.value.clear();
+    mainController.allQuestionsFromFS.value.clear();
+    if (userController.user.value != null) {
+      Map data =
+          await userController.getDataScore(userController.user.value.uid);
+      Map question =
+          await userController.getDataQuestion(userController.user.value.uid);
+
+      await userController.getDataFavorite(userController.user.value.uid);
+
+      if (data.isNotEmpty) {
+        if (data['${widget.level}'] != null)
+          mainController.scoreOfCate.value = data['${widget.level}'];
+        else
+          mainController.scoreOfCate.value = {};
+      }
+
+      if (question.isNotEmpty) {
+        if (question['${widget.level}'] != null)
+          mainController.allQuestionsFromFS.value =
+              HashMap.from(question['${widget.level}']);
+        else
+          mainController.allQuestionsFromFS.value = {};
+      }
+    } else {
+      final openBox = await Hive.openBox('Table_Score_${widget.level}');
+      mainController.scoreOfCate.value = openBox.toMap();
+      openBox.close();
+    }
   }
 
   @override
@@ -222,9 +253,7 @@ class _LevelScreenState extends State<LevelScreen> {
                                     getCategory(e), widget.level, e);
                               }
                             : () {},
-                        testCompleted: Rx<int>(
-                            getTestCompleted(e) ??
-                                0),
+                        testCompleted: Rx<int>(getTestCompleted(e) ?? 0),
                         score: Rx<double>((getScoreOfCate(e) ?? 0)),
                       ),
                     );
@@ -267,7 +296,15 @@ class _LevelScreenState extends State<LevelScreen> {
 
   _buildProgress() {
     return widget.isProgress == false
-        ? SizedBox()
+        ? Container(
+            margin: EdgeInsets.symmetric(
+                horizontal: Dimens.formPadding, vertical: 15),
+            child: AppText(
+              text: '#The Enest Language Center',
+              fontWeight: FontWeight.bold,
+              color: AppColors.blue,
+              textSize: Dimens.paragraphHeaderTextSize,
+            ))
         : Column(
             children: <Widget>[
               Container(
@@ -276,12 +313,10 @@ class _LevelScreenState extends State<LevelScreen> {
                 child: Row(
                   children: <Widget>[
                     Expanded(
-                      child: Text(
-                        'Delete All At This Level',
-                        style: TextStyle(
-                          color: AppColors.red,
-                          fontSize: Dimens.paragraphHeaderTextSize,
-                        ),
+                      child: AppText(
+                        text: 'Delete All At This Level',
+                        color: AppColors.red,
+                        textSize: Dimens.paragraphHeaderTextSize,
                       ),
                     ),
                     GestureDetector(
@@ -317,13 +352,24 @@ class _LevelScreenState extends State<LevelScreen> {
   }
 
   restartLevel() async {
-    final openBox = await Hive.openBox('Table_${widget.level}');
-    openBox.deleteFromDisk();
-    openBox.close();
+    if (userController.user.value != null) {
+      var data = {'scores.${widget.level}': FieldValue.delete()};
 
-    final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
-    openBoxScore.deleteFromDisk();
-    openBoxScore.close();
+      userController.deleteDataScore(userController.user.value.uid, data);
+
+      var questions = {'questions.${widget.level}': FieldValue.delete()};
+
+      userController.deleteDataQuestion(
+          userController.user.value.uid, questions);
+    } else {
+      final openBox = await Hive.openBox('Table_${widget.level}');
+      openBox.deleteFromDisk();
+      openBox.close();
+
+      final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
+      openBoxScore.deleteFromDisk();
+      openBoxScore.close();
+    }
   }
 
   getScoreOfCate(int index) {
@@ -354,8 +400,7 @@ class _LevelScreenState extends State<LevelScreen> {
         scoreCate
             .addAll(mainController.scoreOfCate.value['${widget.level}_$index']);
         scoreCate.forEach((key, value) {
-          if(value!='0_0')
-            countTest++;
+          if (value != '0_0') countTest++;
         });
       }
     }
@@ -364,16 +409,31 @@ class _LevelScreenState extends State<LevelScreen> {
 
   modalBottomSheet(String cateName, int level, int categoryId) async {
     mainController.score.value.clear();
-    final openBox = await Hive.openBox('Table_Score_${widget.level}');
-    if (openBox.containsKey('$level' '_' '$categoryId')) {
-      if (openBox.get('$level' '_' '$categoryId') != null) {
-        mainController.score.value
-            .addAll(openBox.get('$level' '_' '$categoryId'));
+    if (userController.user.value != null) {
+      if (mainController.scoreOfCate.value
+          .containsKey('$level' '_' '$categoryId')) {
+        if (mainController.scoreOfCate.value['$level' '_' '$categoryId'] !=
+            null) {
+          mainController.score.value.addAll(
+              mainController.scoreOfCate.value['$level' '_' '$categoryId']);
+        } else {
+          mainController.score.value.clear();
+        }
       } else {
         mainController.score.value.clear();
       }
     } else {
-      mainController.score.value.clear();
+      final openBox = await Hive.openBox('Table_Score_${widget.level}');
+      if (openBox.containsKey('$level' '_' '$categoryId')) {
+        if (openBox.get('$level' '_' '$categoryId') != null) {
+          mainController.score.value
+              .addAll(openBox.get('$level' '_' '$categoryId'));
+        } else {
+          mainController.score.value.clear();
+        }
+      } else {
+        mainController.score.value.clear();
+      }
     }
     await showModalBottomSheet(
         backgroundColor: AppColors.transparent,
@@ -391,11 +451,18 @@ class _LevelScreenState extends State<LevelScreen> {
   choiceAction(String choice) async {
     switch (choice) {
       case 'Favorite':
-        bool exist = await HiveHelper.isExists(boxName: 'Table_Favorite');
-        if (exist) {
-          print('-----------------------------------------');
-          mainController.questionsHiveFavorite =
-              RxList<Question>(await HiveHelper.getBoxes('Table_Favorite'));
+        if (userController.user.value != null) {
+          List<dynamic> favorite=await userController.getDataFavorite(userController.user.value.uid);
+          if(favorite.isNotEmpty){
+            mainController.questionsHiveFavorite=  RxList<Question>(favorite.map((e) => Question.fromJson(e)).toList());
+          }
+        } else {
+          bool exist = await HiveHelper.isExists(boxName: 'Table_Favorite');
+          if (exist) {
+            print('-----------------------------------------');
+            mainController.questionsHiveFavorite =
+                RxList<Question>(await HiveHelper.getBoxes('Table_Favorite'));
+          }
         }
         Get.to(
             QuestionScreen(

@@ -5,6 +5,7 @@ import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
@@ -20,6 +21,7 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   final AppController appController = Get.find();
+  final UserController userController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -37,11 +39,11 @@ class _SettingScreenState extends State<SettingScreen> {
                 _buildHeader(),
                 _buildSoundSetting(),
                 _buildLanguageSetting(),
-                // _buildButtonSignInOut(context),
+                _buildButtonSignInOut(context),
               ],
             ),
           ),
-          isLoading: appController.isShowLoading.value,
+          isLoading: userController.isShowLoading.value,
         ));
   }
 
@@ -86,45 +88,32 @@ class _SettingScreenState extends State<SettingScreen> {
   //   });
   // }
 
-  // _buildButtonSignInOut(BuildContext context) {
-  //   return Obx(() => Card(
-  //         child: ListTile(
-  //           leading: Container(
-  //             child: Icon(Icons.email),
-  //             padding: EdgeInsets.symmetric(horizontal: 17),
-  //           ),
-  //           title: AppText(
-  //             text: appController.user.value == null
-  //                 ? 'Sign In With The ENEST Account'
-  //                 : appController.user.value['mail'],
-  //           ),
-  //           onTap: () async {
-  //             appController.user.value == null
-  //                 ? appController.loginWithMicrosoft()
-  //                 : appController.signOut();
-  //           },
-  //         ),
-  //       ));
-  //
-  //   // AppButton(
-  //   //   appController.user.value == null
-  //   //       ? 'Sign In With The ENEST Account'
-  //   //       : appController.user.value['mail'],
-  //   //   widthButton: getScreenWidth(context) / 3,
-  //   //   onTap: appController.user.value == null
-  //   //       ? () {
-  //   //           Get.offAll(MainScreen());
-  //   //         }
-  //   //       : () async {
-  //   //           await ConfigMicrosoft.oauth.logout();
-  //   //           appController.user.value = null;
-  //   //           final openBox = await Hive.openBox('accessToken');
-  //   //           await openBox.clear();
-  //   //           openBox.close();
-  //   //           Get.offAll(MainScreen());
-  //   //         },
-  //   // );
-  // }
+  _buildButtonSignInOut(BuildContext context) {
+    return Obx(() => Card(
+          child: ListTile(
+            leading: Container(
+              child: Icon(Icons.email),
+              padding: EdgeInsets.symmetric(horizontal: 17),
+            ),
+            title: AppText(
+              text: userController.user.value == null
+                  ? 'Sign In With Social'
+                  : userController.user.value.displayName ?? 'Unknown Name',
+            ),
+            onTap: () async {
+              userController.user.value == null
+                  ? Get.offAll(MainScreen())
+                  : showConfirmDialog(context,
+                      title: 'WARNING!!!',
+                      content: 'Do you want to LOG OUT?', confirm: () async {
+                      await userController.logout();
+                    }, cancel: () {
+                      Get.back();
+                    });
+            },
+          ),
+        ));
+  }
 
   _buildSoundSetting() {
     return Obx(() {
@@ -135,7 +124,7 @@ class _SettingScreenState extends State<SettingScreen> {
               onChanged: (bool value) async {
                 final openBox = await Hive.openBox('Sound');
                 appController.sound.value = value;
-                await openBox.put('isSound', appController.isDark.value);
+                await openBox.put('isSound', appController.sound.value);
                 openBox.close();
               }),
           title: AppText(
@@ -147,7 +136,7 @@ class _SettingScreenState extends State<SettingScreen> {
     });
   }
 
-  _buildLanguageSetting(){
+  _buildLanguageSetting() {
     return Card(
       child: ListTile(
         leading: Container(
@@ -155,10 +144,9 @@ class _SettingScreenState extends State<SettingScreen> {
           padding: EdgeInsets.symmetric(horizontal: 17),
         ),
         title: AppText(
-          text: FlutterLocalizations.of(context)
-              .getString(context, 'language'),
+          text: FlutterLocalizations.of(context).getString(context, 'language'),
         ),
-        onTap: (){
+        onTap: () {
           Get.to(ChangeLanguageScreen());
         },
       ),

@@ -1,4 +1,7 @@
+import 'dart:collection';
+
 import 'package:animated_widgets/animated_widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +15,7 @@ import 'package:the_enest_english_grammar_test/commons/backdrop_container.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
 import 'package:the_enest_english_grammar_test/commons/slide_up_container.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
@@ -49,6 +53,7 @@ class QuestionScreen extends StatefulWidget {
 class _QuestionScreenState extends State<QuestionScreen>
     with SingleTickerProviderStateMixin {
   final MainController mainController = Get.find();
+  final UserController userController= Get.find();
   AnimationController _formController;
   Rx<int> countTrue = Rx<int>();
   ConfettiController _controllerCenter;
@@ -329,49 +334,89 @@ class _QuestionScreenState extends State<QuestionScreen>
 
   saveResult() async {
     var listQuestions = widget.question.map((e) => e.toJson()).toList();
-    final openBoxLevel = await Hive.openBox('Table_${widget.level}');
-    Map level = await openBoxLevel.get('${widget.categoryId}');
-    if (level==null) {
-      level = {'${widget.testNumber}': listQuestions};
-    } else {
-      level['${widget.testNumber}'] = listQuestions;
+    if(userController.user.value!=null){
+      var score ={'scores.${widget.level}.${widget.level}_${widget.categoryId}.${widget.testNumber}':'${countTrue.value}_${widget.question.length}'};
+
+      userController.updateDataScore(userController.user.value.uid, score);
+
+      var dataScore =await userController.getDataScore(userController.user.value.uid);
+      if(dataScore['${widget.level}']!=null)
+        mainController.scoreOfCate.value=dataScore['${widget.level}'];
+      else
+        mainController.scoreOfCate.value={};
+
+      var question={'questions.${widget.level}.${widget.categoryId}.${widget.testNumber}':listQuestions};
+
+      userController.updateDataQuestion(userController.user.value.uid, question);
+    }else{
+      final openBoxLevel = await Hive.openBox('Table_${widget.level}');
+      Map level = await openBoxLevel.get('${widget.categoryId}');
+      if (level==null) {
+        level = {'${widget.testNumber}': listQuestions};
+      } else {
+        level['${widget.testNumber}'] = listQuestions;
+      }
+      await openBoxLevel.put('${widget.categoryId}', level);
+      openBoxLevel.close();
+
+      final openBox = await Hive.openBox('Table_Score_${widget.level}');
+      Map score = await openBox.get('${widget.level}_${widget.categoryId}');
+      if (score==null) {
+        score = {
+          '${widget.testNumber}': '${countTrue.value}_${widget.question.length}'
+        };
+      } else {
+        score['${widget.testNumber}'] =
+        '${countTrue.value}_${widget.question.length}';
+      }
+
+      await openBox.put('${widget.level}_${widget.categoryId}', score);
+
+      mainController.scoreOfCate.value=openBox.toMap();
+      openBox.close();
     }
-    await openBoxLevel.put('${widget.categoryId}', level);
-    openBoxLevel.close();
-
-    final openBox = await Hive.openBox('Table_Score_${widget.level}');
-    Map score = await openBox.get('${widget.level}_${widget.categoryId}');
-    if (score==null) {
-      score = {
-        '${widget.testNumber}': '${countTrue.value}_${widget.question.length}'
-      };
-    } else {
-      score['${widget.testNumber}'] =
-          '${countTrue.value}_${widget.question.length}';
-    }
-
-    await openBox.put('${widget.level}_${widget.categoryId}', score);
-
-    mainController.scoreOfCate.value=openBox.toMap();
-    openBox.close();
   }
 
   deleteResult() async {
     mainController.questionsFromHive.clear();
-    final openBox = await Hive.openBox('Table_${widget.level}');
-    Map level = await openBox.get('${widget.categoryId}');
-    level['${widget.testNumber}'] = null;
-    await openBox.put('${widget.categoryId}', level);
+    if(userController.user.value!=null){
+      var data ={'scores.${widget.level}.${widget.level}_${widget.categoryId}.${widget.testNumber}':'0_0'};
 
-    final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
-    Map score = openBoxScore.get('${widget.level}_${widget.categoryId}');
-    score['${widget.testNumber}'] = '0_0';
-    await openBoxScore.put('${widget.level}_${widget.categoryId}', score);
-    mainController.score.value.clear();
+      userController.deleteDataScore(userController.user.value.uid, data);
 
-    mainController.scoreOfCate.value=openBoxScore.toMap();
+      var dataScore =await userController.getDataScore(userController.user.value.uid);
+      if(dataScore['${widget.level}']!=null)
+        mainController.scoreOfCate.value=dataScore['${widget.level}'];
+      else
+        mainController.scoreOfCate.value={};
+
+      var questions={'questions.${widget.level}.${widget.categoryId}.${widget.testNumber}':FieldValue.delete()};
+
+      userController.deleteDataQuestion(userController.user.value.uid, questions);
+
+      var dataQuestion =await userController.getDataQuestion(userController.user.value.uid);
+      if(dataQuestion!=null){
+        if(dataQuestion['${widget.level}']!=null)
+          mainController.allQuestionsFromFS.value=HashMap.from(dataQuestion['${widget.level}']);
+        else
+          mainController.allQuestionsFromFS.value={};
+      }
+    }else{
+      final openBox = await Hive.openBox('Table_${widget.level}');
+      Map level = await openBox.get('${widget.categoryId}');
+      level['${widget.testNumber}'] = null;
+      await openBox.put('${widget.categoryId}', level);
+
+      final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
+      Map score = openBoxScore.get('${widget.level}_${widget.categoryId}');
+      score['${widget.testNumber}'] = '0_0';
+      await openBoxScore.put('${widget.level}_${widget.categoryId}', score);
+      mainController.score.value.clear();
+
+      mainController.scoreOfCate.value=openBoxScore.toMap();
+      openBoxScore.close();
+    }
 
     Get.close(2);
-    openBoxScore.close();
   }
 }

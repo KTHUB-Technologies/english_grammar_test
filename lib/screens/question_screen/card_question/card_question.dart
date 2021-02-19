@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
@@ -32,6 +34,7 @@ class CardQuestion extends StatefulWidget {
 
 class _CardQuestionState extends State<CardQuestion> {
   final MainController mainController = Get.find();
+  final UserController userController = Get.find();
 
   @override
   void initState() {
@@ -198,32 +201,63 @@ class _CardQuestionState extends State<CardQuestion> {
   }
 
   addOrRemoveFromFavorite() async {
-    if (mainController.containFromFavorite.isEmpty) {
-      List<Question> question = [];
-      question.add(widget.question);
-      var questions = question.map((e) => e.toJson()).toList();
-      await HiveHelper.addBoxes(questions, 'Table_Favorite');
-      mainController.questionsHiveFavorite.add(widget.question);
-      mainController.containFromFavorite = RxList<Question>(mainController
-          .questionsHiveFavorite
-          .where((e) => e.id == widget.question.id)
-          .toList());
-    } else {
-      final openBox = await Hive.openBox('Table_Favorite');
-      if (widget.isFavorite == true) {
-        openBox.deleteAt(widget.listQuestions.indexOf(widget.question));
-        widget.listQuestions
-            .removeWhere((element) => element.id == widget.question.id);
-        if (mainController.index.value > 0) mainController.index.value--;
-      } else {
-        openBox.deleteAt(mainController.questionsHiveFavorite
-            .indexWhere((e) => e.id == widget.question.id));
-        mainController.questionsHiveFavorite
-            .removeWhere((e) => e.id == widget.question.id);
+    if (userController.user.value != null) {
+      if (mainController.containFromFavorite.isEmpty) {
+        Question ques=widget.question;
+        ques.currentChecked.value=null;
+        var favorite ={'favorites': FieldValue.arrayUnion([ques.toJson()])};
+        userController.updateDataFavorite(userController.user.value.uid, favorite);
+        mainController.questionsHiveFavorite.add(widget.question);
         mainController.containFromFavorite = RxList<Question>(mainController
             .questionsHiveFavorite
             .where((e) => e.id == widget.question.id)
             .toList());
+      } else {
+        if (widget.isFavorite == true) {
+          widget.listQuestions
+              .removeWhere((element) => element.id == widget.question.id);
+          if (mainController.index.value > 0) mainController.index.value--;
+        } else {
+          mainController.questionsHiveFavorite
+              .removeWhere((e) => e.id == widget.question.id);
+          mainController.containFromFavorite = RxList<Question>(mainController
+              .questionsHiveFavorite
+              .where((e) => e.id == widget.question.id)
+              .toList());
+        }
+        Question ques=widget.question;
+        ques.currentChecked.value=null;
+        var favorite ={'favorites': FieldValue.arrayRemove([ques.toJson()])};
+        await userController.deleteDataFavorite(userController.user.value.uid, favorite);
+      }
+    } else {
+      if (mainController.containFromFavorite.isEmpty) {
+        List<Question> question = [];
+        question.add(widget.question);
+        var questions = question.map((e) => e.toJson()).toList();
+        await HiveHelper.addBoxes(questions, 'Table_Favorite');
+        mainController.questionsHiveFavorite.add(widget.question);
+        mainController.containFromFavorite = RxList<Question>(mainController
+            .questionsHiveFavorite
+            .where((e) => e.id == widget.question.id)
+            .toList());
+      } else {
+        final openBox = await Hive.openBox('Table_Favorite');
+        if (widget.isFavorite == true) {
+          openBox.deleteAt(widget.listQuestions.indexOf(widget.question));
+          widget.listQuestions
+              .removeWhere((element) => element.id == widget.question.id);
+          if (mainController.index.value > 0) mainController.index.value--;
+        } else {
+          openBox.deleteAt(mainController.questionsHiveFavorite
+              .indexWhere((e) => e.id == widget.question.id));
+          mainController.questionsHiveFavorite
+              .removeWhere((e) => e.id == widget.question.id);
+          mainController.containFromFavorite = RxList<Question>(mainController
+              .questionsHiveFavorite
+              .where((e) => e.id == widget.question.id)
+              .toList());
+        }
       }
     }
   }

@@ -15,6 +15,9 @@ class MainController extends GetxController {
   RxList<bool> selected = RxList<bool>([true, false]);
   Rx<int> sectionSelected = Rx<int>(0);
 
+  ///Fire store
+  Rx<Map<dynamic,dynamic>> allQuestionsFromFS= Rx<Map<dynamic,dynamic>>({});
+
   ///JSON DATA
   RxList<Question> questions = RxList<Question>([]);
 
