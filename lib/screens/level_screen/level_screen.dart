@@ -55,6 +55,8 @@ class _LevelScreenState extends State<LevelScreen> {
       Map question =
           await userController.getDataQuestion(userController.user.value.uid);
 
+      await userController.getDataFavorite(userController.user.value.uid);
+
       if (data.isNotEmpty) {
         if (data['${widget.level}'] != null)
           mainController.scoreOfCate.value = data['${widget.level}'];
@@ -449,11 +451,18 @@ class _LevelScreenState extends State<LevelScreen> {
   choiceAction(String choice) async {
     switch (choice) {
       case 'Favorite':
-        bool exist = await HiveHelper.isExists(boxName: 'Table_Favorite');
-        if (exist) {
-          print('-----------------------------------------');
-          mainController.questionsHiveFavorite =
-              RxList<Question>(await HiveHelper.getBoxes('Table_Favorite'));
+        if (userController.user.value != null) {
+          List<dynamic> favorite=await userController.getDataFavorite(userController.user.value.uid);
+          if(favorite.isNotEmpty){
+            mainController.questionsHiveFavorite=  RxList<Question>(favorite.map((e) => Question.fromJson(e)).toList());
+          }
+        } else {
+          bool exist = await HiveHelper.isExists(boxName: 'Table_Favorite');
+          if (exist) {
+            print('-----------------------------------------');
+            mainController.questionsHiveFavorite =
+                RxList<Question>(await HiveHelper.getBoxes('Table_Favorite'));
+          }
         }
         Get.to(
             QuestionScreen(

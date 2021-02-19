@@ -145,4 +145,31 @@ class UserController extends GetxController{
   deleteDataQuestion(String uid, var data) async{
     await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_QUESTIONS').update(data);
   }
+
+  ///Favorites
+  setDataFavorite(String uid) async{
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('FAVORITES').set({'favorites':[]});
+  }
+
+  getDataFavorite(String uid) async{
+    DocumentSnapshot doc = await FireBaseHelper.fireStoreReference
+        .collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('FAVORITES')
+        .get();
+    if(doc.data()==null){
+      await setDataFavorite(uid);
+    }else{
+      if(doc.data()['favorites']!=null)
+        return doc.data()['favorites'];
+      else
+        return [];
+    }
+  }
+
+  updateDataFavorite(String uid, var data) async{
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('FAVORITES').update(data);
+  }
+
+  deleteDataFavorite(String uid, var data) async{
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('FAVORITES').update(data);
+  }
 }

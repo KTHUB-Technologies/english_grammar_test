@@ -188,6 +188,14 @@ class _MainScreenState extends State<MainScreen> {
                     _navigateToSettingScreen();
                   }),
             ),
+            userController.user.value==null?Padding(
+              padding: EdgeInsets.symmetric(vertical: 0),
+              child: IconButton(
+                  icon: Icon(Icons.warning,color: AppColors.red,),
+                  onPressed: () {
+                    showConfirmDialog(context,title: 'WARNING!!!', content: 'Log in to save your results', confirm: (){Get.back();});
+                  }),
+            ):SizedBox(),
           ],
         ),
         destinations: []..addAll(levelController.distinctLevel

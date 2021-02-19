@@ -90,8 +90,15 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
           ),
           onTap: () async {
            // Get.back();
-            mainController.questionsHiveFavorite =
-                RxList<Question>(await HiveHelper.getBoxes('Table_Favorite'));
+            if (userController.user.value != null) {
+              List<dynamic> favorite=await userController.getDataFavorite(userController.user.value.uid);
+              if(favorite.isNotEmpty){
+                mainController.questionsHiveFavorite=  RxList<Question>(favorite.map((e) => Question.fromJson(e)).toList());
+              }
+            } else {
+                mainController.questionsHiveFavorite =
+                    RxList<Question>(await HiveHelper.getBoxes('Table_Favorite'));
+            }
             await checkExistTable(
                 mainController.listChunkQuestions.indexOf(e) + 1);
             e.forEach((question) {
