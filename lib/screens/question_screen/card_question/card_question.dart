@@ -203,32 +203,41 @@ class _CardQuestionState extends State<CardQuestion> {
   addOrRemoveFromFavorite() async {
     if (userController.user.value != null) {
       if (mainController.containFromFavorite.isEmpty) {
-        Question ques=widget.question;
+        Question ques;
+        int checked= widget.question.currentChecked.value;
+        ques=widget.question;
         ques.currentChecked.value=null;
+
         var favorite ={'favorites': FieldValue.arrayUnion([ques.toJson()])};
         userController.updateDataFavorite(userController.user.value.uid, favorite);
-        mainController.questionsHiveFavorite.add(widget.question);
+        mainController.questionsHiveFavorite.add(ques);
         mainController.containFromFavorite = RxList<Question>(mainController
             .questionsHiveFavorite
-            .where((e) => e.id == widget.question.id)
+            .where((e) => e.id == ques.id)
             .toList());
+
+        widget.question.currentChecked.value=checked;
       } else {
+        Question ques;
+        int checked= widget.question.currentChecked.value;
+        ques=widget.question;
+        ques.currentChecked.value=null;
+        var favorite ={'favorites': FieldValue.arrayRemove([ques.toJson()])};
+        userController.deleteDataFavorite(userController.user.value.uid, favorite);
         if (widget.isFavorite == true) {
           widget.listQuestions
-              .removeWhere((element) => element.id == widget.question.id);
+              .removeWhere((element) => element.id == ques.id);
           if (mainController.index.value > 0) mainController.index.value--;
         } else {
           mainController.questionsHiveFavorite
-              .removeWhere((e) => e.id == widget.question.id);
+              .removeWhere((e) => e.id == ques.id);
           mainController.containFromFavorite = RxList<Question>(mainController
               .questionsHiveFavorite
-              .where((e) => e.id == widget.question.id)
+              .where((e) => e.id == ques.id)
               .toList());
         }
-        Question ques=widget.question;
-        ques.currentChecked.value=null;
-        var favorite ={'favorites': FieldValue.arrayRemove([ques.toJson()])};
-        await userController.deleteDataFavorite(userController.user.value.uid, favorite);
+
+        widget.question.currentChecked.value=checked;
       }
     } else {
       if (mainController.containFromFavorite.isEmpty) {
