@@ -89,7 +89,6 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
             ),
           ),
           onTap: () async {
-           // Get.back();
             if (userController.user.value != null) {
               List<dynamic> favorite=await userController.getDataFavorite(userController.user.value.uid);
               if(favorite.isNotEmpty){

@@ -176,8 +176,6 @@ class _QuestionScreenState extends State<QuestionScreen>
                               Get.back();
                             },
                             confirm: () async {
-                              Get.back();
-
                               await deleteResult();
                             },
                           );
@@ -348,6 +346,14 @@ class _QuestionScreenState extends State<QuestionScreen>
       var question={'questions.${widget.level}.${widget.categoryId}.${widget.testNumber}':listQuestions};
 
       userController.updateDataQuestion(userController.user.value.uid, question);
+
+      var dataQuestion =await userController.getDataQuestion(userController.user.value.uid);
+      if(dataQuestion!=null){
+        if(dataQuestion['${widget.level}']!=null)
+          mainController.allQuestionsFromFS.value=HashMap.from(dataQuestion['${widget.level}']);
+        else
+          mainController.allQuestionsFromFS.value={};
+      }
     }else{
       final openBoxLevel = await Hive.openBox('Table_${widget.level}');
       Map level = await openBoxLevel.get('${widget.categoryId}');
@@ -379,6 +385,7 @@ class _QuestionScreenState extends State<QuestionScreen>
 
   deleteResult() async {
     mainController.questionsFromHive.clear();
+    Get.close(3);
     if(userController.user.value!=null){
       var data ={'scores.${widget.level}.${widget.level}_${widget.categoryId}.${widget.testNumber}':'0_0'};
 
@@ -416,7 +423,5 @@ class _QuestionScreenState extends State<QuestionScreen>
       mainController.scoreOfCate.value=openBoxScore.toMap();
       openBoxScore.close();
     }
-
-    Get.close(2);
   }
 }
