@@ -207,16 +207,18 @@ class _CardQuestionState extends State<CardQuestion> {
         int checked= widget.question.currentChecked.value;
         ques=widget.question;
         ques.currentChecked.value=null;
-
         var favorite ={'favorites': FieldValue.arrayUnion([ques.toJson()])};
         userController.updateDataFavorite(userController.user.value.uid, favorite);
+
+        widget.question.currentChecked.value=checked;
+
         mainController.questionsHiveFavorite.add(ques);
         mainController.containFromFavorite = RxList<Question>(mainController
             .questionsHiveFavorite
             .where((e) => e.id == ques.id)
             .toList());
 
-        widget.question.currentChecked.value=checked;
+
       } else {
         Question ques;
         int checked= widget.question.currentChecked.value;
@@ -224,6 +226,9 @@ class _CardQuestionState extends State<CardQuestion> {
         ques.currentChecked.value=null;
         var favorite ={'favorites': FieldValue.arrayRemove([ques.toJson()])};
         userController.deleteDataFavorite(userController.user.value.uid, favorite);
+
+        widget.question.currentChecked.value=checked;
+
         if (widget.isFavorite == true) {
           widget.listQuestions
               .removeWhere((element) => element.id == ques.id);
@@ -236,8 +241,6 @@ class _CardQuestionState extends State<CardQuestion> {
               .where((e) => e.id == ques.id)
               .toList());
         }
-
-        widget.question.currentChecked.value=checked;
       }
     } else {
       if (mainController.containFromFavorite.isEmpty) {
