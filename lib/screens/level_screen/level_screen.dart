@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/animted_list.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
-import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
@@ -18,12 +17,13 @@ import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/category_card.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
+import 'package:the_enest_english_grammar_test/screens/level_screen/normal_card.dart';
 import 'package:the_enest_english_grammar_test/screens/progress_screen/progress_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/question_screen/question_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/setting_screen/setting_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
+import 'package:timeline_tile/timeline_tile.dart';
 
 class LevelScreen extends StatefulWidget {
   final int level;
@@ -227,22 +227,53 @@ class _LevelScreenState extends State<LevelScreen> {
                             .where((c) => c.categoryId == e)
                             .toList())
                         .length;
-                    return WidgetAnimator(
-                      CategoryCard(
-                        totalQuestion: totalQuestion,
-                        index: e,
-                        level: widget.level,
-                        category: e,
-                        onTap: () async {
-                                await mainController
-                                    .loadQuestionFromLevelAndCategory(
-                                        widget.level, e);
+                    return e.isOdd?TimelineTile(
+                      alignment: TimelineAlign.center,
+                      indicatorStyle: const IndicatorStyle(
+                        width: 20,
+                        color: AppColors.green,
+                        padding: EdgeInsets.all(8),
+                      ),
+                      endChild: WidgetAnimator(
+                        NormalCategoryCard(
+                          index: e,
+                          level: widget.level,
+                          totalQuestion: totalQuestion,
+                          score: Rx<double>(getScoreOfCate(e))??0,
+                          category: e,
+                          onTap: () async {
+                            await mainController
+                                .loadQuestionFromLevelAndCategory(
+                                widget.level, e);
 
-                                modalBottomSheet(
-                                    getCategory(e), widget.level, e);
-                              },
-                        testCompleted: Rx<int>(getTestCompleted(e) ?? 0),
-                        score: Rx<double>((getScoreOfCate(e) ?? 0)),
+                            modalBottomSheet(
+                                getCategory(e), widget.level, e);
+                          },
+                        ),
+                      ),
+                    ):TimelineTile(
+                      alignment: TimelineAlign.center,
+                      indicatorStyle: const IndicatorStyle(
+                        width: 20,
+                        color: AppColors.green,
+                        padding: EdgeInsets.all(8),
+                      ),
+                      startChild: WidgetAnimator(
+                        NormalCategoryCard(
+                          index: e,
+                          level: widget.level,
+                          totalQuestion: totalQuestion,
+                          score: Rx<double>(getScoreOfCate(e))??0,
+                          category: e,
+                          onTap: () async {
+                            await mainController
+                                .loadQuestionFromLevelAndCategory(
+                                widget.level, e);
+
+                            modalBottomSheet(
+                                getCategory(e), widget.level, e);
+                          },
+                        ),
                       ),
                     );
                   }).toList(),

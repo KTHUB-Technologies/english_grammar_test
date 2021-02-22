@@ -43,7 +43,7 @@ dependencies:
   flutter_facebook_auth: ^2.0.1
   sign_in_with_apple: ^2.5.4
   crypto: ^2.1.5
-  liquid_progress_indicator: ^0.3.2
+  timeline_tile: ^1.0.0
   dio: ^3.0.10
 
 

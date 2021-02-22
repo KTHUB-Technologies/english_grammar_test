@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:hive/hive.dart';
-import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
@@ -86,6 +85,7 @@ class _CategoryCardState extends State<CategoryCard> {
                             padding: const EdgeInsets.all(3.0),
                             child: LinearPercentIndicator(
                                 width: getScreenWidth(context) / 2,
+                                lineHeight: 7.0,
                                 backgroundColor: AppColors.white,
                                 progressColor: Colors.deepOrange[500],
                                 percent: widget.score.value == null ||
