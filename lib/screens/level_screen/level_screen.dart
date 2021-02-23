@@ -56,14 +56,14 @@ class _LevelScreenState extends State<LevelScreen> {
 
       await userController.getDataFavorite(userController.user.value.uid);
 
-      if (data.isNotEmpty) {
+      if (data!=null) {
         if (data['${widget.level}'] != null)
           mainController.scoreOfCate.value = data['${widget.level}'];
         else
           mainController.scoreOfCate.value = {};
       }
 
-      if (question.isNotEmpty) {
+      if (question!=null) {
         if (question['${widget.level}'] != null)
           mainController.allQuestionsFromFS.value =
               HashMap.from(question['${widget.level}']);
