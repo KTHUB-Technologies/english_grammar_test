@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
@@ -30,6 +31,7 @@ class _MainScreenState extends State<MainScreen> {
   final MainController levelController = Get.find();
   final AppController appController = Get.find();
 
+  /// OVERRIDE METHOD
   @override
   void initState() {
     levelController.categories = [];
@@ -41,88 +43,93 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return LoadingContainer(
-        child: Scaffold(
-          resizeToAvoidBottomPadding: false,
-          body: Container(
-            child: Row(
-              children: [
-                _buildLevelNavigationRail(),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Stack(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                    colors: AppColors.gradientColorPrimary)),
-                            height: getScreenHeight(context) / 2,
-                          ),
-                          Container(
-                              decoration: BoxDecoration(
-                                  color: AppColors.white,
-                                  borderRadius: BorderRadius.only(
-                                      bottomRight: Radius.circular(70))),
-                              height: getScreenHeight(context) / 2,
-                              child: Center(
-                                child: AppLogo(),
-                              )),
-                        ],
-                      ),
-                      Stack(
-                        children: [
-                          Container(
-                            color: AppColors.white,
-                            height: getScreenHeight(context) / 2,
-                          ),
-                          Container(
-                            height: getScreenHeight(context) / 2,
-                            decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                    colors: AppColors.gradientColorPrimary),
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(70))),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: AppText(
-                                    text: getLevelDescription(
-                                        levelController.levelSelected.value + 1,
-                                        context),
-                                    textAlign: TextAlign.left,
-                                    color: AppColors.white,
-                                    textSize: Dimens.paragraphHeaderTextSize,
-                                  ),
-                                ),
-                                Dimens.height10,
-                                Container(
-                                  child: Center(
-                                      child: _buildSelectedContent(
-                                          levelController.levelSelected.value +
-                                              1)),
-                                )
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-        isLoading: levelController.isShowLoading.value,
-        isShowIndicator: true,
-      );
+      return _buildContent();
     });
   }
 
-  _buildLevelNavigationRail() {
+  /// BUILD METHOD
+  Widget _buildContent() {
+    return LoadingContainer(
+      child: Scaffold(
+        resizeToAvoidBottomPadding: false,
+        body: Container(
+          child: Row(
+            children: [
+              _buildLevelNavigationRail(),
+              Expanded(
+                child: Column(
+                  children: [
+                    Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                  colors: AppColors.gradientColorPrimary)),
+                          height: getScreenHeight(context) / 2,
+                        ),
+                        Container(
+                            decoration: BoxDecoration(
+                                color: AppColors.white,
+                                borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(70))),
+                            height: getScreenHeight(context) / 2,
+                            child: Center(
+                              child: AppLogo(),
+                            )),
+                      ],
+                    ),
+                    Stack(
+                      children: [
+                        Container(
+                          color: AppColors.white,
+                          height: getScreenHeight(context) / 2,
+                        ),
+                        Container(
+                          height: getScreenHeight(context) / 2,
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                  colors: AppColors.gradientColorPrimary),
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(70))),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: AppText(
+                                  text: getLevelDescription(
+                                      levelController.levelSelected.value + 1,
+                                      context),
+                                  textAlign: TextAlign.left,
+                                  color: AppColors.white,
+                                  textSize: Dimens.paragraphHeaderTextSize,
+                                ),
+                              ),
+                              Dimens.height10,
+                              Container(
+                                child: Center(
+                                    child: _buildSelectedContent(
+                                        levelController.levelSelected.value +
+                                            1)),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+      isLoading: levelController.isShowLoading.value,
+      isShowIndicator: true,
+    );
+  }
+
+  Widget _buildLevelNavigationRail() {
     return NavigationRail(
         backgroundColor: AppColors.white,
         minWidth: 55.0,
@@ -153,28 +160,21 @@ class _MainScreenState extends State<MainScreen> {
                       : CircleAvatar(
                           child: AppText(
                               text: shortUserName(
-                                  userController.user.value.displayName??'Unknown Name')),
+                                  userController.user.value.displayName ??
+                                      'Unknown Name')),
                         ),
                   onPressed: () async {
                     // await appController.loginWithMicrosoft();
                     userController.user.value == null
-                        ? _buildChooseLogin()
+                        ? _showBottomSheetSocialLogin()
                         : showConfirmDialog(context,
-                        title: 'WARNING!!!',
-                        content: 'Do you want to LOG OUT?', confirm: () async {
-                          await userController.logout();
-                        }, cancel: () {
-                          Get.back();
-                        });
-
-                  }),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 0),
-              child: IconButton(
-                  icon: Icon(Icons.language),
-                  onPressed: () async {
-                    await _navigateToFacebookApp();
+                            title: 'WARNING!!!',
+                            content: 'Do you want to LOG OUT?',
+                            confirm: () async {
+                            await userController.logout();
+                          }, cancel: () {
+                            Get.back();
+                          });
                   }),
             ),
             Padding(
@@ -185,14 +185,24 @@ class _MainScreenState extends State<MainScreen> {
                     _navigateToSettingScreen();
                   }),
             ),
-            userController.user.value==null?Padding(
-              padding: EdgeInsets.symmetric(vertical: 0),
-              child: IconButton(
-                  icon: Icon(Icons.warning,color: AppColors.red,),
-                  onPressed: () {
-                    showConfirmDialog(context,title: 'WARNING!!!', content: 'Log in to save your results', confirm: (){Get.back();});
-                  }),
-            ):SizedBox(),
+            userController.user.value == null
+                ? Padding(
+                    padding: EdgeInsets.symmetric(vertical: 0),
+                    child: IconButton(
+                        icon: Icon(
+                          Icons.warning,
+                          color: AppColors.red,
+                        ),
+                        onPressed: () {
+                          showConfirmDialog(context,
+                              title: 'WARNING!!!',
+                              content: 'Log in to save your results',
+                              confirm: () {
+                            Get.back();
+                          });
+                        }),
+                  )
+                : SizedBox(),
           ],
         ),
         destinations: []..addAll(levelController.distinctLevel
@@ -210,17 +220,14 @@ class _MainScreenState extends State<MainScreen> {
             .toList()));
   }
 
-  _buildSelectedContent(int level) {
+  Widget _buildSelectedContent(int level) {
     return Column(
       children: [buildAppButtonLevel(level)],
     );
   }
 
   Widget buildAppButtonLevel(int level) {
-    return
-        // Stack(
-        // children: <Widget>[
-        AppButton(
+    return AppButton(
       "Let's Start",
       onTap: () async {
         SoundsHelper.checkAudio(Sounds.touch);
@@ -242,6 +249,54 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  Widget _buildBottomSheetSocialLogin() {
+    return CupertinoActionSheet(
+      title: AppText(text: "Social Login",),
+      message: AppText(text: "Login with social account to save your progress",),
+      actions: [
+        Platform.isIOS
+            ? CupertinoActionSheetAction(
+
+                onPressed: () {},
+                child: SignInButton(
+                  Buttons.Apple,
+                  onPressed: () async {
+                    try {
+                      await userController.signInWithApple();
+                      Get.back();
+                    } catch (e) {
+                      print(e);
+                    }
+                  },
+                ))
+            : null,
+        CupertinoActionSheetAction(
+          onPressed: (){},
+          child: SignInButton(Buttons.Facebook, onPressed: () async {
+            try {
+              await userController.signInWithFacebook();
+              Get.back();
+            } catch (e) {
+              print(e);
+            }
+          }),
+        ),
+        CupertinoActionSheetAction(
+          onPressed: (){},
+          child: SignInButton(Buttons.Google, onPressed: () async {
+            try {
+              await userController.signInWithGoogle();
+              Get.back();
+            } catch (e) {
+              print(e);
+            }
+          }),
+        )
+      ],
+    );
+  }
+
+  ///OTHER METHOD
   _navigateToFacebookApp() async {
     if (Platform.isIOS) {
       if (await canLaunch('https://www.facebook.com/Enestcenter')) {
@@ -274,47 +329,11 @@ class _MainScreenState extends State<MainScreen> {
     openBox.close();
   }
 
-  _buildChooseLogin() {
-    showDialog(
+  _showBottomSheetSocialLogin() {
+    showCupertinoModalPopup(
         context: context,
         builder: (context) {
-          return Dialog(
-            elevation: 0,
-            backgroundColor: AppColors.transparent,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                if (Platform.isIOS)
-                  SignInButton(
-                    Buttons.Apple,
-                    onPressed: () async {
-                      try{
-                        await userController.signInWithApple();
-                        Get.back();
-                      }catch (e){
-                        print(e);
-                      }
-                    },
-                  ),
-                SignInButton(Buttons.Facebook, onPressed: () async {
-                  try{
-                    await userController.signInWithFacebook();
-                    Get.back();
-                  }catch (e){
-                    print(e);
-                  }
-                }),
-                SignInButton(Buttons.Google, onPressed: () async {
-                  try{
-                    await userController.signInWithGoogle();
-                    Get.back();
-                  }catch (e){
-                    print(e);
-                  }
-                }),
-              ],
-            ),
-          );
+          return _buildBottomSheetSocialLogin();
         });
   }
 }

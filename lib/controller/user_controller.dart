@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:convert';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -27,6 +26,7 @@ class UserController extends GetxController{
     var userGoogle= await FirebaseAuth.instance.signInWithCredential(credential);
 
     user.value=userGoogle.user;
+    print(user.value.uid);
     getDataScore(user.value.uid);
   }
 
@@ -39,6 +39,7 @@ class UserController extends GetxController{
     var userFacebook= await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
 
     user.value=userFacebook.user;
+
     getDataScore(user.value.uid);
   }
 

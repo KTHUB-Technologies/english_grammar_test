@@ -7,7 +7,7 @@ class Constants {
 
   static const String QUESTIONS_DATA='QUESTIONS_DATA';
 
-  ///Fire store
+  ///Firestore
   static const String USERS='USERS';
   static const String DATA='DATA';
 }
