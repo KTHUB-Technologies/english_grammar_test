@@ -25,22 +25,22 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.1042312715170-52mhhaoa1d05gkr0prg709649jdkgt7l</string>
+				<string>com.googleusercontent.apps.1042312715170-hjmqtk2svtq1enqkrb8o502tk7sfpri3</string>
 			</array>
 		</dict>
-        <dict>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>fb165185982066748</string>
-            </array>
-        </dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb165185982066748</string>
+			</array>
+		</dict>
 	</array>
-    <key>FacebookAppID</key>
-    <string>165185982066748</string>
-    <key>FacebookDisplayName</key>
-    <string>The English Grammar Test</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>FacebookAppID</key>
+	<string>165185982066748</string>
+	<key>FacebookDisplayName</key>
+	<string>The English Grammar Test</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>facebook</string>
