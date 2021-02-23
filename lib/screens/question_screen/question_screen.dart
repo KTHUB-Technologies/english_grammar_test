@@ -337,7 +337,7 @@ class _QuestionScreenState extends State<QuestionScreen>
 
       userController.updateDataScore(userController.user.value.uid, score);
 
-      var dataScore =await userController.getDataScore(userController.user.value.uid);
+      Map dataScore =await userController.getDataScore(userController.user.value.uid);
       if(dataScore['${widget.level}']!=null)
         mainController.scoreOfCate.value=dataScore['${widget.level}'];
       else
@@ -347,7 +347,7 @@ class _QuestionScreenState extends State<QuestionScreen>
 
       userController.updateDataQuestion(userController.user.value.uid, question);
 
-      var dataQuestion =await userController.getDataQuestion(userController.user.value.uid);
+      Map dataQuestion =await userController.getDataQuestion(userController.user.value.uid);
       if(dataQuestion!=null){
         if(dataQuestion['${widget.level}']!=null)
           mainController.allQuestionsFromFS.value=HashMap.from(dataQuestion['${widget.level}']);

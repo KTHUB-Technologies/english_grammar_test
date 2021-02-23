@@ -188,3 +188,15 @@ getTotalTest(int totalQuestion){
   }
   return totalTest;
 }
+
+getProviderNumber(String providerName){
+  switch(providerName){
+    case 'facebook.com':
+      return 1;
+    case 'google.com':
+      return 2;
+    case 'apple.com':
+      return 3;
+    default:
+  }
+}

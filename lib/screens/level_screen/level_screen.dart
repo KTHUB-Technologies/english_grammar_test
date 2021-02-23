@@ -51,11 +51,10 @@ class _LevelScreenState extends State<LevelScreen> {
     mainController.scoreOfCate.value.clear();
     mainController.allQuestionsFromFS.value.clear();
     if (userController.user.value != null) {
-      var data =
+      Map data =
           await userController.getDataScore(userController.user.value.uid);
-      var question =
+      Map question =
           await userController.getDataQuestion(userController.user.value.uid);
-      print('question    $question');
 
 
       await userController.getDataFavorite(userController.user.value.uid);

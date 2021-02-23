@@ -10,6 +10,8 @@ import 'package:hive/hive.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/helper/firebase_helper.dart';
+import 'package:the_enest_english_grammar_test/helper/utils.dart';
+import 'package:the_enest_english_grammar_test/model/user_model.dart';
 
 class UserController extends GetxController{
   Rx<bool> isShowLoading = Rx<bool>(false);
@@ -26,8 +28,8 @@ class UserController extends GetxController{
     var userGoogle= await FirebaseAuth.instance.signInWithCredential(credential);
 
     user.value=userGoogle.user;
-    print(user.value.uid);
-    getDataScore(user.value.uid);
+    UserInfo userInfo=user.value.providerData.first;
+    getDataUser(user.value.uid,email: userInfo.email, displayName: userInfo.displayName, phoneNumber: userInfo.phoneNumber, providerNumber: getProviderNumber(userInfo.providerId));
   }
 
 
@@ -39,18 +41,15 @@ class UserController extends GetxController{
     var userFacebook= await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
 
     user.value=userFacebook.user;
-
-    getDataScore(user.value.uid);
+    print(user.value);
+    UserInfo userInfo=user.value.providerData.first;
+    getDataUser(user.value.uid,email: userInfo.email, displayName: userInfo.displayName, phoneNumber: userInfo.phoneNumber, providerNumber: getProviderNumber(userInfo.providerId));
   }
 
 
   ///Log Out
   logout() async {
     isShowLoading.value = true;
-
-    final openBox=await Hive.openBox('user');
-    await openBox.deleteFromDisk();
-    openBox.close();
 
     await FireBaseHelper.fireBaseAuth.signOut();
     user.value=null;
@@ -89,10 +88,24 @@ class UserController extends GetxController{
     var userApple = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
 
     user.value=userApple.user;
-    getDataScore(user.value.uid);
+    UserInfo userInfo=user.value.providerData.first;
+    getDataUser(user.value.uid,email: userInfo.email, displayName: userInfo.displayName, phoneNumber: userInfo.phoneNumber, providerNumber: getProviderNumber(userInfo.providerId));
   }
 
   ///Fire store
+  ///User
+  getDataUser(String uid, {String email, String displayName, String phoneNumber, num providerNumber}) async{
+    DocumentSnapshot doc=await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).get();
+    if(doc.data()==null){
+      addDataUser(uid, email, displayName, phoneNumber, providerNumber);
+    }else
+      print('Already Exist Information!!!');
+  }
+
+  addDataUser(String uid, String email, String displayName, String phoneNumber, num providerNumber) async{
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).set({'email': email, 'displayName': displayName, 'phoneNumber': phoneNumber, 'providerNumber': providerNumber });
+  }
+
   ///Scores
   setDataScore(String uid) async{
     await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_SCORES').set({'scores':{}});
