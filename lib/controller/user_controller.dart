@@ -95,7 +95,7 @@ class UserController extends GetxController{
   ///Fire store
   ///Scores
   setDataScore(String uid) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_SCORES').set({'scores':[]});
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_SCORES').set({'scores':{}});
   }
 
   getDataScore(String uid) async{
@@ -108,7 +108,7 @@ class UserController extends GetxController{
       if(doc.data()['scores']!=null)
         return doc.data()['scores'];
       else
-        return [];
+        return {};
     }
   }
 
@@ -122,7 +122,7 @@ class UserController extends GetxController{
 
   ///Questions
   setDataQuestion(String uid) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_QUESTIONS').set({'questions':[]});
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_QUESTIONS').set({'questions':{}});
   }
 
   getDataQuestion(String uid) async{
@@ -135,7 +135,7 @@ class UserController extends GetxController{
       if(doc.data()['questions']!=null)
         return doc.data()['questions'];
       else
-        return [];
+        return {};
     }
   }
 

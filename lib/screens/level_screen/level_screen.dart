@@ -15,6 +15,7 @@ import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
+import 'package:the_enest_english_grammar_test/main.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/category_card.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -59,14 +60,14 @@ class _LevelScreenState extends State<LevelScreen> {
 
       await userController.getDataFavorite(userController.user.value.uid);
 
-      if (data.isNotEmpty) {
+      if (data!=null) {
         if (data['${widget.level}'] != null)
           mainController.scoreOfCate.value = data['${widget.level}'];
         else
           mainController.scoreOfCate.value = {};
       }
 
-      if (question.isNotEmpty) {
+      if (question!=null) {
         if (question['${widget.level}'] != null)
           mainController.allQuestionsFromFS.value =
               HashMap.from(question['${widget.level}']);
