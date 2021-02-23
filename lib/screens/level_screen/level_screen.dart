@@ -74,7 +74,7 @@ class _LevelScreenState extends State<LevelScreen> {
           mainController.allQuestionsFromFS.value = {};
       }
     } else {
-      final openBox = await Hive.openBox('Table_Score_${widget.level}');
+      final openBox = await Hive.openBox('${Constants.TABLE_SCORE}${widget.level}');
       mainController.scoreOfCate.value = openBox.toMap();
       openBox.close();
     }
@@ -364,11 +364,11 @@ class _LevelScreenState extends State<LevelScreen> {
       userController.deleteDataQuestion(
           userController.user.value.uid, questions);
     } else {
-      final openBox = await Hive.openBox('Table_${widget.level}');
+      final openBox = await Hive.openBox('${Constants.TABLE}${widget.level}');
       openBox.deleteFromDisk();
       openBox.close();
 
-      final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
+      final openBoxScore = await Hive.openBox('${Constants.TABLE_SCORE}${widget.level}');
       openBoxScore.deleteFromDisk();
       openBoxScore.close();
     }
@@ -425,7 +425,7 @@ class _LevelScreenState extends State<LevelScreen> {
         mainController.score.value.clear();
       }
     } else {
-      final openBox = await Hive.openBox('Table_Score_${widget.level}');
+      final openBox = await Hive.openBox('${Constants.TABLE_SCORE}${widget.level}');
       if (openBox.containsKey('$level' '_' '$categoryId')) {
         if (openBox.get('$level' '_' '$categoryId') != null) {
           mainController.score.value

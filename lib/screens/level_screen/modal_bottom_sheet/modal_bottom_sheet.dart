@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
+import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
@@ -96,7 +97,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
               }
             } else {
                 mainController.questionsHiveFavorite =
-                    RxList<Question>(await HiveHelper.getBoxes('Table_Favorite'));
+                    RxList<Question>(await HiveHelper.getBoxes(Constants.TABLE_FAVORITES));
             }
             await checkExistTable(
                 mainController.listChunkQuestions.indexOf(e) + 1);
@@ -151,7 +152,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
         mainController.questionsFromHive.clear();
       }
     }else{
-      final openBox = await Hive.openBox('Table_${widget.level}');
+      final openBox = await Hive.openBox('${Constants.TABLE}${widget.level}');
       if (openBox.containsKey('${widget.categoryId}')) {
         Map getCate = openBox.get('${widget.categoryId}');
         if (getCate != null) {

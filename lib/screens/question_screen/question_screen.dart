@@ -14,6 +14,7 @@ import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/backdrop_container.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
 import 'package:the_enest_english_grammar_test/commons/slide_up_container.dart';
+import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
@@ -355,7 +356,7 @@ class _QuestionScreenState extends State<QuestionScreen>
           mainController.allQuestionsFromFS.value={};
       }
     }else{
-      final openBoxLevel = await Hive.openBox('Table_${widget.level}');
+      final openBoxLevel = await Hive.openBox('${Constants.TABLE}${widget.level}');
       Map level = await openBoxLevel.get('${widget.categoryId}');
       if (level==null) {
         level = {'${widget.testNumber}': listQuestions};
@@ -365,7 +366,7 @@ class _QuestionScreenState extends State<QuestionScreen>
       await openBoxLevel.put('${widget.categoryId}', level);
       openBoxLevel.close();
 
-      final openBox = await Hive.openBox('Table_Score_${widget.level}');
+      final openBox = await Hive.openBox('${Constants.TABLE_SCORE}${widget.level}');
       Map score = await openBox.get('${widget.level}_${widget.categoryId}');
       if (score==null) {
         score = {
@@ -409,12 +410,12 @@ class _QuestionScreenState extends State<QuestionScreen>
           mainController.allQuestionsFromFS.value={};
       }
     }else{
-      final openBox = await Hive.openBox('Table_${widget.level}');
+      final openBox = await Hive.openBox('${Constants.TABLE}${widget.level}');
       Map level = await openBox.get('${widget.categoryId}');
       level['${widget.testNumber}'] = null;
       await openBox.put('${widget.categoryId}', level);
 
-      final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
+      final openBoxScore = await Hive.openBox('${Constants.TABLE_SCORE}${widget.level}');
       Map score = openBoxScore.get('${widget.level}_${widget.categoryId}');
       score['${widget.testNumber}'] = '0_0';
       await openBoxScore.put('${widget.level}_${widget.categoryId}', score);

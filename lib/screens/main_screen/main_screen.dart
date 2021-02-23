@@ -28,14 +28,18 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final UserController userController = Get.find();
-  final MainController levelController = Get.find();
+  final MainController mainController = Get.find();
   final AppController appController = Get.find();
 
   /// OVERRIDE METHOD
   @override
   void initState() {
-    levelController.categories = [];
-    levelController.distinctCategory = [];
+    WidgetsBinding.instance.addPostFrameCallback((_) async{
+      await mainController.getAllQuestions();
+      setState(() {});
+    });
+    mainController.categories = [];
+    mainController.distinctCategory = [];
     super.initState();
     firstLoad();
   }
@@ -98,7 +102,7 @@ class _MainScreenState extends State<MainScreen> {
                                 padding: const EdgeInsets.all(20.0),
                                 child: AppText(
                                   text: getLevelDescription(
-                                      levelController.levelSelected.value + 1,
+                                      mainController.levelSelected.value + 1,
                                       context),
                                   textAlign: TextAlign.left,
                                   color: AppColors.white,
@@ -109,7 +113,7 @@ class _MainScreenState extends State<MainScreen> {
                               Container(
                                 child: Center(
                                     child: _buildSelectedContent(
-                                        levelController.levelSelected.value +
+                                        mainController.levelSelected.value +
                                             1)),
                               )
                             ],
@@ -124,7 +128,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
       ),
-      isLoading: levelController.isShowLoading.value,
+      isLoading: mainController.isShowLoading.value,
       isShowIndicator: true,
     );
   }
@@ -145,9 +149,9 @@ class _MainScreenState extends State<MainScreen> {
           fontSize: 13,
           letterSpacing: 0.8,
         ),
-        selectedIndex: levelController.levelSelected.value,
+        selectedIndex: mainController.levelSelected.value,
         onDestinationSelected: (int index) {
-          levelController.levelSelected.value = index;
+          mainController.levelSelected.value = index;
         },
         labelType: NavigationRailLabelType.all,
         trailing: Column(
@@ -205,7 +209,7 @@ class _MainScreenState extends State<MainScreen> {
                 : SizedBox(),
           ],
         ),
-        destinations: []..addAll(levelController.distinctLevel
+        destinations: []..addAll(mainController.distinctLevel
             .map(
               (e) => NavigationRailDestination(
                   icon: SizedBox.shrink(),
@@ -231,12 +235,12 @@ class _MainScreenState extends State<MainScreen> {
       "Let's Start",
       onTap: () async {
         SoundsHelper.checkAudio(Sounds.touch);
-        await levelController.loadQuestionFromLevel(level);
-        levelController.categories =
-            levelController.questions.map((e) => e.categoryId).toList();
-        levelController.distinctCategory =
-            levelController.categories.toSet().toList();
-        levelController.distinctCategory.sort();
+        await mainController.loadQuestionFromLevel(level);
+        mainController.categories =
+            mainController.questions.map((e) => e.categoryId).toList();
+        mainController.distinctCategory =
+            mainController.categories.toSet().toList();
+        mainController.distinctCategory.sort();
 
         Get.to(
             LevelScreen(

@@ -58,8 +58,7 @@ class UserController extends GetxController{
 
   ///Login with APPLE ID
   String generateNonce([int length = 32]) {
-    final charset =
-        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final charset = Constants.CHARSET;
     final random = Random.secure();
     return List.generate(length, (_) => charset[random.nextInt(charset.length)])
         .join();

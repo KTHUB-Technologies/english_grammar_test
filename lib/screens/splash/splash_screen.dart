@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/fade_container.dart';
+import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
@@ -79,7 +80,6 @@ class _SplashScreenState extends State<SplashScreen> {
   ///             OTHER METHODS            ///
   ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~///
   onBuildDone() async {
-    await mainController.getAllQuestions();
     await SoundsHelper.load();
     await checkSound();
     /// Delay 3 seconds, then navigate to Login screen

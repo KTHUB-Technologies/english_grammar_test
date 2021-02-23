@@ -5,6 +5,7 @@ import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:hive/hive.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
+import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
@@ -152,11 +153,11 @@ class _CategoryCardState extends State<CategoryCard> {
   }
 
   restartScoreOfCate(int category, Rx<double> score) async {
-    final openBox = await Hive.openBox('Table_${widget.level}');
+    final openBox = await Hive.openBox('${Constants.TABLE}${widget.level}');
     openBox.put('$category', null);
     openBox.close();
 
-    final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
+    final openBoxScore = await Hive.openBox('${Constants.TABLE_SCORE}${widget.level}');
     openBoxScore.put('${widget.level}_$category', null);
     openBoxScore.close();
 

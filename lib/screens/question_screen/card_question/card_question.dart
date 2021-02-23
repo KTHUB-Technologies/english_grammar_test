@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
+import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
@@ -247,14 +248,14 @@ class _CardQuestionState extends State<CardQuestion> {
         List<Question> question = [];
         question.add(widget.question);
         var questions = question.map((e) => e.toJson()).toList();
-        await HiveHelper.addBoxes(questions, 'Table_Favorite');
+        await HiveHelper.addBoxes(questions, Constants.TABLE_FAVORITES);
         mainController.questionsHiveFavorite.add(widget.question);
         mainController.containFromFavorite = RxList<Question>(mainController
             .questionsHiveFavorite
             .where((e) => e.id == widget.question.id)
             .toList());
       } else {
-        final openBox = await Hive.openBox('Table_Favorite');
+        final openBox = await Hive.openBox(Constants.TABLE_FAVORITES);
         if (widget.isFavorite == true) {
           openBox.deleteAt(widget.listQuestions.indexOf(widget.question));
           widget.listQuestions
