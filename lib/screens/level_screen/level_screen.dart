@@ -23,7 +23,6 @@ import 'package:the_enest_english_grammar_test/screens/question_screen/question_
 import 'package:the_enest_english_grammar_test/screens/setting_screen/setting_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
-import 'package:timeline_tile/timeline_tile.dart';
 
 class LevelScreen extends StatefulWidget {
   final int level;
@@ -227,53 +226,21 @@ class _LevelScreenState extends State<LevelScreen> {
                             .where((c) => c.categoryId == e)
                             .toList())
                         .length;
-                    return e.isOdd?TimelineTile(
-                      alignment: TimelineAlign.center,
-                      indicatorStyle: const IndicatorStyle(
-                        width: 20,
-                        color: AppColors.green,
-                        padding: EdgeInsets.all(8),
-                      ),
-                      endChild: WidgetAnimator(
-                        NormalCategoryCard(
-                          index: e,
-                          level: widget.level,
-                          totalQuestion: totalQuestion,
-                          score: Rx<double>(getScoreOfCate(e))??0,
-                          category: e,
-                          onTap: () async {
-                            await mainController
-                                .loadQuestionFromLevelAndCategory(
-                                widget.level, e);
+                    return WidgetAnimator(
+                      NormalCategoryCard(
+                        index: e,
+                        level: widget.level,
+                        totalQuestion: totalQuestion,
+                        score: Rx<double>(getScoreOfCate(e))??0,
+                        category: e,
+                        onTap: () async {
+                          await mainController
+                              .loadQuestionFromLevelAndCategory(
+                              widget.level, e);
 
-                            modalBottomSheet(
-                                getCategory(e), widget.level, e);
-                          },
-                        ),
-                      ),
-                    ):TimelineTile(
-                      alignment: TimelineAlign.center,
-                      indicatorStyle: const IndicatorStyle(
-                        width: 20,
-                        color: AppColors.green,
-                        padding: EdgeInsets.all(8),
-                      ),
-                      startChild: WidgetAnimator(
-                        NormalCategoryCard(
-                          index: e,
-                          level: widget.level,
-                          totalQuestion: totalQuestion,
-                          score: Rx<double>(getScoreOfCate(e))??0,
-                          category: e,
-                          onTap: () async {
-                            await mainController
-                                .loadQuestionFromLevelAndCategory(
-                                widget.level, e);
-
-                            modalBottomSheet(
-                                getCategory(e), widget.level, e);
-                          },
-                        ),
+                          modalBottomSheet(
+                              getCategory(e), widget.level, e);
+                        },
                       ),
                     );
                   }).toList(),

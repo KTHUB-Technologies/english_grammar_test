@@ -13,7 +13,7 @@ class AppColors {
   static const closeIcon = Color(0xff6a6a6a);
   static const paragraphHeaderText = Color(0xff5c5c5c);
   static const paragraphText = Color(0xff5c5c5c);
-  static const List<Color> gradientColorPrimary  = [Color(0xFF66BB6A),Color(0xFF0277BD)];
+  static const List<Color> gradientColorPrimary  = [Color(0xFF4E65FF),Color(0xFF92EFFD)];
   static const List<Color> gradientColorCard1  = [Color(0xFF74ebd5),Color(0xFFACB6E5)];
   static const List<Color> gradientColorCard2  = [Color(0xFF2980B9),Color(0xFF6DD5FA)];
   static const List<Color> gradientColorCard3  = [Color(0xFFee9ca7),Color(0xFFffdde1)];

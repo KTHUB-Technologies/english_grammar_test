@@ -23,13 +23,14 @@ class NormalCategoryCard extends StatefulWidget {
 class _NormalCategoryCardState extends State<NormalCategoryCard> {
   @override
   Widget build(BuildContext context) {
+    final totalTest = getTotalTest(widget.totalQuestion);
     return GestureDetector(
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(Images.bubbles),
+                // image: AssetImage(Images.png_picture),
                 fit: BoxFit.fitWidth,
               ),
               borderRadius: BorderRadius.circular(25),
@@ -45,14 +46,37 @@ class _NormalCategoryCardState extends State<NormalCategoryCard> {
               ],
             ),
             padding: EdgeInsets.all(Dimens.formPadding),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: Column(
               children: <Widget>[
-                Expanded(
+                Align(
+                  alignment: Alignment.topLeft,
                   child: AppText(
-                    text: getCategory(widget.category),
-                    textSize: Dimens.paragraphHeaderTextSize,
+                      text: getCategory(widget.category),
+                      textSize: Dimens.paragraphHeaderTextSize,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.white,
+                    ),
+                  ),
+                Dimens.height10,
+                Align(
+                  alignment: Alignment.center,
+                  child: AppText(
+                    text: '${widget.totalQuestion} questions & $totalTest tests',
                     color: AppColors.white,
+                  ),
+                ),
+                Dimens.height10,
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Container(
+                    width: getScreenWidth(context)/6,
+                    height: getScreenHeight(context)/25,
+                    decoration: BoxDecoration(
+                      color: AppColors.transparent,
+                      border: Border.all(color: AppColors.white,width: 2.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Icon(Icons.arrow_forward,color: AppColors.white,),
                   ),
                 ),
               ],

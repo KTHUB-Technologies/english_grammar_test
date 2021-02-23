@@ -130,7 +130,6 @@ class _ProgressScreenState extends State<ProgressScreen> {
                         category: e,
                         testCompleted: Rx<int>(getTestCompleted(e) ?? 0),
                         score: Rx<double>((getScoreOfCate(e) ?? 0)),
-                        onTap: (){},
                       ),
                     );
                   }).toList(),

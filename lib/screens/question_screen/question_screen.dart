@@ -146,8 +146,7 @@ class _QuestionScreenState extends State<QuestionScreen>
                                 Get.back();
                               },
                               confirm: () {
-                                Get.back();
-                                Get.back();
+                                Get.close(2);
                               },
                             );
                           });
@@ -348,6 +347,14 @@ class _QuestionScreenState extends State<QuestionScreen>
       var question={'questions.${widget.level}.${widget.categoryId}.${widget.testNumber}':listQuestions};
 
       userController.updateDataQuestion(userController.user.value.uid, question);
+
+      var dataQuestion =await userController.getDataQuestion(userController.user.value.uid);
+      if(dataQuestion!=null){
+        if(dataQuestion['${widget.level}']!=null)
+          mainController.allQuestionsFromFS.value=HashMap.from(dataQuestion['${widget.level}']);
+        else
+          mainController.allQuestionsFromFS.value={};
+      }
     }else{
       final openBoxLevel = await Hive.openBox('Table_${widget.level}');
       Map level = await openBoxLevel.get('${widget.categoryId}');
