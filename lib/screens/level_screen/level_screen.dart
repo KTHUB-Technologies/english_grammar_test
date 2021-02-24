@@ -37,7 +37,6 @@ class LevelScreen extends StatefulWidget {
 
 class _LevelScreenState extends State<LevelScreen> {
   final MainController mainController = Get.find();
-  final AppController appController = Get.put(AppController());
   final UserController userController = Get.find();
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
 

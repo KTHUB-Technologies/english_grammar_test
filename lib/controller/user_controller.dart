@@ -95,14 +95,26 @@ class UserController extends GetxController{
   ///User
   getDataUser(String uid, {String email, String displayName, String phoneNumber, num providerNumber}) async{
     DocumentSnapshot doc=await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).get();
-    if(doc.data()==null){
-      addDataUser(uid, email, displayName, phoneNumber, providerNumber);
+    if(doc.data()==null) {
+      num numberUser=await getNumberUser();
+      addDataUser(uid, email, displayName, phoneNumber, providerNumber,numberUser);
     }else
       print('Already Exist Information!!!');
   }
 
-  addDataUser(String uid, String email, String displayName, String phoneNumber, num providerNumber) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).set({'email': email, 'displayName': displayName, 'phoneNumber': phoneNumber, 'providerNumber': providerNumber });
+  addDataUser(String uid, String email, String displayName, String phoneNumber, num providerNumber,num numberUser) async{
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).set({'email': email, 'displayName': displayName, 'phoneNumber': phoneNumber, 'providerNumber': providerNumber,'numberUser':numberUser+1 });
+  }
+
+  getNumberUser() async{
+    QuerySnapshot snapshot= await FireBaseHelper.fireStoreReference.collection(Constants.USERS).orderBy('numberUser').get();
+    if(snapshot.docs.isEmpty)
+      return 0;
+    else{
+      List<UserApp> listUser =snapshot.docs.map((e) => UserApp.fromJson(e.data())).toList();
+      UserApp userLast=listUser.last;
+      return userLast.numberUser;
+    }
   }
 
   ///Scores
