@@ -283,7 +283,7 @@ class _MainScreenState extends State<MainScreen> {
                     }
                   },
                 ))
-            : null,
+            : SizedBox(),
         CupertinoActionSheetAction(
           onPressed: () {},
           child: SignInButton(Buttons.Facebook, onPressed: () async {
