@@ -80,6 +80,7 @@ class _SplashScreenState extends State<SplashScreen> {
   ///             OTHER METHODS            ///
   ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~///
   onBuildDone() async {
+    await mainController.getAllQuestions();
     await SoundsHelper.load();
     await checkSound();
     /// Delay 3 seconds, then navigate to Login screen

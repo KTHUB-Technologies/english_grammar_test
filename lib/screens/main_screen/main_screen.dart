@@ -34,10 +34,6 @@ class _MainScreenState extends State<MainScreen> {
   /// OVERRIDE METHOD
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) async{
-      await mainController.getAllQuestions();
-      setState(() {});
-    });
     mainController.categories = [];
     mainController.distinctCategory = [];
     super.initState();
