@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/button_builder.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:social_share_plugin/social_share_plugin.dart';
 import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_logo.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
@@ -14,6 +16,7 @@ import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
+import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/level_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/setting_screen/setting_screen.dart';
@@ -185,6 +188,14 @@ class _MainScreenState extends State<MainScreen> {
                     _navigateToSettingScreen();
                   }),
             ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 0),
+              child: IconButton(
+                  icon: Icon(Icons.share),
+                  onPressed: () {
+                    _showShareBottomSheet();
+                  }),
+            ),
             userController.user.value == null
                 ? Padding(
                     padding: EdgeInsets.symmetric(vertical: 0),
@@ -251,12 +262,15 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildBottomSheetSocialLogin() {
     return CupertinoActionSheet(
-      title: AppText(text: "Social Login",),
-      message: AppText(text: "Login with social account to save your progress",),
+      title: AppText(
+        text: "Social Login",
+      ),
+      message: AppText(
+        text: "Login with social account to save your progress",
+      ),
       actions: [
         Platform.isIOS
             ? CupertinoActionSheetAction(
-
                 onPressed: () {},
                 child: SignInButton(
                   Buttons.Apple,
@@ -271,7 +285,7 @@ class _MainScreenState extends State<MainScreen> {
                 ))
             : null,
         CupertinoActionSheetAction(
-          onPressed: (){},
+          onPressed: () {},
           child: SignInButton(Buttons.Facebook, onPressed: () async {
             try {
               await userController.signInWithFacebook();
@@ -282,7 +296,7 @@ class _MainScreenState extends State<MainScreen> {
           }),
         ),
         CupertinoActionSheetAction(
-          onPressed: (){},
+          onPressed: () {},
           child: SignInButton(Buttons.Google, onPressed: () async {
             try {
               await userController.signInWithGoogle();
@@ -292,6 +306,67 @@ class _MainScreenState extends State<MainScreen> {
             }
           }),
         )
+      ],
+    );
+  }
+
+  Widget _buildBottomSheetShareSocial() {
+    return CupertinoActionSheet(
+      title: AppText(
+        text: "Share",
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Column(
+            children: <Widget>[
+              SignInButton(Buttons.Facebook, text: 'Share on Facebook',
+                  onPressed: () async {
+                String url = 'https://www.facebook.com/Enestcenter';
+                final quote =
+                    'The Enest hatching your future';
+                final result = await SocialSharePlugin.shareToFeedFacebookLink(
+                  quote: quote,
+                  url: url,
+                  onSuccess: (_) {
+                    print('FACEBOOK SUCCESS');
+                    return;
+                  },
+                  onCancel: () {
+                    print('FACEBOOK CANCELLED');
+                    return;
+                  },
+                  onError: (error) {
+                    print('FACEBOOK ERROR $error');
+                    return;
+                  },
+                );
+                print(result);
+                Get.back();
+              }),
+              Dimens.height10,
+              SignInButton(Buttons.Twitter, text: 'Share on Twitter',
+                  onPressed: () async {
+                    String url = 'https://www.facebook.com/Enestcenter';
+                    final text =
+                        'The Enest hatching your future';
+                    final result = await SocialSharePlugin.shareToTwitterLink(
+                        text: text,
+                        url: url,
+                        onSuccess: (_) {
+                          print('TWITTER SUCCESS');
+                          return;
+                        },
+                        onCancel: () {
+                          print('TWITTER CANCELLED');
+                          return;
+                        });
+                    print(result);
+                    Get.back();
+              }),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -334,6 +409,14 @@ class _MainScreenState extends State<MainScreen> {
         context: context,
         builder: (context) {
           return _buildBottomSheetSocialLogin();
+        });
+  }
+
+  _showShareBottomSheet() {
+    showCupertinoModalPopup(
+        context: context,
+        builder: (context) {
+          return _buildBottomSheetShareSocial();
         });
   }
 }

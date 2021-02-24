@@ -65,5 +65,17 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+        <provider android:authorities="com.facebook.app.FacebookContentProvider165185982066748"
+            android:name="com.facebook.FacebookContentProvider"
+            android:exported="true"/>
+
+        <provider android:name="androidx.core.content.FileProvider"
+            android:authorities="dev.kthub.theENESTenglishgrammartest.social.share.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
     </application>
 </manifest>
