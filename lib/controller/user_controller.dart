@@ -27,7 +27,6 @@ class UserController extends GetxController{
     var userGoogle= await FirebaseAuth.instance.signInWithCredential(credential);
 
     user.value=userGoogle.user;
-    getDataScore(user.value.uid);
   }
 
 
@@ -39,7 +38,6 @@ class UserController extends GetxController{
     var userFacebook= await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
 
     user.value=userFacebook.user;
-    getDataScore(user.value.uid);
   }
 
 
@@ -88,13 +86,12 @@ class UserController extends GetxController{
     var userApple = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
 
     user.value=userApple.user;
-    getDataScore(user.value.uid);
   }
 
   ///Fire store
   ///Scores
   setDataScore(String uid) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_SCORES').set({'scores':[]});
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_SCORES').set({'scores':{}});
   }
 
   getDataScore(String uid) async{
@@ -107,7 +104,7 @@ class UserController extends GetxController{
       if(doc.data()['scores']!=null)
         return doc.data()['scores'];
       else
-        return [];
+        return {};
     }
   }
 
@@ -121,7 +118,7 @@ class UserController extends GetxController{
 
   ///Questions
   setDataQuestion(String uid) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_QUESTIONS').set({'questions':[]});
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_QUESTIONS').set({'questions':{}});
   }
 
   getDataQuestion(String uid) async{
@@ -134,7 +131,7 @@ class UserController extends GetxController{
       if(doc.data()['questions']!=null)
         return doc.data()['questions'];
       else
-        return [];
+        return {};
     }
   }
 

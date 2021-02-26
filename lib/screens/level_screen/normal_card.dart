@@ -29,13 +29,16 @@ class _NormalCategoryCardState extends State<NormalCategoryCard> {
         padding: const EdgeInsets.all(15.0),
         child: Container(
             decoration: BoxDecoration(
-              image: DecorationImage(
-                // image: AssetImage(Images.png_picture),
-                fit: BoxFit.fitWidth,
-              ),
+              // image: DecorationImage(
+              //   image: AssetImage(Images.png_picture),
+              //   fit: BoxFit.fitWidth,
+              // ),
               borderRadius: BorderRadius.circular(25),
               gradient: LinearGradient(
-                  colors: categoryColorCard(widget.index - 1)),
+                  colors: categoryColorCard(widget.index - 1),
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.red.withOpacity(0.5),

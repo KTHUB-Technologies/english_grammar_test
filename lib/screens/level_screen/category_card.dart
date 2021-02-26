@@ -210,9 +210,9 @@ class _CategoryCardState extends State<CategoryCard> {
 
       final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
       openBoxScore.put('${widget.level}_$category', null);
-      openBoxScore.close();
 
-      score.value = 0.0;
+      mainController.scoreOfCate.value=openBoxScore.toMap();
+      openBoxScore.close();
     }
   }
 }

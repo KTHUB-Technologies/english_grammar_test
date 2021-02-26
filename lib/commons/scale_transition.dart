@@ -19,9 +19,9 @@ class _AnimatorState extends State<Animator>
   void initState() {
     super.initState();
     animationController =
-        AnimationController(duration: Duration(milliseconds: 300), vsync: this);
+        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
     animation =
-        CurvedAnimation(parent: animationController, curve: Curves.easeInOut);
+        CurvedAnimation(parent: animationController, curve: Curves.fastOutSlowIn);
     timer = Timer(widget.time, animationController.forward);
   }
 
@@ -39,8 +39,7 @@ class _AnimatorState extends State<Animator>
       animation: animation,
       child: widget.child,
       builder: (BuildContext context, Widget child) {
-        return SlideTransition(position: Tween<Offset>(begin: Offset(-1.0, 0.0), end: Offset.zero)
-            .animate(animationController), child: child);
+        return ScaleTransition(scale: animationController, child: child);
       },
     );
   }
@@ -58,9 +57,9 @@ wait() {
   return duration;
 }
 
-class WidgetAnimator extends StatelessWidget {
+class WidgetAnimatorScaleTransition extends StatelessWidget {
   final Widget child;
-  WidgetAnimator(this.child);
+  WidgetAnimatorScaleTransition(this.child);
   @override
   Widget build(BuildContext context) {
     return Animator(child, wait());

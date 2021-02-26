@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:the_enest_english_grammar_test/commons/animted_list.dart';
+import 'package:the_enest_english_grammar_test/commons/scale_transition.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/constants/constants.dart';
@@ -226,7 +226,7 @@ class _LevelScreenState extends State<LevelScreen> {
                             .where((c) => c.categoryId == e)
                             .toList())
                         .length;
-                    return WidgetAnimator(
+                    return WidgetAnimatorScaleTransition(
                       NormalCategoryCard(
                         index: e,
                         level: widget.level,

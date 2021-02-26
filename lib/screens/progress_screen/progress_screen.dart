@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:the_enest_english_grammar_test/commons/animted_list.dart';
+import 'package:the_enest_english_grammar_test/commons/scale_transition.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
+import 'package:the_enest_english_grammar_test/commons/slide_transition.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
@@ -122,7 +123,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                         .where((c) => c.categoryId == e)
                         .toList())
                         .length;
-                    return WidgetAnimator(
+                    return WidgetAnimatorSlideTransition(
                       CategoryCard(
                         totalQuestion: totalQuestion,
                         index: e,
