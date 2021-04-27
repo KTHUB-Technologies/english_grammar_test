@@ -35,6 +35,7 @@ class CardQuestion extends StatefulWidget {
 class _CardQuestionState extends State<CardQuestion> {
   final MainController mainController = Get.find();
   final UserController userController = Get.find();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -91,20 +92,23 @@ class _CardQuestionState extends State<CardQuestion> {
           .questionsHiveFavorite
           .where((e) => e.id == widget.question.id)
           .toList());
-      return Stack(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              children: <Widget>[
-                buildQuestionContent(options, colorsI, iconsI),
-              ],
+      return Scaffold(
+        key: _scaffoldKey,
+        body: Stack(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: <Widget>[
+                  buildQuestionContent(options, colorsI, iconsI),
+                ],
+              ),
             ),
-          ),
-          _buildFloatingPreviousButton(),
-          _buildCompleteButton(),
-          _buildFloatingAddFavoriteButton()
-        ],
+            _buildFloatingPreviousButton(),
+            _buildCompleteButton(),
+            _buildFloatingAddFavoriteButton()
+          ],
+        ),
       );
     });
   }
@@ -189,7 +193,6 @@ class _CardQuestionState extends State<CardQuestion> {
                   title: AppText(
                     text: widget.question.explanation,
                   ),
-
                 ),
               ),
             ),
@@ -201,6 +204,7 @@ class _CardQuestionState extends State<CardQuestion> {
   }
 
   addOrRemoveFromFavorite() async {
+    mainController.checkRemoveFavorite.value=true;
     if (userController.user.value != null) {
       if (mainController.containFromFavorite.isEmpty) {
         int checked= widget.question.currentChecked.value;
@@ -218,9 +222,6 @@ class _CardQuestionState extends State<CardQuestion> {
         int checked= widget.question.currentChecked.value;
         Question ques=widget.question;
         ques.currentChecked.value=null;
-        var favorite ={'favorites': FieldValue.arrayRemove([ques.toJson()])};
-        await userController.deleteDataFavorite(userController.user.value.uid, favorite);
-        widget.question.currentChecked.value=checked;
         if (widget.isFavorite == true) {
           widget.listQuestions
               .removeWhere((element) => element.id == widget.question.id);
@@ -233,6 +234,33 @@ class _CardQuestionState extends State<CardQuestion> {
               .where((e) => e.id == widget.question.id)
               .toList());
         }
+        _handleWithSnackBar(
+            (){
+              if (widget.isFavorite == true) {
+                if(!widget.listQuestions.contains(widget.question.id)){
+                  widget.listQuestions.add(widget.question);
+                }
+              } else {
+                if(!mainController.questionsFromHive.contains(widget.question.id)){
+                  mainController.questionsHiveFavorite.add(widget.question);
+                }
+                mainController.containFromFavorite = RxList<Question>(mainController
+                    .questionsHiveFavorite
+                    .where((e) => e.id == widget.question.id)
+                    .toList());
+              }
+            },
+            () async{
+              if(mainController.checkRemoveFavorite.value==true){
+                var favorite ={'favorites': FieldValue.arrayRemove([ques.toJson()])};
+                await userController.deleteDataFavorite(userController.user.value.uid, favorite);
+                widget.question.currentChecked.value=checked;
+                print('Remove success');
+              }else{
+                print('User press Undo');
+              }
+            }
+        );
       }
     } else {
       if (mainController.containFromFavorite.isEmpty) {
@@ -246,15 +274,16 @@ class _CardQuestionState extends State<CardQuestion> {
             .where((e) => e.id == widget.question.id)
             .toList());
       } else {
+        num getIndex;
         final openBox = await Hive.openBox('Table_Favorite');
         if (widget.isFavorite == true) {
-          openBox.deleteAt(widget.listQuestions.indexOf(widget.question));
+          getIndex=widget.listQuestions.indexOf(widget.question);
           widget.listQuestions
               .removeWhere((element) => element.id == widget.question.id);
           if (mainController.index.value > 0) mainController.index.value--;
         } else {
-          openBox.deleteAt(mainController.questionsHiveFavorite
-              .indexWhere((e) => e.id == widget.question.id));
+          getIndex=mainController.questionsHiveFavorite
+              .indexWhere((e) => e.id == widget.question.id);
           mainController.questionsHiveFavorite
               .removeWhere((e) => e.id == widget.question.id);
           mainController.containFromFavorite = RxList<Question>(mainController
@@ -262,8 +291,61 @@ class _CardQuestionState extends State<CardQuestion> {
               .where((e) => e.id == widget.question.id)
               .toList());
         }
+        _handleWithSnackBar(
+            (){
+              if (widget.isFavorite == true) {
+                if(!widget.listQuestions.contains(widget.question.id)){
+                  widget.listQuestions.add(widget.question);
+                }
+              } else {
+                if(!mainController.questionsFromHive.contains(widget.question.id)){
+                  mainController.questionsHiveFavorite.add(widget.question);
+                }
+                mainController.containFromFavorite = RxList<Question>(mainController
+                    .questionsHiveFavorite
+                    .where((e) => e.id == widget.question.id)
+                    .toList());
+              }
+            },
+            () async{
+              if(mainController.checkRemoveFavorite.value==true){
+                if (widget.isFavorite == true) {
+                  openBox.deleteAt(getIndex);
+                  if (mainController.index.value > 0) mainController.index.value--;
+                } else {
+                  openBox.deleteAt(getIndex);
+                  mainController.containFromFavorite = RxList<Question>(mainController
+                      .questionsHiveFavorite
+                      .where((e) => e.id == widget.question.id)
+                      .toList());
+                }
+                print('Remove success');
+              }else{
+                print('User press Undo');
+              }
+            }
+        );
       }
     }
+  }
+
+  _handleWithSnackBar(Function undo, Function notUndo){
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        duration: Duration(seconds: 5),
+        content: AppText(text: 'Remove Question!!!'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: (){
+            mainController.checkRemoveFavorite.value=false;
+            undo();
+          },
+        ),
+      ),
+    );
+    Future.delayed(Duration(seconds: 5)).then((_) async{
+      notUndo();
+    });
   }
 
   countTrueAnswer() {

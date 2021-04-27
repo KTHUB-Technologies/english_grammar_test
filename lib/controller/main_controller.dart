@@ -10,6 +10,7 @@ import 'package:the_enest_english_grammar_test/helper/firebase_helper.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 
 class MainController extends GetxController {
+  Rx<bool> checkRemoveFavorite=Rx<bool>(true);
   ///SECTION
   List<int> sections = [1, 2];
   RxList<bool> selected = RxList<bool>([true, false]);

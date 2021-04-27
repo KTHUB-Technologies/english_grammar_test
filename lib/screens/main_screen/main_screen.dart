@@ -156,20 +156,21 @@ class _MainScreenState extends State<MainScreen> {
                       : CircleAvatar(
                           child: AppText(
                               text: shortUserName(
-                                  userController.user.value.displayName??'Unknown Name')),
+                                  userController.user.value.displayName ??
+                                      'Unknown Name')),
                         ),
                   onPressed: () async {
                     // await appController.loginWithMicrosoft();
                     userController.user.value == null
                         ? _buildChooseLogin()
                         : showConfirmDialog(context,
-                        title: 'WARNING!!!',
-                        content: 'Do you want to LOG OUT?', confirm: () async {
-                          await userController.logout();
-                        }, cancel: () {
-                          Get.back();
-                        });
-
+                            title: 'WARNING!!!',
+                            content: 'Do you want to LOG OUT?',
+                            confirm: () async {
+                            await userController.logout();
+                          }, cancel: () {
+                            Get.back();
+                          });
                   }),
             ),
             Padding(
@@ -188,14 +189,24 @@ class _MainScreenState extends State<MainScreen> {
                     _navigateToSettingScreen();
                   }),
             ),
-            userController.user.value==null?Padding(
-              padding: EdgeInsets.symmetric(vertical: 0),
-              child: IconButton(
-                  icon: Icon(Icons.warning,color: AppColors.red,),
-                  onPressed: () {
-                    showConfirmDialog(context,title: 'WARNING!!!', content: 'Log in to save your results', confirm: (){Get.back();});
-                  }),
-            ):SizedBox(),
+            userController.user.value == null
+                ? Padding(
+                    padding: EdgeInsets.symmetric(vertical: 0),
+                    child: IconButton(
+                        icon: Icon(
+                          Icons.warning,
+                          color: AppColors.red,
+                        ),
+                        onPressed: () {
+                          showConfirmDialog(context,
+                              title: 'WARNING!!!',
+                              content: 'Log in to save your results',
+                              confirm: () {
+                            Get.back();
+                          });
+                        }),
+                  )
+                : SizedBox(),
           ],
         ),
         destinations: []..addAll(levelController.distinctLevel
@@ -307,27 +318,27 @@ class _MainScreenState extends State<MainScreen> {
                   SignInButton(
                     Buttons.Apple,
                     onPressed: () async {
-                      try{
+                      try {
                         await userController.signInWithApple();
                         Get.back();
-                      }catch (e){
+                      } catch (e) {
                         print(e);
                       }
                     },
                   ),
                 SignInButton(Buttons.Facebook, onPressed: () async {
-                  try{
+                  try {
                     await userController.signInWithFacebook();
                     Get.back();
-                  }catch (e){
+                  } catch (e) {
                     print(e);
                   }
                 }),
                 SignInButton(Buttons.Google, onPressed: () async {
-                  try{
+                  try {
                     await userController.signInWithGoogle();
                     Get.back();
-                  }catch (e){
+                  } catch (e) {
                     print(e);
                   }
                 }),
