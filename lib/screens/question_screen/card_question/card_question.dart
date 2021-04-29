@@ -35,7 +35,6 @@ class CardQuestion extends StatefulWidget {
 class _CardQuestionState extends State<CardQuestion> {
   final MainController mainController = Get.find();
   final UserController userController = Get.find();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -92,23 +91,20 @@ class _CardQuestionState extends State<CardQuestion> {
           .questionsHiveFavorite
           .where((e) => e.id == widget.question.id)
           .toList());
-      return Scaffold(
-        key: _scaffoldKey,
-        body: Stack(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                children: <Widget>[
-                  buildQuestionContent(options, colorsI, iconsI),
-                ],
-              ),
+      return Stack(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: <Widget>[
+                buildQuestionContent(options, colorsI, iconsI),
+              ],
             ),
-            _buildFloatingPreviousButton(),
-            _buildCompleteButton(),
-            _buildFloatingAddFavoriteButton()
-          ],
-        ),
+          ),
+          _buildFloatingPreviousButton(),
+          _buildCompleteButton(),
+          _buildFloatingAddFavoriteButton()
+        ],
       );
     });
   }
@@ -205,6 +201,7 @@ class _CardQuestionState extends State<CardQuestion> {
 
   addOrRemoveFromFavorite() async {
     mainController.checkRemoveFavorite.value=true;
+    Question ques=widget.question;
     if (userController.user.value != null) {
       if (mainController.containFromFavorite.isEmpty) {
         int checked= widget.question.currentChecked.value;
@@ -220,7 +217,6 @@ class _CardQuestionState extends State<CardQuestion> {
             .toList());
       } else {
         int checked= widget.question.currentChecked.value;
-        Question ques=widget.question;
         ques.currentChecked.value=null;
         if (widget.isFavorite == true) {
           widget.listQuestions
@@ -238,11 +234,11 @@ class _CardQuestionState extends State<CardQuestion> {
             (){
               if (widget.isFavorite == true) {
                 if(!widget.listQuestions.contains(widget.question.id)){
-                  widget.listQuestions.add(widget.question);
+                  widget.listQuestions.add(ques);
                 }
               } else {
                 if(!mainController.questionsFromHive.contains(widget.question.id)){
-                  mainController.questionsHiveFavorite.add(widget.question);
+                  mainController.questionsHiveFavorite.add(ques);
                 }
                 mainController.containFromFavorite = RxList<Question>(mainController
                     .questionsHiveFavorite
@@ -295,11 +291,11 @@ class _CardQuestionState extends State<CardQuestion> {
             (){
               if (widget.isFavorite == true) {
                 if(!widget.listQuestions.contains(widget.question.id)){
-                  widget.listQuestions.add(widget.question);
+                  widget.listQuestions.add(ques);
                 }
               } else {
                 if(!mainController.questionsFromHive.contains(widget.question.id)){
-                  mainController.questionsHiveFavorite.add(widget.question);
+                  mainController.questionsHiveFavorite.add(ques);
                 }
                 mainController.containFromFavorite = RxList<Question>(mainController
                     .questionsHiveFavorite
