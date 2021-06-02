@@ -41,9 +41,11 @@ class MainController extends GetxController {
   RxList<Question> questionsFromHive = RxList<Question>([]);
   RxList<Question> questionsHiveFavorite = RxList<Question>([]);
 
-  Rx<Map> score = Rx<Map>({});
+  RxMap score = RxMap({});
 
-  Rx<Map> scoreOfCate = Rx<Map>({});
+  RxMap scoreOfCate = RxMap({});
+
+  Rx<bool> isGoToCheck = Rx<bool>(false);
 
   Future loadJson() async {
     isShowLoading.value = true;
@@ -76,15 +78,14 @@ class MainController extends GetxController {
               ? questionsFromCategory.length
               : i + 20));
 
-      ///Merge last test to previous test if total questions less than 10
-
-      if (listChunkQuestions.length >= 2 &&
-          listChunkQuestions.last.length < 10) {
-        listChunkQuestions
-            .elementAt(listChunkQuestions.length - 2)
-            .addAll(listChunkQuestions.last);
-        listChunkQuestions.removeLast();
-      }
+      // ///Merge last test to previous test if total questions less than 10
+      // if (listChunkQuestions.length >= 2 &&
+      //     listChunkQuestions.last.length < 10) {
+      //   listChunkQuestions
+      //       .elementAt(listChunkQuestions.length - 2)
+      //       .addAll(listChunkQuestions.last);
+      //   listChunkQuestions.removeLast();
+      // }
     }
     isShowLoading.value = false;
   }
@@ -95,11 +96,10 @@ class MainController extends GetxController {
   RxList<ListQuestion> questionsFromFirebase = RxList<ListQuestion>([]);
 
   getAllQuestions() async {
-    final openBox = await Hive.openBox("Questions");
-
-    if (openBox.get('AllQuestions') != null) {
+    final openBox = await Hive.openBox(Constants.QUESTIONS_BOX_NAME);
+    if (openBox.get(Constants.ALL_QUESTIONS_KEY_NAME) != null) {
       print('-----------> local');
-      List<dynamic> allQues = openBox.get('AllQuestions');
+      List<dynamic> allQues = openBox.get(Constants.ALL_QUESTIONS_KEY_NAME);
 
       listQuestions = allQues.map((e) => Question.fromJson(e)).toList();
     } else {
@@ -121,7 +121,7 @@ class MainController extends GetxController {
 
       var allQuestion = listQuestions.map((e) => e.toJson()).toList();
 
-      await openBox.put('AllQuestions', allQuestion);
+      await openBox.put(Constants.ALL_QUESTIONS_KEY_NAME, allQuestion);
     }
 
     openBox.close();

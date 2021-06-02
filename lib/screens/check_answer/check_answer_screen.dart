@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
+import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
+import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
@@ -17,6 +21,8 @@ class CheckAnswerScreen extends StatefulWidget {
 }
 
 class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
+  final MainController mainController = Get.find();
+  final UserController userController = Get.find();
   List<String> options = [];
   Rx<int> index = Rx<int>(0);
 
@@ -24,39 +30,42 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
         options = e.options.split('///');
         return Container(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(Dimens.padding10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(Dimens.padding10),
                   child: AppText(
-                    text: '${widget.question.indexOf(e) + 1}. ${e.task}',
+                    text: '${widget.question.indexOf(e) + Dimens.intValue1}. ${e.task}',
                     color: AppColors.white,
                     textSize: Dimens.paragraphHeaderTextSize,
                   ),
                 ),
                 Dimens.height10,
-                e.currentChecked.value == e.correctAnswer - 1
+                e.currentChecked.value == e.correctAnswer - Dimens.intValue1
                     ? AppText(
-                        text: 'Your Answer: ${options[e.currentChecked.value]}',
+                        text: '${FlutterLocalizations.of(context).getString(
+                            context, 'your_answer')}: ${options[e.currentChecked.value]}',
                         color: Colors.green,
                       )
                     : AppText(
-                        text: 'Your Answer: ${options[e.currentChecked.value]}',
+                        text: '${FlutterLocalizations.of(context).getString(
+                            context, 'your_answer')}: ${options[e.currentChecked.value]}',
                         color: Colors.red,
                       ),
                 Dimens.height10,
-                e.currentChecked.value == e.correctAnswer - 1
+                e.currentChecked.value == e.correctAnswer - Dimens.intValue1
                     ? SizedBox()
                     : AppText(
-                        text: 'Correct Answer: ${options[e.correctAnswer - 1]}',
+                        text: '${FlutterLocalizations.of(context).getString(
+                            context, 'correct_answer')}: ${options[e.correctAnswer - Dimens.intValue1]}',
                         color: Colors.green,
                       ),
                 Dimens.height10,
                 Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(Dimens.border10),
                     border: Border.all(
                       color: AppColors.red,
                     ),
@@ -73,7 +82,7 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
 
   @override
   void initState() {
-    index.value = 0;
+    index.value = Dimens.initialValue0;
 
     super.initState();
   }
@@ -81,16 +90,17 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.white,
       body: Column(
         children: [
-          Dimens.height30,
+          Dimens.height10,
           _buildHeader(),
           Expanded(
             child: Obx(() {
               return Container(
                 decoration: BoxDecoration(
                     color: AppColors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(15))),
+                    borderRadius: BorderRadius.all(Radius.circular(Dimens.border15))),
                 child: Row(
                   children: [
                     widget.question.isEmpty
@@ -101,10 +111,13 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
                           ),
                     Expanded(
                         child: Container(
-                          decoration: BoxDecoration(
-                              image: DecorationImage(image: AssetImage(Images.quiz_bg),fit: BoxFit.fill),
-                            borderRadius: BorderRadius.only(topRight: Radius.circular(30),topLeft: Radius.circular(30))
-                          ),
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage(Images.quiz_bg),
+                              fit: BoxFit.fill),
+                          borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(Dimens.border30),
+                              topLeft: Radius.circular(Dimens.border30))),
                       child: listCheckedAnswer[index.value],
                     ))
                     //Expanded(child:   Container(child: AppText(text: "TEST",),))
@@ -122,19 +135,56 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
     return Container(
       color: AppColors.white,
       child: ListTile(
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back_rounded), onPressed: _navigateBack),
         title: AppText(
-          text: 'Check Answer',
+          text: FlutterLocalizations.of(context).getString(
+              context, 'review'),
           textSize: Dimens.paragraphHeaderTextSize,
           color: AppColors.secondary,
+        ),
+        trailing: GestureDetector(
+          onTap: _navigateBack,
+          child: AppText(
+            text: FlutterLocalizations.of(context).getString(
+                context, 'back_home'),
+            color: AppColors.red,
+          ),
         ),
       ),
     );
   }
 
-  _navigateBack() {
-    Get.close(3);
+  _navigateBack() async {
+    Get.close(2);
+    mainController.score.clear();
+    if (userController.user.value != null && mainController.scoreOfCate.containsKey(
+        '${widget.question.first.level}'
+            '_'
+            '${widget.question.first.categoryId}') && mainController.scoreOfCate['${widget.question.first.level}'
+        '_'
+        '${widget.question.first.categoryId}'] !=
+        null) {
+      mainController.score.assignAll(mainController.scoreOfCate[
+      '${widget.question.first.level}'
+          '_'
+          '${widget.question.first.categoryId}']);
+    } else {
+      final openBox =
+      await Hive.openBox('Table_Score_${widget.question.first.level}');
+      if (openBox.containsKey('${widget.question.first.level}'
+          '_'
+          '${widget.question.first.categoryId}') && openBox.get('${widget.question.first.level}'
+          '_'
+          '${widget.question.first.categoryId}') !=
+          null) {
+        mainController.score.assignAll(openBox.get(
+            '${widget.question.first.level}'
+                '_'
+                '${widget.question.first.categoryId}'));
+      } else {
+        mainController.score.clear();
+      }
+      openBox.close();
+    }
   }
 }
 
@@ -156,9 +206,9 @@ class _ListCheckState extends State<ListCheck> {
         constraints: BoxConstraints(minHeight: getScreenHeight(context)),
         child: IntrinsicHeight(
           child: NavigationRail(
-            groupAlignment: -1.0,
+            groupAlignment: -Dimens.doubleValue1,
             backgroundColor: AppColors.white,
-            minWidth: 90,
+            minWidth: Dimens.width90,
             destinations: widget.question
                 .map((element) => NavigationRailDestination(
                       icon: Row(
@@ -166,16 +216,16 @@ class _ListCheckState extends State<ListCheck> {
                           Dimens.width10,
                           AppText(
                               text:
-                                  '${widget.question.indexOf(element) + 1}. '),
+                                  '${widget.question.indexOf(element) + Dimens.intValue1}. '),
                           element.currentChecked.value ==
-                                  element.correctAnswer - 1
+                                  element.correctAnswer - Dimens.intValue1
                               ? Icon(
                                   Icons.check,
-                                  color: Colors.green,
+                                  color: AppColors.green,
                                 )
                               : Icon(
                                   Icons.clear,
-                                  color: Colors.red,
+                                  color: AppColors.red,
                                 ),
                           widget.index.value == widget.question.indexOf(element)
                               ? Icon(Icons.arrow_forward_rounded)

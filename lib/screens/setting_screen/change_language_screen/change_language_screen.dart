@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
+import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
@@ -31,7 +32,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
           children: <Widget>[
             // buildDarkModeSetting(),
             Container(
-              height: 30,
+              height: Dimens.container30,
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                       colors: AppColors.gradientColorPrimary)),
@@ -76,7 +77,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
             width: getScreenWidth(context) / 15,
             child: Image.asset(Images.vn_flag)),
         onTap: () {
-          _handleClickMe('VIETNAMESE');
+          _handleClickMe(Constants.VIETNAMESE);
         },
       ),
     );
@@ -91,7 +92,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
             width: getScreenWidth(context) / 15,
             child: Image.asset(Images.us_flag)),
         onTap: () {
-          _handleClickMe('ENGLISH');
+          _handleClickMe(Constants.ENGLISH);
         },
       ),
     );
@@ -99,10 +100,10 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
 
   void _changeLanguage(String languageCode) async {
     switch (languageCode) {
-      case "VIETNAMESE":
+      case Constants.VIETNAMESE:
         appController.switchToVietnameseLanguage();
         break;
-      case "ENGLISH":
+      case Constants.ENGLISH:
         appController.switchToEnglishLanguage();
         break;
       default:

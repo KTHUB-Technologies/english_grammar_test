@@ -33,7 +33,7 @@ class AppButton extends StatelessWidget {
         height:
             heightButton != null ? heightButton : getScreenWidth(context) / 8,
         decoration: BoxDecoration(
-            gradient: LinearGradient(colors: AppColors.gradientColorPrimary),
+            gradient: LinearGradient(colors: AppColors.gradientColorCard2),
             borderRadius: BorderRadius.circular(15)),
         child: Align(
           alignment: Alignment.center,

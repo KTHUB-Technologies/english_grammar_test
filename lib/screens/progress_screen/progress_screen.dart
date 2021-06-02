@@ -9,6 +9,7 @@ import 'package:the_enest_english_grammar_test/commons/slide_transition.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
+import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/category_card.dart';
 import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
@@ -41,7 +42,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                             colors: AppColors.gradientColorPrimary),
-                        border: Border.all(width: 0, color: Colors.transparent),
+                        border: Border.all(width: Dimens.borderWidth0, color: AppColors.transparent),
                       ),
                     ),
                     _buildCategoryContent(mainController.sectionSelected.value)
@@ -61,14 +62,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
       children: [
         Container(
           color: AppColors.white,
-          height: getScreenHeight(context) / 4,
+          height: getScreenHeight(context)/Dimens.intValue4,
         ),
         Container(
-          height: getScreenHeight(context) / 4,
+          height: getScreenHeight(context)/Dimens.intValue4,
           decoration: BoxDecoration(
-              border: Border.all(width: 0, color: Colors.transparent),
+              border: Border.all(width: Dimens.borderWidth0, color: AppColors.transparent),
               gradient: LinearGradient(colors: AppColors.gradientColorPrimary),
-              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(70))),
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(Dimens.border70))),
           child: Container(
             padding: EdgeInsets.symmetric(vertical: Dimens.formPadding),
             child: Column(
@@ -88,7 +89,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                     color: AppColors.white,
                     fontWeight: FontWeight.bold,
                     textSize: Dimens.paragraphHeaderTextSize,
-                    text: '${getLevel(widget.level)} (Progress)',
+                    text: '${getLevel(widget.level)}',
                   ),
                 ),
                 _buildSectionTitle()
@@ -105,14 +106,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
       case 0:
         return Container(
           decoration: BoxDecoration(
-              border: Border.all(width: 0, color: Colors.transparent),
+              border: Border.all(width: Dimens.borderWidth0, color: Colors.transparent),
               color: AppColors.white,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
+              borderRadius: BorderRadius.only(topRight: Radius.circular(Dimens.border70))),
           child: Column(
             children: [
               SizedBox(
                 child: _buildProgress(),
-                height: 54,
+                height: Dimens.height54,
               ),
               Expanded(
                 child: ListView(
@@ -129,8 +130,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
                         index: e,
                         level: widget.level,
                         category: e,
-                        testCompleted: Rx<int>(getTestCompleted(e) ?? 0),
-                        score: Rx<double>((getScoreOfCate(e) ?? 0)),
+                        testCompleted: Rx<int>(getTestCompleted(e) ?? Dimens.initialValue0),
+                        score: Rx<double>((getScoreOfCate(e) ?? Dimens.initialValue0)),
                       ),
                     );
                   }).toList(),
@@ -144,12 +145,13 @@ class _ProgressScreenState extends State<ProgressScreen> {
           height: getScreenHeight(context),
           width: getScreenWidth(context),
           decoration: BoxDecoration(
-              border: Border.all(width: 0, color: Colors.transparent),
+              border: Border.all(width: Dimens.borderWidth0, color: Colors.transparent),
               color: AppColors.white,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
+              borderRadius: BorderRadius.only(topRight: Radius.circular(Dimens.border70))),
           child: Center(
             child: AppText(
-              text: "COMING SOON",
+              text: FlutterLocalizations.of(context).getString(
+                  context, 'coming_soon'),
             ),
           ),
         );
@@ -158,12 +160,13 @@ class _ProgressScreenState extends State<ProgressScreen> {
           height: getScreenHeight(context),
           width: getScreenWidth(context),
           decoration: BoxDecoration(
-              border: Border.all(width: 0, color: Colors.transparent),
+              border: Border.all(width: Dimens.borderWidth0, color: Colors.transparent),
               color: AppColors.white,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
+              borderRadius: BorderRadius.only(topRight: Radius.circular(Dimens.border70))),
           child: Center(
             child: AppText(
-              text: "Something wrong",
+              text: FlutterLocalizations.of(context).getString(
+                  context, 'something_wrong'),
             ),
           ),
         );
@@ -174,16 +177,16 @@ class _ProgressScreenState extends State<ProgressScreen> {
     return ToggleButtons(
       children: mainController.sections
           .map((e) => Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(Dimens.padding10),
         child: AppText(
           text: getSection(e),
           color: AppColors.white,
         ),
       ))
           .toList(),
-      borderRadius: BorderRadius.circular(15),
+      borderRadius: BorderRadius.circular(Dimens.border15),
       onPressed: (int index) {
-        for (int buttonIndex = 0;
+        for (int buttonIndex = Dimens.initialValue0;
         buttonIndex < mainController.selected.length;
         buttonIndex++) {
           if (buttonIndex == index) {
@@ -199,14 +202,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
   }
 
   getScoreOfCate(int index) {
-    double score = 0;
+    double score = Dimens.doubleValue0;
     Map scoreCate = new Map();
-    if (mainController.scoreOfCate.value
+    if (mainController.scoreOfCate
         .containsKey('${widget.level}_$index')) {
-      if (mainController.scoreOfCate.value['${widget.level}_$index'] != null ||
-          mainController.scoreOfCate.value['${widget.level}_$index'] == '0_0') {
+      if (mainController.scoreOfCate['${widget.level}_$index'] != null ||
+          mainController.scoreOfCate['${widget.level}_$index'] == '0_0') {
         scoreCate
-            .addAll(mainController.scoreOfCate.value['${widget.level}_$index']);
+            .addAll(mainController.scoreOfCate['${widget.level}_$index']);
         scoreCate.forEach((key, value) {
           List<String> split = value.toString().split('_');
           score += double.tryParse(split[0]);
@@ -217,14 +220,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
   }
 
   getTestCompleted(int index) {
-    int countTest = 0;
+    int countTest = Dimens.initialValue0;
     Map scoreCate = new Map();
-    if (mainController.scoreOfCate.value
+    if (mainController.scoreOfCate
         .containsKey('${widget.level}_$index')) {
-      if (mainController.scoreOfCate.value['${widget.level}_$index'] != null ||
-          mainController.scoreOfCate.value['${widget.level}_$index'] == '0_0') {
+      if (mainController.scoreOfCate['${widget.level}_$index'] != null ||
+          mainController.scoreOfCate['${widget.level}_$index'] == '0_0') {
         scoreCate
-            .addAll(mainController.scoreOfCate.value['${widget.level}_$index']);
+            .addAll(mainController.scoreOfCate['${widget.level}_$index']);
         scoreCate.forEach((key, value) {
           if (value != '0_0') countTest++;
         });
@@ -238,12 +241,13 @@ class _ProgressScreenState extends State<ProgressScreen> {
       children: <Widget>[
         Container(
           margin: EdgeInsets.symmetric(
-              horizontal: Dimens.formPadding, vertical: 15),
+              horizontal: Dimens.formPadding, vertical: Dimens.padding15),
           child: Row(
             children: <Widget>[
               Expanded(
                 child: AppText(
-                  text: 'Delete All At This Level',
+                  text: FlutterLocalizations.of(context).getString(
+                      context, 'delete_this_level'),
                   color: AppColors.red,
                   textSize: Dimens.paragraphHeaderTextSize,
                 ),
@@ -254,9 +258,11 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   color: AppColors.red,
                 ),
                 onTap: () {
-                  showConfirmDialog(context,title: 'WARNING',
+                  showConfirmDialog(context,title: FlutterLocalizations.of(context).getString(
+                      context, 'waring'),
                     content:
-                    "Do you want to reset all question in this level?", cancel: () {
+                    FlutterLocalizations.of(context).getString(
+                        context, 'ask_reset_level'), cancel: () {
                       Get.back();
                     },
                     confirm: () async {

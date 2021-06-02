@@ -3,10 +3,15 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:get/get.dart';
 import 'package:the_enest_english_grammar_test/commons/android_dialog.dart';
+import 'package:the_enest_english_grammar_test/commons/app_button.dart';
+import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
+import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
+import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 /// This method is used when we need to call a method after build() function is completed.
 void onWidgetBuildDone(function) {
@@ -21,8 +26,8 @@ double subTotal(List<double> prices) {
     subTotal = prices.reduce((a, b) => a + b);
     return subTotal / double.tryParse(prices.length.toString());
   } else
-    subTotal = 0.0;
-  return subTotal == 0.0
+    subTotal = Dimens.doubleValue0;
+  return subTotal == Dimens.doubleValue0
       ? subTotal
       : subTotal / double.tryParse(prices.length.toString());
 }
@@ -38,68 +43,68 @@ getScreenHeight(BuildContext context) {
 getLevel(num levelId) {
   switch (levelId) {
     case 1:
-      return 'Beginning';
+      return Constants.BEGINNING;
     case 2:
-      return 'Intermediate';
+      return Constants.INTERMEDIATE;
     case 3:
-      return 'Advanced';
+      return Constants.ADVANCED;
   }
 }
 
 getCategory(num categoryId) {
   switch (categoryId) {
     case 1:
-      return 'Phrasal Verb';
+      return Constants.PHRASAL_VERB;
     case 2:
-      return 'Vocabulary';
+      return Constants.VOCABULARY;
     case 3:
-      return 'Comparison';
+      return Constants.COMPARISON;
     case 4:
-      return 'Reported Speech';
+      return Constants.REPORTED_SPEECH;
     case 5:
-      return 'Present Tenses';
+      return Constants.PRESENT_TENSES;
     case 6:
-      return 'Relative Clauses';
+      return Constants.RELATIVE_CLAUSES;
     case 7:
-      return 'Passive Voice';
+      return Constants.PASSIVE_VOICE;
     case 8:
-      return 'Future Tenses';
+      return Constants.FUTURE_TENSES;
     case 9:
-      return 'Preposition';
+      return Constants.PREPOSITION;
     case 10:
-      return 'If (Conditional Clauses)';
+      return Constants.IF;
     case 11:
-      return 'Types Of Question';
+      return Constants.TYPES_OF_QUESTION;
     case 12:
-      return 'Idiom';
+      return Constants.IDIOM;
     case 13:
-      return 'Types Of Clauses';
+      return Constants.TYPES_OF_CLAUSES;
     case 14:
-      return 'Mixed Tenses';
+      return Constants.MIXED_TENSES;
     case 15:
-      return 'Past Tenses';
+      return Constants.PAST_TENSES;
     case 16:
-      return 'Modal Verbs';
+      return Constants.MODAL_VERBS;
     case 17:
-      return 'Pronoun';
+      return Constants.PRONOUN;
     case 18:
-      return 'Modal Verbs';
+      return Constants.MODAL_VERBS;
     case 19:
-      return 'Article';
+      return Constants.ARTICLE;
     case 20:
-      return 'Conjunction';
+      return Constants.CONJUNCTION;
     case 21:
-      return 'Gerund And Infinitive';
+      return Constants.GERUND_AND_INFINITIVE;
     case 22:
-      return 'Collocation';
+      return Constants.COLLOCATION;
     case 23:
-      return 'Misc Topics';
+      return Constants.MISC_TOPICS;
     case 24:
-      return 'Quantifier_Determiner';
+      return Constants.QUANTIFIER_DETERMINER;
     case 25:
-      return 'Adjective-Adverb';
+      return Constants.ADJECTIVE_ADVERB;
     case 26:
-      return 'Noun-Noun Phrase';
+      return Constants.NOUN_NOUN_PHRASE;
   }
 }
 
@@ -180,11 +185,92 @@ categoryColorCard(int index){
   }
 }
 getTotalTest(int totalQuestion){
-  int totalTest= 0;
-  if(totalQuestion<=10){
-    totalTest = 1;
+  int totalTest= Dimens.initialValue0;
+  if(totalQuestion<=Dimens.intValue10){
+    totalTest = Dimens.intValue1;
   }else{
-    totalTest = (totalQuestion/20).round();
+    totalTest = (totalQuestion/Dimens.intValue20).round();
   }
   return totalTest;
+}
+
+alertDialog(BuildContext context, String content, Function confirm) {
+  showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape:
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: Dimens.padding25, horizontal: Dimens.padding15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AppText(
+                textSize: Dimens.paragraphHeaderTextSize,
+                text: FlutterLocalizations.of(context).getString(context, 'waring'),
+                color: AppColors.red,
+              ),
+              Dimens.height10,
+              AppText(
+                text: FlutterLocalizations.of(context).getString(context, 'ask_restart_result'),
+                color: AppColors.black,
+                textSize: Dimens.errorTextSize,
+              ),
+              Dimens.height20,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      child: AppText(
+                        text: FlutterLocalizations.of(context).getString(context, 'cancel'),
+                        color: AppColors.white,
+                      ),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(AppColors.divider),
+                      ),
+                      onPressed: (){
+                        Get.back();
+                      },
+                    ),
+                  ),
+                  Dimens.width20,
+                  Expanded(
+                    child: TextButton(
+                      child: AppText(
+                        text: FlutterLocalizations.of(context).getString(context, 'confirm'),
+                        color: AppColors.white,
+                      ),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(AppColors.blue),
+                      ),
+                      onPressed: confirm,
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ));
+}
+
+getStringChoice(int id, BuildContext context){
+  switch(id){
+    case 1:
+      return FlutterLocalizations.of(context).getString(
+          context, 'favorite');
+      break;
+    case 2:
+      return FlutterLocalizations.of(context).getString(
+          context, 'progress');
+      break;
+    case 3:
+      return FlutterLocalizations.of(context).getString(
+          context, 'setting');
+      break;
+    default:
+      return '';
+  }
 }

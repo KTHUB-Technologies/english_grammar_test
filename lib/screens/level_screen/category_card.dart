@@ -13,6 +13,7 @@ import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
+import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
@@ -42,7 +43,7 @@ class CategoryCard extends StatefulWidget {
 }
 
 class _CategoryCardState extends State<CategoryCard> {
-  final SlidableController slidableController = SlidableController();
+  final SlidableController slideAbleController = SlidableController();
   final UserController userController=Get.find();
   final MainController mainController=Get.find();
   @override
@@ -55,21 +56,21 @@ class _CategoryCardState extends State<CategoryCard> {
     final totalTest = getTotalTest(widget.totalQuestion);
     return Obx(() {
       return Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(Dimens.border15),
         child: Slidable(
-          controller: slidableController,
+          controller: slideAbleController,
           actionPane: SlidableBehindActionPane(),
           child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: BorderRadius.circular(Dimens.border25),
                 gradient: LinearGradient(
-                    colors: categoryColorCard(widget.index - 1)),
+                    colors: categoryColorCard(widget.index - Dimens.intValue1)),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.red.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 8,
-                    offset: Offset(2,5),
+                    color: AppColors.red.withOpacity(Dimens.opacityColor0_5),
+                    spreadRadius: Dimens.spreedRadius2,
+                    blurRadius: Dimens.blurRadius8,
+                    offset: Offset(Dimens.offSet2,Dimens.offSet5),
                   ),
                 ],
               ),
@@ -79,7 +80,7 @@ class _CategoryCardState extends State<CategoryCard> {
                   Expanded(
                     child: ListTile(
                       title: Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
+                        padding: const EdgeInsets.only(top: Dimens.padding10),
                         child: AppText(
                           text: getCategory(widget.category),
                           textSize: Dimens.paragraphHeaderTextSize,
@@ -91,25 +92,27 @@ class _CategoryCardState extends State<CategoryCard> {
                         children: [
                           Dimens.height10,
                           Padding(
-                            padding: const EdgeInsets.all(3.0),
+                            padding: const EdgeInsets.all(Dimens.padding3),
                             child: LinearPercentIndicator(
-                                width: getScreenWidth(context) / 2,
-                                lineHeight: 7.0,
+                                width: getScreenWidth(context) / Dimens.intValue2,
+                                lineHeight: Dimens.line7,
                                 backgroundColor: AppColors.white,
                                 progressColor: Colors.deepOrange[500],
                                 percent: widget.score.value == null ||
                                     widget.score.value.isNaN
-                                    ? 0
+                                    ? Dimens.doubleValue0
                                     : widget.score.value /
                                     widget.totalQuestion),
                           ),
                           Dimens.height10,
                           Row(
                             children: [
-                              _buildProgress('Question', widget.totalQuestion,
+                              _buildProgress(FlutterLocalizations.of(context).getString(
+                                  context, 'question'), widget.totalQuestion,
                                   widget.score.value.round()),
                               Dimens.width30,
-                              _buildProgress('Test', totalTest,
+                              _buildProgress(FlutterLocalizations.of(context).getString(
+                                  context, 'test'), totalTest,
                                   widget.testCompleted.value),
                             ],
                           )
@@ -118,23 +121,23 @@ class _CategoryCardState extends State<CategoryCard> {
                     ),
                   ),
                   Transform.rotate(
-                    angle: 0.8,
+                    angle: Dimens.angle0_8,
                     child: Container(
                       clipBehavior: Clip.antiAlias,
-                      height: 60,
-                      width: 60,
+                      height: Dimens.height60,
+                      width: Dimens.width60,
                       decoration: BoxDecoration(
                         border:
-                        Border.all(width: 3, color: Colors.deepOrange[800]),
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        Border.all(width: Dimens.width3, color: Colors.deepOrange[800]),
+                        borderRadius: BorderRadius.all(Radius.circular(Dimens.border10)),
                         color: AppColors.white,
                       ),
                       child: Transform.rotate(
-                        angle: -0.8,
+                        angle: -Dimens.angle0_8,
                         child: Center(
                           child: AppText(
                             text:
-                            '${((widget.score.value.round() / widget.totalQuestion) * 100).round()}%',
+                            '${((widget.score.value.round() / widget.totalQuestion) * Dimens.intValue100).round()}%',
                             fontWeight: FontWeight.bold,
                             color: Colors.deepOrange[800],
                           ),
@@ -147,9 +150,10 @@ class _CategoryCardState extends State<CategoryCard> {
               )),
           secondaryActions: <Widget>[
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(Dimens.padding10),
               child: IconSlideAction(
-                caption: 'Restart',
+                caption: FlutterLocalizations.of(context).getString(
+                    context, 'restart'),
                 color: AppColors.transparent,
                 foregroundColor: AppColors.black,
                 icon: Icons.rotate_left,
@@ -188,9 +192,9 @@ class _CategoryCardState extends State<CategoryCard> {
 
       var newScore =await userController.getDataScore(userController.user.value.uid);
       if(newScore['${widget.level}']!=null)
-        mainController.scoreOfCate.value=newScore['${widget.level}'];
+        mainController.scoreOfCate.assignAll(newScore['${widget.level}']);
       else
-        mainController.scoreOfCate.value={};
+        mainController.scoreOfCate.clear();
 
       var questions={'questions.${widget.level}.${widget.category}':FieldValue.delete()};
 
@@ -211,7 +215,7 @@ class _CategoryCardState extends State<CategoryCard> {
       final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
       openBoxScore.put('${widget.level}_$category', null);
 
-      mainController.scoreOfCate.value=openBoxScore.toMap();
+      mainController.scoreOfCate.assignAll(openBoxScore.toMap());
       openBoxScore.close();
     }
   }

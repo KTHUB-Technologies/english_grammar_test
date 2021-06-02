@@ -10,14 +10,17 @@ import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_logo.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
+import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
+import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/level_screen.dart';
+import 'package:the_enest_english_grammar_test/screens/promotion_screen/promotions_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/setting_screen/setting_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
@@ -60,14 +63,14 @@ class _MainScreenState extends State<MainScreen> {
                             decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                     colors: AppColors.gradientColorPrimary)),
-                            height: getScreenHeight(context) / 2,
+                            height: getScreenHeight(context)/Dimens.intValue2,
                           ),
                           Container(
                               decoration: BoxDecoration(
                                   color: AppColors.white,
                                   borderRadius: BorderRadius.only(
-                                      bottomRight: Radius.circular(70))),
-                              height: getScreenHeight(context) / 2,
+                                      bottomRight: Radius.circular(Dimens.border70))),
+                              height: getScreenHeight(context)/Dimens.intValue2,
                               child: Center(
                                 child: AppLogo(),
                               )),
@@ -77,23 +80,23 @@ class _MainScreenState extends State<MainScreen> {
                         children: [
                           Container(
                             color: AppColors.white,
-                            height: getScreenHeight(context) / 2,
+                            height: getScreenHeight(context)/Dimens.intValue2,
                           ),
                           Container(
-                            height: getScreenHeight(context) / 2,
+                            height: getScreenHeight(context)/Dimens.intValue2,
                             decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                     colors: AppColors.gradientColorPrimary),
                                 borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(70))),
+                                    topLeft: Radius.circular(Dimens.border70))),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.all(20.0),
+                                  padding: const EdgeInsets.all(Dimens.padding20),
                                   child: AppText(
                                     text: getLevelDescription(
-                                        levelController.levelSelected.value + 1,
+                                        levelController.levelSelected.value + Dimens.intValue1,
                                         context),
                                     textAlign: TextAlign.left,
                                     color: AppColors.white,
@@ -105,7 +108,7 @@ class _MainScreenState extends State<MainScreen> {
                                   child: Center(
                                       child: _buildSelectedContent(
                                           levelController.levelSelected.value +
-                                              1)),
+                                              Dimens.intValue1)),
                                 )
                               ],
                             ),
@@ -128,18 +131,18 @@ class _MainScreenState extends State<MainScreen> {
   _buildLevelNavigationRail() {
     return NavigationRail(
         backgroundColor: AppColors.white,
-        minWidth: 55.0,
-        groupAlignment: 0.0,
+        minWidth: Dimens.minWidth,
+        groupAlignment: Dimens.doubleValue0,
         selectedLabelTextStyle: TextStyle(
-          color: Colors.orangeAccent,
-          fontSize: 14,
-          letterSpacing: 1,
-          decorationThickness: 2.0,
+          color: AppColors.orangeAccent,
+          fontSize: Dimens.paragraphTextSize,
+          letterSpacing: Dimens.doubleValue1,
+          decorationThickness: Dimens.doubleValue2,
         ),
         unselectedLabelTextStyle: TextStyle(
           color: AppColors.black,
-          fontSize: 13,
-          letterSpacing: 0.8,
+          fontSize: Dimens.messageTextSize,
+          letterSpacing: Dimens.doubleValue1,
         ),
         selectedIndex: levelController.levelSelected.value,
         onDestinationSelected: (int index) {
@@ -148,65 +151,64 @@ class _MainScreenState extends State<MainScreen> {
         labelType: NavigationRailLabelType.all,
         trailing: Column(
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 0),
-              child: IconButton(
-                  icon: userController.user.value == null
-                      ? Icon(Icons.person)
-                      : CircleAvatar(
-                          child: AppText(
-                              text: shortUserName(
-                                  userController.user.value.displayName ??
-                                      'Unknown Name')),
-                        ),
-                  onPressed: () async {
-                    // await appController.loginWithMicrosoft();
-                    userController.user.value == null
-                        ? _buildChooseLogin()
-                        : showConfirmDialog(context,
-                            title: 'WARNING!!!',
-                            content: 'Do you want to LOG OUT?',
-                            confirm: () async {
-                            await userController.logout();
-                          }, cancel: () {
-                            Get.back();
-                          });
-                  }),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 0),
-              child: IconButton(
-                  icon: Icon(Icons.language),
-                  onPressed: () async {
-                    await _navigateToFacebookApp();
-                  }),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 0),
-              child: IconButton(
-                  icon: Icon(Icons.settings),
-                  onPressed: () {
-                    _navigateToSettingScreen();
-                  }),
-            ),
-            userController.user.value == null
-                ? Padding(
-                    padding: EdgeInsets.symmetric(vertical: 0),
-                    child: IconButton(
-                        icon: Icon(
-                          Icons.warning,
-                          color: AppColors.red,
-                        ),
-                        onPressed: () {
-                          showConfirmDialog(context,
-                              title: 'WARNING!!!',
-                              content: 'Log in to save your results',
-                              confirm: () {
-                            Get.back();
-                          });
-                        }),
-                  )
-                : SizedBox(),
+            // Padding(
+            //   padding: EdgeInsets.symmetric(vertical: 0),
+            //   child: IconButton(
+            //       icon: userController.user.value == null
+            //           ? Icon(Icons.person)
+            //           : CircleAvatar(
+            //               child: AppText(
+            //                   text: shortUserName(
+            //                       userController.user.value.displayName ??
+            //                           'Unknown Name')),
+            //             ),
+            //       onPressed: () async {
+            //         // await appController.loginWithMicrosoft();
+            //         userController.user.value == null
+            //             ? _buildChooseLogin()
+            //             : showConfirmDialog(context,
+            //                 title: 'WARNING!!!',
+            //                 content: 'Do you want to LOG OUT?',
+            //                 confirm: () async {
+            //                 await userController.logout();
+            //               }, cancel: () {
+            //                 Get.back();
+            //               });
+            //       }),
+            // ),
+            IconButton(
+                icon: Icon(Icons.card_giftcard),
+                onPressed: () {
+                  _navigateToPromotionScreen();
+                }),
+            IconButton(
+                icon: Icon(Icons.language),
+                onPressed: () async {
+                  await _navigateToFacebookApp();
+                }),
+            IconButton(
+                icon: Icon(Icons.settings),
+                onPressed: () {
+                  _navigateToSettingScreen();
+                }),
+            // userController.user.value == null
+            //     ? Padding(
+            //         padding: EdgeInsets.symmetric(vertical: 0),
+            //         child: IconButton(
+            //             icon: Icon(
+            //               Icons.warning,
+            //               color: AppColors.red,
+            //             ),
+            //             onPressed: () {
+            //               showConfirmDialog(context,
+            //                   title: 'WARNING!!!',
+            //                   content: 'Log in to save your results',
+            //                   confirm: () {
+            //                 Get.back();
+            //               });
+            //             }),
+            //       )
+            //     : SizedBox(),
           ],
         ),
         destinations: []..addAll(levelController.distinctLevel
@@ -214,9 +216,9 @@ class _MainScreenState extends State<MainScreen> {
               (e) => NavigationRailDestination(
                   icon: SizedBox.shrink(),
                   label: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
+                    padding: EdgeInsets.symmetric(vertical: Dimens.padding10),
                     child: RotatedBox(
-                      quarterTurns: -1,
+                      quarterTurns: -Dimens.intValue1,
                       child: Text(getLevel(e)),
                     ),
                   )),
@@ -235,7 +237,8 @@ class _MainScreenState extends State<MainScreen> {
         // Stack(
         // children: <Widget>[
         AppButton(
-      "Let's Start",
+          FlutterLocalizations.of(context).getString(
+              context, 'let_start'),
       onTap: () async {
         SoundsHelper.checkAudio(Sounds.touch);
         await levelController.loadQuestionFromLevel(level);
@@ -250,7 +253,7 @@ class _MainScreenState extends State<MainScreen> {
               level: level,
             ),
             transition: Transition.rightToLeftWithFade,
-            duration: Duration(milliseconds: 500));
+            duration: Duration(milliseconds: Dimens.durationMilliseconds500));
       },
     );
     // appController.user.value == null
@@ -298,9 +301,13 @@ class _MainScreenState extends State<MainScreen> {
     Get.to(SettingScreen());
   }
 
+  _navigateToPromotionScreen() async {
+    Get.to(PromotionsScreen());
+  }
+
   firstLoad() async {
-    final openBox = await Hive.openBox('First_Load');
-    await openBox.put('isFirst', true);
+    final openBox = await Hive.openBox(Constants.FIRST_LOAD_BOX_NAME);
+    await openBox.put(Constants.FIRST_LOAD_KEY_NAME, true);
     openBox.close();
   }
 
@@ -309,7 +316,7 @@ class _MainScreenState extends State<MainScreen> {
         context: context,
         builder: (context) {
           return Dialog(
-            elevation: 0,
+            elevation: Dimens.elevation0,
             backgroundColor: AppColors.transparent,
             child: Column(
               mainAxisSize: MainAxisSize.min,

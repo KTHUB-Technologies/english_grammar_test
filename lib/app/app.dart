@@ -9,6 +9,7 @@ import 'package:the_enest_english_grammar_test/localization/flutter_localization
 import 'package:the_enest_english_grammar_test/routes/routes.dart';
 import 'package:the_enest_english_grammar_test/screens/splash/splash_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
+import 'package:the_enest_english_grammar_test/theme/fonts.dart';
 
 
 class EnglishGrammarTestApp extends StatefulWidget {
@@ -56,7 +57,7 @@ class _EnglishGrammarTestAppState extends State<EnglishGrammarTestApp> {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            theme: appController.isDark.value==true?ThemeData(brightness: Brightness.dark):ThemeData.light(),
+            theme: ThemeData(brightness: Brightness.light, fontFamily: Fonts.Helvetica),
             // theme: ThemeData(
             //    // primaryColor: AppColors.primary,
             //  //   accentColor: AppColors.primary,

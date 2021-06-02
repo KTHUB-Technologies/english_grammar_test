@@ -45,7 +45,7 @@ class _AppTextState extends State<AppText> {
           style: TextStyle(
               fontStyle: widget.fontStyle,
               fontSize: widget.textSize == null ? Dimens.descriptionTextSize : widget.textSize,
-              fontFamily: widget.font == null ? Fonts.Lato : widget.font,
+              fontFamily: widget.font == null ? Fonts.Helvetica : widget.font,
               color:  appController.isDark.value==true?AppColors.white:widget.color,
               fontWeight: widget.fontWeight));
     });

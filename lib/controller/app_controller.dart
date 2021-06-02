@@ -43,6 +43,8 @@ class AppController extends GetxController {
           locale.value = Locale("en", 'US');
           break;
         default:
+          locale.value = Locale("en", 'US');
+          break;
       }
     }
   }

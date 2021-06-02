@@ -9,7 +9,11 @@ class AppColors {
   static const divider = Color(0xff707070);
   static const black = Colors.black;
   static const red = Color(0xfff23559);
+  static const yellow = Colors.yellow;
   static const blue = Color(0xFF29B6F6);
+  static const pink = Colors.pink;
+  static const orange = Colors.orange;
+  static const purple = Colors.purple;
   static const closeIcon = Color(0xff6a6a6a);
   static const paragraphHeaderText = Color(0xff5c5c5c);
   static const paragraphText = Color(0xff5c5c5c);

@@ -3,9 +3,11 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
+import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
+import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/screens/question_screen/question_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
@@ -35,108 +37,124 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      return Container(
-        decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(20), topLeft: Radius.circular(20))),
-        padding: EdgeInsets.all(10),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            AppText(
-              text: widget.categoryName,
-              color: AppColors.blue,
-              fontWeight: FontWeight.bold,
-              textSize: Dimens.paragraphHeaderTextSize,
+    return Container(
+      decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.only(
+              topRight: Radius.circular(Dimens.border20), topLeft: Radius.circular(Dimens.border20))),
+      padding: EdgeInsets.all(Dimens.padding10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          AppText(
+            text: widget.categoryName,
+            color: AppColors.blue,
+            fontWeight: FontWeight.bold,
+            textSize: Dimens.paragraphHeaderTextSize,
+          ),
+          Dimens.height10,
+          buildCardTestWithProgress(),
+        ],
+      ),
+    );
+  }
+
+  Widget buildCardTestWithProgress() {
+    return Obx((){
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: mainController.listChunkQuestions.map((e) {
+          return GestureDetector(
+            child: Card(
+              child: ListTile(
+                title: AppText(
+                  text:
+                  '${FlutterLocalizations.of(context).getString(
+                      context, 'test')}'' ${mainController.listChunkQuestions.indexOf(e) + Dimens.intValue1}',
+                ),
+                trailing:getScoreOfTest(e) == null || getScoreOfTest(e).isNaN ? Container(
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.yellow,width: Dimens.width3)
+                  ),
+                  child: CircleAvatar(
+                    radius: Dimens.border15,
+                    backgroundColor: AppColors.transparent,
+                    child: AppText(
+                      text: FlutterLocalizations.of(context).getString(
+                          context, 'go'),
+                      color: AppColors.black,
+                      textSize: Dimens.errorTextSize,
+                    ),
+                  ),
+                ) : CircularPercentIndicator(
+                  radius: Dimens.radius35,
+                  lineWidth: Dimens.line2,
+                  animation: true,
+                  percent:
+                  getScoreOfTest(e) == null || getScoreOfTest(e).isNaN
+                      ? Dimens.doubleValue0
+                      : getScoreOfTest(e).round()==Dimens.initialValue0?Dimens.doubleValue1:getScoreOfTest(e) / Dimens.intValue100.round(),
+                  center:  Text(
+                    '${getScoreOfTest(e) == null || getScoreOfTest(e).isNaN ? Dimens.initialValue0 : getScoreOfTest(e).round()}%',
+                    style:  TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: Dimens.textSize10),
+                  ),
+                  circularStrokeCap: CircularStrokeCap.round,
+                  progressColor: getScoreOfTest(e).round()==Dimens.initialValue0?AppColors.red:AppColors.green,
+                ),
+              ),
             ),
-            Dimens.height10,
-            buildCardTestWithProgress(),
-          ],
-        ),
+            onTap: () async {
+              // Get.back();
+              if (userController.user.value != null) {
+                List<dynamic> favorite=await userController.getDataFavorite(userController.user.value.uid);
+                if(favorite.isNotEmpty){
+                  mainController.questionsHiveFavorite=  RxList<Question>(favorite.map((e) => Question.fromJson(e)).toList());
+                }
+              } else {
+                mainController.questionsHiveFavorite =
+                    RxList<Question>(await HiveHelper.getBoxes(Constants.TABLE_FAVORITE_BOX_NAME));
+              }
+              await checkExistTable(
+                  mainController.listChunkQuestions.indexOf(e) + Dimens.intValue1);
+              e.forEach((question) {
+                question.currentChecked.value = null;
+              });
+
+              Get.to(
+                  QuestionScreen(
+                    level: widget.level,
+                    categoryId: widget.categoryId,
+                    question:
+                    mainController.questionsFromHive.isEmpty
+                        ? RxList<Question>(e)
+                        : mainController.questionsFromHive,
+                    testNumber: mainController.listChunkQuestions.indexOf(e) + Dimens.intValue1,
+                    isFavorite: false,
+                    questionTemp: RxList<Question>(e),
+                  ),
+                  transition: Transition.fadeIn,
+
+                  duration: Duration(milliseconds: Dimens.durationMilliseconds500),preventDuplicates: false);
+
+            },
+          );
+        }).toList(),
       );
     });
   }
 
-  Widget buildCardTestWithProgress() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: mainController.listChunkQuestions.map((e) {
-        return GestureDetector(
-          child: Card(
-            child: ListTile(
-              title: AppText(
-                text:
-                    'Test ${mainController.listChunkQuestions.indexOf(e) + 1}',
-              ),
-              trailing: CircularPercentIndicator(
-                radius: 35.0,
-                lineWidth: 2.0,
-                animation: true,
-                percent:
-                    getScoreOfTest(e) == null || getScoreOfTest(e).isNaN
-                        ? 0
-                        : getScoreOfTest(e) / 100.round(),
-                center:  Text(
-                  '${getScoreOfTest(e) == null || getScoreOfTest(e).isNaN ? 0 : getScoreOfTest(e).round()}%',
-                  style:  TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 10.0),
-                ),
-                circularStrokeCap: CircularStrokeCap.round,
-                progressColor: AppColors.green,
-              ),
-            ),
-          ),
-          onTap: () async {
-           // Get.back();
-            if (userController.user.value != null) {
-              List<dynamic> favorite=await userController.getDataFavorite(userController.user.value.uid);
-              if(favorite.isNotEmpty){
-                mainController.questionsHiveFavorite=  RxList<Question>(favorite.map((e) => Question.fromJson(e)).toList());
-              }
-            } else {
-                mainController.questionsHiveFavorite =
-                    RxList<Question>(await HiveHelper.getBoxes('Table_Favorite'));
-            }
-            await checkExistTable(
-                mainController.listChunkQuestions.indexOf(e) + 1);
-            e.forEach((question) {
-              question.currentChecked.value = null;
-            });
-
-            Get.to(
-                QuestionScreen(
-                  level: widget.level,
-                  categoryId: widget.categoryId,
-                  question:
-                      mainController.questionsFromHive.isEmpty
-                          ? RxList<Question>(e)
-                          : mainController.questionsFromHive,
-                  testNumber: mainController.listChunkQuestions.indexOf(e) + 1,
-                  isFavorite: false,
-                  questionTemp: RxList<Question>(e),
-                ),
-                transition: Transition.fadeIn,
-
-                duration: Duration(milliseconds: 500),preventDuplicates: false);
-
-          },
-        );
-      }).toList(),
-    );
-  }
-
   getScoreOfTest(List<Question> index){
     if (mainController.score
-        .value['${mainController.listChunkQuestions.indexOf(index) + 1}'] !=
+        ['${mainController.listChunkQuestions.indexOf(index) + Dimens.intValue1}'] !=
         null) {
       List<String> splitScore =
-      '${mainController.score.value['${mainController.listChunkQuestions.indexOf(index) + 1}']}'
+      '${mainController.score['${mainController.listChunkQuestions.indexOf(index) + Dimens.intValue1}']}'
           .split('_');
       return (double.tryParse(splitScore[0]) /
           double.tryParse(splitScore[1])) *
-          100;
+          Dimens.intValue100;
     }
   }
 

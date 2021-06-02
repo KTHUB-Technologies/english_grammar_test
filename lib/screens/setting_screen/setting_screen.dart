@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/app_button.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
+import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
@@ -31,7 +32,7 @@ class _SettingScreenState extends State<SettingScreen> {
               children: <Widget>[
                 // buildDarkModeSetting(),
                 Container(
-                  height: 30,
+                  height: Dimens.container30,
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
                           colors: AppColors.gradientColorPrimary)),
@@ -59,7 +60,7 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             onPressed: () => Get.back()),
         title: AppText(
-          text: 'SETTINGS',
+          text: FlutterLocalizations.of(context).getString(context, 'setting'),
           textSize: Dimens.paragraphHeaderTextSize,
           color: AppColors.white,
         ),
@@ -93,19 +94,19 @@ class _SettingScreenState extends State<SettingScreen> {
           child: ListTile(
             leading: Container(
               child: Icon(Icons.email),
-              padding: EdgeInsets.symmetric(horizontal: 17),
+              padding: EdgeInsets.symmetric(horizontal: Dimens.padding17),
             ),
             title: AppText(
               text: userController.user.value == null
-                  ? 'Sign In With Social'
-                  : userController.user.value.displayName ?? 'Unknown Name',
+                  ? FlutterLocalizations.of(context).getString(context, 'sign_in_with_social')
+                  : userController.user.value.displayName ?? FlutterLocalizations.of(context).getString(context, 'unknown_name'),
             ),
             onTap: () async {
               userController.user.value == null
                   ? Get.offAll(MainScreen())
                   : showConfirmDialog(context,
-                      title: 'WARNING!!!',
-                      content: 'Do you want to LOG OUT?', confirm: () async {
+                      title: FlutterLocalizations.of(context).getString(context, 'waring'),
+                      content: FlutterLocalizations.of(context).getString(context, 'ask_log_out'), confirm: () async {
                       await userController.logout();
                     }, cancel: () {
                       Get.back();
@@ -122,13 +123,13 @@ class _SettingScreenState extends State<SettingScreen> {
           leading: Switch(
               value: appController.sound.value,
               onChanged: (bool value) async {
-                final openBox = await Hive.openBox('Sound');
+                final openBox = await Hive.openBox(Constants.SOUND_BOX_NAME);
                 appController.sound.value = value;
-                await openBox.put('isSound', appController.sound.value);
+                await openBox.put(Constants.SOUND_KEY_NAME, appController.sound.value);
                 openBox.close();
               }),
           title: AppText(
-            text: 'Sounds',
+            text: FlutterLocalizations.of(context).getString(context, 'sound'),
             color: AppColors.blue,
           ),
         ),
@@ -141,7 +142,7 @@ class _SettingScreenState extends State<SettingScreen> {
       child: ListTile(
         leading: Container(
           child: Icon(Icons.language),
-          padding: EdgeInsets.symmetric(horizontal: 17),
+          padding: EdgeInsets.symmetric(horizontal: Dimens.padding17),
         ),
         title: AppText(
           text: FlutterLocalizations.of(context).getString(context, 'language'),

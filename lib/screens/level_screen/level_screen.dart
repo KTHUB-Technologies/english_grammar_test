@@ -14,6 +14,7 @@ import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
+import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/category_card.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -46,7 +47,7 @@ class _LevelScreenState extends State<LevelScreen> {
   }
 
   loadAllScoreOfLevel() async {
-    mainController.scoreOfCate.value.clear();
+    mainController.scoreOfCate.clear();
     mainController.allQuestionsFromFS.value.clear();
     if (userController.user.value != null) {
       Map data =
@@ -58,9 +59,9 @@ class _LevelScreenState extends State<LevelScreen> {
 
       if (data!=null) {
         if (data['${widget.level}'] != null)
-          mainController.scoreOfCate.value = data['${widget.level}'];
+          mainController.scoreOfCate.assignAll(data['${widget.level}']);
         else
-          mainController.scoreOfCate.value = {};
+          mainController.scoreOfCate.clear();
       }
 
       if (question!=null) {
@@ -72,7 +73,7 @@ class _LevelScreenState extends State<LevelScreen> {
       }
     } else {
       final openBox = await Hive.openBox('Table_Score_${widget.level}');
-      mainController.scoreOfCate.value = openBox.toMap();
+      mainController.scoreOfCate.assignAll(openBox.toMap());
       openBox.close();
     }
   }
@@ -97,7 +98,7 @@ class _LevelScreenState extends State<LevelScreen> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                             colors: AppColors.gradientColorPrimary),
-                        border: Border.all(width: 0, color: Colors.transparent),
+                        border: Border.all(width: Dimens.borderWidth0, color: AppColors.transparent),
                       ),
                     ),
                     _buildCategoryContent(mainController.sectionSelected.value)
@@ -117,14 +118,14 @@ class _LevelScreenState extends State<LevelScreen> {
       children: [
         Container(
           color: AppColors.white,
-          height: getScreenHeight(context) / 4,
+          height: getScreenHeight(context) / Dimens.intValue4,
         ),
         Container(
-          height: getScreenHeight(context) / 4,
+          height: getScreenHeight(context) / Dimens.intValue4,
           decoration: BoxDecoration(
-              border: Border.all(width: 0, color: Colors.transparent),
+              border: Border.all(width: Dimens.borderWidth0, color: AppColors.transparent),
               gradient: LinearGradient(colors: AppColors.gradientColorPrimary),
-              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(70))),
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(Dimens.border70))),
           child: Container(
             padding: EdgeInsets.symmetric(vertical: Dimens.formPadding),
             child: Column(
@@ -147,10 +148,10 @@ class _LevelScreenState extends State<LevelScreen> {
                     text: getLevel(widget.level),
                   ),
                   trailing: PopupMenuButton(
-                      elevation: 20,
+                      elevation: Dimens.elevation20,
                       icon: Icon(Icons.menu,color: AppColors.white,),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15)),
+                          borderRadius: BorderRadius.circular(Dimens.border15)),
                       onSelected: choiceAction,
                       itemBuilder: (context) {
                         return Constants.choices.map((e) {
@@ -158,7 +159,7 @@ class _LevelScreenState extends State<LevelScreen> {
                             value: e,
                             child: ListTile(
                               title: AppText(
-                                text: e,
+                                text: getStringChoice(e, context),
                                 color: AppColors.orangeAccent,
                               ),
                             ),
@@ -166,7 +167,7 @@ class _LevelScreenState extends State<LevelScreen> {
                         }).toList();
                       }),
                 ),
-                _buildSectionTitle()
+                // _buildSectionTitle()
               ],
             ),
           ),
@@ -175,47 +176,47 @@ class _LevelScreenState extends State<LevelScreen> {
     );
   }
 
-  _buildSectionTitle() {
-    return ToggleButtons(
-      children: mainController.sections
-          .map((e) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: AppText(
-                  text: getSection(e),
-                  color: AppColors.white,
-                ),
-              ))
-          .toList(),
-      borderRadius: BorderRadius.circular(15),
-      onPressed: (int index) {
-        for (int buttonIndex = 0;
-            buttonIndex < mainController.selected.length;
-            buttonIndex++) {
-          if (buttonIndex == index) {
-            mainController.selected[buttonIndex] = true;
-          } else {
-            mainController.selected[buttonIndex] = false;
-          }
-        }
-        mainController.sectionSelected.value = index;
-      },
-      isSelected: mainController.selected,
-    );
-  }
+  // _buildSectionTitle() {
+  //   return ToggleButtons(
+  //     children: mainController.sections
+  //         .map((e) => Padding(
+  //               padding: const EdgeInsets.all(8.0),
+  //               child: AppText(
+  //                 text: getSection(e),
+  //                 color: AppColors.white,
+  //               ),
+  //             ))
+  //         .toList(),
+  //     borderRadius: BorderRadius.circular(15),
+  //     onPressed: (int index) {
+  //       for (int buttonIndex = 0;
+  //           buttonIndex < mainController.selected.length;
+  //           buttonIndex++) {
+  //         if (buttonIndex == index) {
+  //           mainController.selected[buttonIndex] = true;
+  //         } else {
+  //           mainController.selected[buttonIndex] = false;
+  //         }
+  //       }
+  //       mainController.sectionSelected.value = index;
+  //     },
+  //     isSelected: mainController.selected,
+  //   );
+  // }
 
   _buildCategoryContent(int sectionSelected) {
-    switch (sectionSelected) {
-      case 0:
+    // switch (sectionSelected) {
+    //   case 0:
         return Container(
           decoration: BoxDecoration(
-              border: Border.all(width: 0, color: Colors.transparent),
+              border: Border.all(width: Dimens.borderWidth0, color: Colors.transparent),
               color: AppColors.white,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
+              borderRadius: BorderRadius.only(topRight: Radius.circular(Dimens.border70))),
           child: Column(
             children: [
               SizedBox(
                 child: _buildProgress(),
-                height: 54,
+                height: Dimens.height54,
               ),
               Expanded(
                 child: ListView(
@@ -231,7 +232,8 @@ class _LevelScreenState extends State<LevelScreen> {
                         index: e,
                         level: widget.level,
                         totalQuestion: totalQuestion,
-                        score: Rx<double>(getScoreOfCate(e))??0,
+                        trueQues: Rx<double>(getTrueScoreOfCate(e))??Dimens.doubleValue0,
+                        wrongQues: Rx<double>(getWrongScoreOfCate(e))??Dimens.doubleValue0,
                         category: e,
                         onTap: () async {
                           await mainController
@@ -249,43 +251,44 @@ class _LevelScreenState extends State<LevelScreen> {
             ],
           ),
         );
-      case 1:
-        return Container(
-          height: getScreenHeight(context),
-          width: getScreenWidth(context),
-          decoration: BoxDecoration(
-              border: Border.all(width: 0, color: Colors.transparent),
-              color: AppColors.white,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
-          child: Center(
-            child: AppText(
-              text: "COMING SOON",
-            ),
-          ),
-        );
-      default:
-        return Container(
-          height: getScreenHeight(context),
-          width: getScreenWidth(context),
-          decoration: BoxDecoration(
-              border: Border.all(width: 0, color: Colors.transparent),
-              color: AppColors.white,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
-          child: Center(
-            child: AppText(
-              text: "Something wrong",
-            ),
-          ),
-        );
-    }
+      // case 1:
+      //   return Container(
+      //     height: getScreenHeight(context),
+      //     width: getScreenWidth(context),
+      //     decoration: BoxDecoration(
+      //         border: Border.all(width: 0, color: Colors.transparent),
+      //         color: AppColors.white,
+      //         borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
+      //     child: Center(
+      //       child: AppText(
+      //         text: "COMING SOON",
+      //       ),
+      //     ),
+      //   );
+      // default:
+      //   return Container(
+      //     height: getScreenHeight(context),
+      //     width: getScreenWidth(context),
+      //     decoration: BoxDecoration(
+      //         border: Border.all(width: 0, color: Colors.transparent),
+      //         color: AppColors.white,
+      //         borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
+      //     child: Center(
+      //       child: AppText(
+      //         text: "Something wrong",
+      //       ),
+      //     ),
+      //   );
+    // }
   }
 
   _buildProgress() {
     return Container(
             margin: EdgeInsets.symmetric(
-                horizontal: Dimens.formPadding, vertical: 15),
+                horizontal: Dimens.formPadding, vertical: Dimens.padding15),
             child: AppText(
-              text: '#The Enest Language Center',
+              text: FlutterLocalizations.of(context).getString(
+                  context, 'the_enest'),
               fontWeight: FontWeight.bold,
               color: AppColors.blue,
               textSize: Dimens.paragraphHeaderTextSize,
@@ -313,33 +316,51 @@ class _LevelScreenState extends State<LevelScreen> {
     }
   }
 
-  getScoreOfCate(int index) {
-    double score = 0;
+  getTrueScoreOfCate(int index) {
+    double scoreTrue = Dimens.doubleValue0;
     Map scoreCate = new Map();
-    if (mainController.scoreOfCate.value
+    if (mainController.scoreOfCate
         .containsKey('${widget.level}_$index')) {
-      if (mainController.scoreOfCate.value['${widget.level}_$index'] != null ||
-          mainController.scoreOfCate.value['${widget.level}_$index'] == '0_0') {
+      if (mainController.scoreOfCate['${widget.level}_$index'] != null ||
+          mainController.scoreOfCate['${widget.level}_$index'] == '0_0') {
         scoreCate
-            .addAll(mainController.scoreOfCate.value['${widget.level}_$index']);
+            .addAll(mainController.scoreOfCate['${widget.level}_$index']);
         scoreCate.forEach((key, value) {
           List<String> split = value.toString().split('_');
-          score += double.tryParse(split[0]);
+          scoreTrue += double.tryParse(split[0]);
         });
       }
     }
-    return score;
+    return scoreTrue;
+  }
+
+  getWrongScoreOfCate(int index) {
+    double scoreWrong = Dimens.doubleValue0;
+    Map scoreCate = new Map();
+    if (mainController.scoreOfCate
+        .containsKey('${widget.level}_$index')) {
+      if (mainController.scoreOfCate['${widget.level}_$index'] != null ||
+          mainController.scoreOfCate['${widget.level}_$index'] == '0_0') {
+        scoreCate
+            .addAll(mainController.scoreOfCate['${widget.level}_$index']);
+        scoreCate.forEach((key, value) {
+          List<String> split = value.toString().split('_');
+          scoreWrong += double.tryParse(split[1])-double.tryParse(split[0]);
+        });
+      }
+    }
+    return scoreWrong;
   }
 
   getTestCompleted(int index) {
-    int countTest = 0;
+    int countTest = Dimens.intValue1;
     Map scoreCate = new Map();
-    if (mainController.scoreOfCate.value
+    if (mainController.scoreOfCate
         .containsKey('${widget.level}_$index')) {
-      if (mainController.scoreOfCate.value['${widget.level}_$index'] != null ||
-          mainController.scoreOfCate.value['${widget.level}_$index'] == '0_0') {
+      if (mainController.scoreOfCate['${widget.level}_$index'] != null ||
+          mainController.scoreOfCate['${widget.level}_$index'] == '0_0') {
         scoreCate
-            .addAll(mainController.scoreOfCate.value['${widget.level}_$index']);
+            .addAll(mainController.scoreOfCate['${widget.level}_$index']);
         scoreCate.forEach((key, value) {
           if (value != '0_0') countTest++;
         });
@@ -349,31 +370,18 @@ class _LevelScreenState extends State<LevelScreen> {
   }
 
   modalBottomSheet(String cateName, int level, int categoryId) async {
-    mainController.score.value.clear();
-    if (userController.user.value != null) {
-      if (mainController.scoreOfCate.value
-          .containsKey('$level' '_' '$categoryId')) {
-        if (mainController.scoreOfCate.value['$level' '_' '$categoryId'] !=
-            null) {
-          mainController.score.value.addAll(
-              mainController.scoreOfCate.value['$level' '_' '$categoryId']);
-        } else {
-          mainController.score.value.clear();
-        }
-      } else {
-        mainController.score.value.clear();
-      }
+    mainController.isGoToCheck.value=false;
+    mainController.score.clear();
+    if (userController.user.value != null && mainController.scoreOfCate.containsKey('$level' '_' '$categoryId') && mainController.scoreOfCate['$level' '_' '$categoryId'] != null) {
+      mainController.score.assignAll(
+          mainController.scoreOfCate['$level' '_' '$categoryId']);
     } else {
       final openBox = await Hive.openBox('Table_Score_${widget.level}');
-      if (openBox.containsKey('$level' '_' '$categoryId')) {
-        if (openBox.get('$level' '_' '$categoryId') != null) {
-          mainController.score.value
-              .addAll(openBox.get('$level' '_' '$categoryId'));
-        } else {
-          mainController.score.value.clear();
-        }
+      if (openBox.containsKey('$level' '_' '$categoryId') && openBox.get('$level' '_' '$categoryId') != null) {
+        mainController.score.assignAll(openBox.get('$level' '_' '$categoryId'));
+        openBox.close();
       } else {
-        mainController.score.value.clear();
+        mainController.score.clear();
       }
     }
     await showModalBottomSheet(
@@ -389,42 +397,43 @@ class _LevelScreenState extends State<LevelScreen> {
         });
   }
 
-  choiceAction(String choice) async {
+  choiceAction(int choice) async {
     switch (choice) {
-      case 'Favorite':
+      case 1:
         if (userController.user.value != null) {
           List<dynamic> favorite=await userController.getDataFavorite(userController.user.value.uid);
           if(favorite.isNotEmpty){
             mainController.questionsHiveFavorite=  RxList<Question>(favorite.map((e) => Question.fromJson(e)).toList());
           }
         } else {
-          bool exist = await HiveHelper.isExists(boxName: 'Table_Favorite');
+          bool exist = await HiveHelper.isExists(boxName: Constants.TABLE_FAVORITE_BOX_NAME);
           if (exist) {
             print('-----------------------------------------');
             mainController.questionsHiveFavorite =
-                RxList<Question>(await HiveHelper.getBoxes('Table_Favorite'));
+                RxList<Question>(await HiveHelper.getBoxes(Constants.TABLE_FAVORITE_BOX_NAME));
           }
         }
+        mainController.isGoToCheck.value=false;
         Get.to(
             QuestionScreen(
               question: mainController.questionsHiveFavorite,
               isFavorite: true,
             ),
             transition: Transition.fadeIn,
-            duration: Duration(milliseconds: 500));
+            duration: Duration(milliseconds: Dimens.durationMilliseconds500));
         return;
-      case 'Progress':
+      case 2:
           Get.to(
               ProgressScreen(
                 level: widget.level,
               ),
               transition: Transition.rightToLeftWithFade,
-              duration: Duration(milliseconds: 500));
+              duration: Duration(milliseconds: Dimens.durationMilliseconds500));
         return;
-      case 'Settings':
+      case 3:
         Get.to(SettingScreen(),
             transition: Transition.rightToLeftWithFade,
-            duration: Duration(milliseconds: 500));
+            duration: Duration(milliseconds: Dimens.durationMilliseconds500));
         return;
     }
   }

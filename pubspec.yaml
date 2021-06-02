@@ -68,6 +68,21 @@ flutter_icons:
 flutter:
   uses-material-design: true
 
+  fonts:
+    - family: Helvetica
+      fonts:
+        - asset: assets/fonts/helveticaneue.ttf
+        - asset: assets/fonts/helveticaneuebold.ttf
+        - asset: assets/fonts/helveticaneuebolditalic.ttf
+        - asset: assets/fonts/helveticaneuecondensedblack.ttf
+        - asset: assets/fonts/helveticaneuecondensedbold.ttf
+        - asset: assets/fonts/helveticaneueitalic.ttf
+        - asset: assets/fonts/helveticaneuelight.ttf
+        - asset: assets/fonts/helveticaneuelightitalic.ttf
+        - asset: assets/fonts/helveticaneuemedium.ttf
+        - asset: assets/fonts/helveticaneueultralight.ttf
+        - asset: assets/fonts/helveticaneueultralightitalic.ttf
+
   assets:
     - lib/res/strings/
     - lib/res/images/

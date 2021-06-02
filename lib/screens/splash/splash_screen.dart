@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/fade_container.dart';
+import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
@@ -17,6 +18,8 @@ import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/screens/about_screen/about_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
+import 'package:the_enest_english_grammar_test/theme/colors.dart';
+import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -49,9 +52,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final logoSize = getScreenWidth(context) / 2;
+    final logoSize = Dimens.getLogoSize(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       body: Center(
         child: FadeContainer(
           child: Image.asset(
@@ -83,7 +86,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await SoundsHelper.load();
     await checkSound();
     /// Delay 3 seconds, then navigate to Login screen
-    timer = Timer.periodic(Duration(seconds: 2), (timer) async {
+    timer = Timer.periodic(Duration(seconds: Dimens.durationSeconds2), (timer) async {
       await _loadUserData();
       _navigateToMainScreen();
       //  await checkFirstLoad();
@@ -91,9 +94,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   checkSound() async {
-    final openBox = await Hive.openBox('Sound');
-    if (openBox.get('isSound') != null)
-      appController.sound.value = openBox.get('isSound');
+    final openBox = await Hive.openBox(Constants.SOUND_BOX_NAME);
+    if (openBox.get(Constants.SOUND_KEY_NAME) != null)
+      appController.sound.value = openBox.get(Constants.SOUND_KEY_NAME);
     openBox.close();
   }
 

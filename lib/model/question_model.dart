@@ -43,7 +43,9 @@ class Question extends HiveObject{
   @HiveField(10)
   Rx<int> currentChecked;
 
-  Question({this.categoryId,this.categoryName,this.correctAnswer,this.explanation,this.explanationVi,this.groupId,this.id,this.level,this.options,this.task,this.currentChecked});
+  Question({this.categoryId,this.categoryName,this.correctAnswer,
+    this.explanation,this.explanationVi,this.groupId,this.id,this.level,
+    this.options,this.task,this.currentChecked});
 
   Question.fromJson(Map<dynamic,dynamic>json):
         categoryId=json['categoryId']??null,

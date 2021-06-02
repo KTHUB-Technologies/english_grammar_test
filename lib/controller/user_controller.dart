@@ -45,7 +45,7 @@ class UserController extends GetxController{
   logout() async {
     isShowLoading.value = true;
 
-    final openBox=await Hive.openBox('user');
+    final openBox=await Hive.openBox(Constants.USER_BOX_NAME);
     await openBox.deleteFromDisk();
     openBox.close();
 
@@ -91,82 +91,82 @@ class UserController extends GetxController{
   ///Fire store
   ///Scores
   setDataScore(String uid) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_SCORES').set({'scores':{}});
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc(Constants.ALL_SCORES).set({Constants.FIELD_SCORES:{}});
   }
 
   getDataScore(String uid) async{
     DocumentSnapshot doc = await FireBaseHelper.fireStoreReference
-        .collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_SCORES')
+        .collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc(Constants.ALL_SCORES)
         .get();
     if(doc.data()==null){
       await setDataScore(uid);
     }else{
-      if(doc.data()['scores']!=null)
-        return doc.data()['scores'];
+      if(doc.data()[Constants.FIELD_SCORES]!=null)
+        return doc.data()[Constants.FIELD_SCORES];
       else
         return {};
     }
   }
 
   updateDataScore(String uid, var data) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_SCORES').update(data);
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc(Constants.ALL_SCORES).update(data);
   }
 
   deleteDataScore(String uid, var data) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_SCORES').update(data);
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc(Constants.ALL_SCORES).update(data);
   }
 
   ///Questions
   setDataQuestion(String uid) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_QUESTIONS').set({'questions':{}});
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc(Constants.ALL_QUESTIONS).set({Constants.FIELD_QUESTIONS:{}});
   }
 
   getDataQuestion(String uid) async{
     DocumentSnapshot doc = await FireBaseHelper.fireStoreReference
-        .collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_QUESTIONS')
+        .collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc(Constants.ALL_QUESTIONS)
         .get();
     if(doc.data()==null){
       await setDataQuestion(uid);
     }else{
-      if(doc.data()['questions']!=null)
-        return doc.data()['questions'];
+      if(doc.data()[Constants.FIELD_QUESTIONS]!=null)
+        return doc.data()[Constants.FIELD_QUESTIONS];
       else
         return {};
     }
   }
 
   updateDataQuestion(String uid, var data) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_QUESTIONS').update(data);
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc(Constants.ALL_QUESTIONS).update(data);
   }
 
   deleteDataQuestion(String uid, var data) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('ALL_QUESTIONS').update(data);
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc(Constants.ALL_QUESTIONS).update(data);
   }
 
   ///Favorites
   setDataFavorite(String uid) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('FAVORITES').set({'favorites':[]});
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc(Constants.FAVORITES).set({Constants.FIELD_FAVORITES:[]});
   }
 
   getDataFavorite(String uid) async{
     DocumentSnapshot doc = await FireBaseHelper.fireStoreReference
-        .collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('FAVORITES')
+        .collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc(Constants.FAVORITES)
         .get();
     if(doc.data()==null){
       await setDataFavorite(uid);
     }else{
-      if(doc.data()['favorites']!=null)
-        return doc.data()['favorites'];
+      if(doc.data()[Constants.FIELD_FAVORITES]!=null)
+        return doc.data()[Constants.FIELD_FAVORITES];
       else
         return [];
     }
   }
 
   updateDataFavorite(String uid, var data) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('FAVORITES').update(data);
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc(Constants.FAVORITES).update(data);
   }
 
   deleteDataFavorite(String uid, var data) async{
-    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc('FAVORITES').update(data);
+    await FireBaseHelper.fireStoreReference.collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc(Constants.FAVORITES).update(data);
   }
 }
