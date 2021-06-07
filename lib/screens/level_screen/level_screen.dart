@@ -423,14 +423,6 @@ class _LevelScreenState extends State<LevelScreen> {
             duration: Duration(milliseconds: Dimens.durationMilliseconds500));
         return;
       case 2:
-          Get.to(
-              ProgressScreen(
-                level: widget.level,
-              ),
-              transition: Transition.rightToLeftWithFade,
-              duration: Duration(milliseconds: Dimens.durationMilliseconds500));
-        return;
-      case 3:
         Get.to(SettingScreen(),
             transition: Transition.rightToLeftWithFade,
             duration: Duration(milliseconds: Dimens.durationMilliseconds500));

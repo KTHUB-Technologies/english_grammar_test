@@ -201,8 +201,9 @@ alertDialog(BuildContext context, String content, Function confirm) {
         shape:
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimens.border15)),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: Dimens.padding25, horizontal: Dimens.padding15),
+          padding: const EdgeInsets.symmetric(vertical: Dimens.padding10),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -218,37 +219,21 @@ alertDialog(BuildContext context, String content, Function confirm) {
                 textSize: Dimens.errorTextSize,
               ),
               Dimens.height20,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Expanded(
-                    child: TextButton(
-                      child: AppText(
-                        text: FlutterLocalizations.of(context).getString(context, 'cancel'),
-                        color: AppColors.white,
-                      ),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(AppColors.divider),
-                      ),
-                      onPressed: (){
-                        Get.back();
-                      },
+              Align(
+                alignment: Alignment.center,
+                child: TextButton(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: Dimens.padding3, horizontal: Dimens.padding10),
+                    child: AppText(
+                      text: FlutterLocalizations.of(context).getString(context, 'confirm'),
+                      color: AppColors.white,
                     ),
                   ),
-                  Dimens.width20,
-                  Expanded(
-                    child: TextButton(
-                      child: AppText(
-                        text: FlutterLocalizations.of(context).getString(context, 'confirm'),
-                        color: AppColors.white,
-                      ),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(AppColors.blue),
-                      ),
-                      onPressed: confirm,
-                    ),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(AppColors.blue),
                   ),
-                ],
+                  onPressed: confirm,
+                ),
               )
             ],
           ),
@@ -263,10 +248,6 @@ getStringChoice(int id, BuildContext context){
           context, 'favorite');
       break;
     case 2:
-      return FlutterLocalizations.of(context).getString(
-          context, 'progress');
-      break;
-    case 3:
       return FlutterLocalizations.of(context).getString(
           context, 'setting');
       break;

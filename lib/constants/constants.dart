@@ -2,7 +2,6 @@ class Constants {
   static const List<int> choices =<int>[
     1,
     2,
-    3
   ];
 
   static const String QUESTIONS_DATA='QUESTIONS_DATA';

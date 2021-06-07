@@ -126,7 +126,6 @@ class Dimens {
   static const double padding15= 15;
   static const double border25 = 25;
   static const double opacityColor0_5 = 0.5;
-  static const double spreedRadius2 = 2;
   static const double blurRadius8 = 8;
   static const double offSet2 = 2;
   static const double offSet5 = 5;
@@ -177,4 +176,8 @@ class Dimens {
   static const double padding25= 25;
   static const int intValue10 = 10;
   static const int intValue20 = 20;
+
+  static const double offset3 = 3;
+  static const double spreedRadius2 =2;
+  static const double blurRadius5 = 5;
 }

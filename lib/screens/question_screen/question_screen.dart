@@ -320,7 +320,7 @@ class _QuestionScreenState extends State<QuestionScreen>
                 widthButton: Dimens.widthValue150,
                 onTap: () async {
                   SoundsHelper.checkAudio(Sounds.touch);
-                  Get.to(CheckAnswerScreen(
+                  Get.off(CheckAnswerScreen(
                     question: widget.question,
                   ));
 

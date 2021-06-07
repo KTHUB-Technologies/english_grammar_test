@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
+import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/screens/promotion_screen/promotion_detail/promotion_detail.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
@@ -33,15 +34,11 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
               padding: const EdgeInsets.all(Dimens.padding15),
               child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(Dimens.border25),
-                    gradient: LinearGradient(
-                      colors: AppColors.gradientColorCard3,
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
+                    borderRadius: BorderRadius.circular(Dimens.border10),
+                    color: AppColors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.red.withOpacity(Dimens.opacityColor0_5),
+                        color: AppColors.blue.withOpacity(Dimens.opacityColor0_5),
                         spreadRadius: Dimens.spreedRadius2,
                         blurRadius: Dimens.blurRadius8,
                         offset: Offset(Dimens.offSet2,Dimens.offSet5),
@@ -49,11 +46,22 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
                     ],
                   ),
                   padding: EdgeInsets.all(Dimens.formPadding),
-                  child: Center(
-                    child: AppText(
-                      text: FlutterLocalizations.of(context).getString(
-                          context, 'coupon'),
-                    ),
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        Images.logo,
+                        width: 120,
+                        height: 120,
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: AppText(
+                            text: FlutterLocalizations.of(context).getString(
+                                context, 'coupon'),
+                          ),
+                        ),
+                      ),
+                    ]
                   ),
               ),
             ),

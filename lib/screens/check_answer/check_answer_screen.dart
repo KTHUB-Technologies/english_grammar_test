@@ -47,12 +47,12 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
                     ? AppText(
                         text: '${FlutterLocalizations.of(context).getString(
                             context, 'your_answer')}: ${options[e.currentChecked.value]}',
-                        color: Colors.green,
+                        color: AppColors.green,
                       )
                     : AppText(
                         text: '${FlutterLocalizations.of(context).getString(
                             context, 'your_answer')}: ${options[e.currentChecked.value]}',
-                        color: Colors.red,
+                        color: AppColors.red,
                       ),
                 Dimens.height10,
                 e.currentChecked.value == e.correctAnswer - Dimens.intValue1
@@ -60,7 +60,7 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
                     : AppText(
                         text: '${FlutterLocalizations.of(context).getString(
                             context, 'correct_answer')}: ${options[e.correctAnswer - Dimens.intValue1]}',
-                        color: Colors.green,
+                        color: AppColors.green,
                       ),
                 Dimens.height10,
                 Container(
@@ -154,7 +154,7 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
   }
 
   _navigateBack() async {
-    Get.close(2);
+    Get.close(1);
     mainController.score.clear();
     if (userController.user.value != null && mainController.scoreOfCate.containsKey(
         '${widget.question.first.level}'
