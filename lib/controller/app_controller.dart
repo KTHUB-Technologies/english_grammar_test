@@ -31,6 +31,12 @@ class AppController extends GetxController {
   Rx<bool> isDark = Rx<bool>(false);
   Rx<bool> sound=Rx<bool>(true);
 
+  Rx<int> selectedIndex = Rx<int>(0);
+
+  setSelectedIndex(index) {
+    selectedIndex.value = index;
+  }
+
   getDefaultLanguage() async {
     String languageCode = await SharedPreferencesHelper.getStringValue(
         SharedPreferencesHelper.LANGUAGE_CODE);
