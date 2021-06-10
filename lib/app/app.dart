@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/statistics_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/localization/flutter_localizations_delegate.dart';
 import 'package:the_enest_english_grammar_test/routes/routes.dart';
@@ -43,6 +44,7 @@ class _EnglishGrammarTestAppState extends State<EnglishGrammarTestApp> {
             initialBinding: BindingsBuilder((){
               Get.put(MainController());
               Get.put(UserController());
+              Get.put(StatisticsController());
             }),
             debugShowCheckedModeBanner: false,
             title: '',

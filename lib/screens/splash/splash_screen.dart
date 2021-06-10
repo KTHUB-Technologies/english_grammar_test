@@ -17,7 +17,6 @@ import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/screens/about_screen/about_screen.dart';
-import 'package:the_enest_english_grammar_test/screens/bottom_nav/bottom_nav_main.dart';
 import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
@@ -123,6 +122,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToMainScreen() {
-    Get.offAll(BottomNavigationScreen());
+    Get.offAll(MainScreen());
   }
 }

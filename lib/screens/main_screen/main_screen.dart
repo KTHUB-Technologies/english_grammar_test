@@ -58,68 +58,64 @@ class _MainScreenState extends State<MainScreen> {
                 Expanded(
                   child: Column(
                     children: <Widget>[
-                      Expanded(
-                        child: Stack(
-                          children: [
-                            Container(
+                      Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                    colors: AppColors.gradientColorPrimary)),
+                            height: getScreenHeight(context)/Dimens.intValue2,
+                          ),
+                          Container(
                               decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                      colors: AppColors.gradientColorPrimary)),
-                              height: getScreenHeight(context)/Dimens.intValue2,
-                            ),
-                            Container(
-                                decoration: BoxDecoration(
-                                    color: AppColors.white,
-                                    borderRadius: BorderRadius.only(
-                                        bottomRight: Radius.circular(Dimens.border70))),
-                                height: getScreenHeight(context)/Dimens.intValue2,
-                                child: Center(
-                                  child: AppLogo(),
-                                ))
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Stack(
-                          children: [
-                            Container(
-                              color: AppColors.white,
-                              height: getScreenHeight(context)/Dimens.intValue2,
-                            ),
-                            Container(
-                              height: getScreenHeight(context)/Dimens.intValue2,
-                              decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                      colors: AppColors.gradientColorPrimary),
+                                  color: AppColors.white,
                                   borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(Dimens.border70))),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(Dimens.padding20),
-                                    child: AppText(
-                                      text: getLevelDescription(
-                                          levelController.levelSelected.value + Dimens.intValue1,
-                                          context),
-                                      textAlign: TextAlign.left,
-                                      color: AppColors.white,
-                                      textSize: Dimens.paragraphHeaderTextSize,
-                                    ),
+                                      bottomRight: Radius.circular(Dimens.border70))),
+                              height: getScreenHeight(context)/Dimens.intValue2,
+                              child: Center(
+                                child: AppLogo(),
+                              ))
+                        ],
+                      ),
+                      Stack(
+                        children: [
+                          Container(
+                            color: AppColors.white,
+                            height: getScreenHeight(context)/Dimens.intValue2,
+                          ),
+                          Container(
+                            height: getScreenHeight(context)/Dimens.intValue2,
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                    colors: AppColors.gradientColorPrimary),
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(Dimens.border70))),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(Dimens.padding20),
+                                  child: AppText(
+                                    text: getLevelDescription(
+                                        levelController.levelSelected.value + Dimens.intValue1,
+                                        context),
+                                    textAlign: TextAlign.left,
+                                    color: AppColors.white,
+                                    textSize: Dimens.paragraphHeaderTextSize,
                                   ),
-                                  Dimens.height10,
-                                  Container(
-                                    child: Center(
-                                        child: _buildSelectedContent(
-                                            levelController.levelSelected.value +
-                                                Dimens.intValue1)),
-                                  )
-                                ],
-                              ),
+                                ),
+                                Dimens.height10,
+                                Container(
+                                  child: Center(
+                                      child: _buildSelectedContent(
+                                          levelController.levelSelected.value +
+                                              Dimens.intValue1)),
+                                )
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       )
                     ],
                   ),
@@ -182,6 +178,11 @@ class _MainScreenState extends State<MainScreen> {
             //               });
             //       }),
             // ),
+            IconButton(
+                icon: Icon(Icons.bar_chart),
+                onPressed: () {
+                  Get.to(StatisticsScreen());
+                }),
             IconButton(
                 icon: Icon(Icons.card_giftcard),
                 onPressed: () {
