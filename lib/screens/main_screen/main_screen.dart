@@ -176,11 +176,11 @@ class _MainScreenState extends State<MainScreen> {
             //               });
             //       }),
             // ),
-            IconButton(
-                icon: Icon(Icons.card_giftcard),
-                onPressed: () {
-                  _navigateToPromotionScreen();
-                }),
+            // IconButton(
+            //     icon: Icon(Icons.card_giftcard),
+            //     onPressed: () {
+            //       _navigateToPromotionScreen();
+            //     }),
             IconButton(
                 icon: Icon(Icons.language),
                 onPressed: () async {
