@@ -15,7 +15,7 @@ import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 /// This method is used when we need to call a method after build() function is completed.
 void onWidgetBuildDone(function) {
-  SchedulerBinding.instance.addPostFrameCallback((_) {
+  SchedulerBinding.instance!.addPostFrameCallback((_) {
     function();
   });
 }
@@ -137,18 +137,18 @@ shortUserName(String displayName) {
 }
 
 showConfirmDialog(BuildContext context,
-    {String title, String content, Function cancel, Function confirm}) {
+    {String? title, String? content, Function? cancel, Function? confirm}) {
   if (Platform.isIOS) {
     showCupertinoDialog(
         context: context,
         builder: (context) {
           return IOSDialog(
-            title: title,
-            content: content,
-            cancel: cancel,
+            title: title!,
+            content: content!,
+            cancel: cancel!,
             confirm: () {
               Navigator.pop(context);
-              confirm();
+              confirm!();
             },
           );
         });
@@ -157,12 +157,12 @@ showConfirmDialog(BuildContext context,
         context: context,
         builder: (context) {
           return AndroidDialog(
-            title: title,
-            content: content,
-            cancel: cancel,
+            title: title!,
+            content: content!,
+            cancel: cancel!,
             confirm: () {
               Navigator.pop(context);
-              confirm();
+              confirm!();
             },
           );
         });
@@ -209,12 +209,12 @@ alertDialog(BuildContext context, String content, Function confirm) {
             children: [
               AppText(
                 textSize: Dimens.paragraphHeaderTextSize,
-                text: FlutterLocalizations.of(context).getString(context, 'waring'),
+                text: FlutterLocalizations.of(context)!.getString(context, 'waring'),
                 color: AppColors.red,
               ),
               Dimens.height10,
               AppText(
-                text: FlutterLocalizations.of(context).getString(context, 'ask_restart_result'),
+                text: FlutterLocalizations.of(context)!.getString(context, 'ask_restart_result'),
                 color: AppColors.black,
                 textSize: Dimens.errorTextSize,
               ),
@@ -225,14 +225,16 @@ alertDialog(BuildContext context, String content, Function confirm) {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: Dimens.padding3, horizontal: Dimens.padding10),
                     child: AppText(
-                      text: FlutterLocalizations.of(context).getString(context, 'confirm'),
+                      text: FlutterLocalizations.of(context)!.getString(context, 'confirm'),
                       color: AppColors.white,
                     ),
                   ),
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(AppColors.blue),
                   ),
-                  onPressed: confirm,
+                  onPressed: (){
+                    confirm();
+                  },
                 ),
               )
             ],
@@ -244,13 +246,11 @@ alertDialog(BuildContext context, String content, Function confirm) {
 getStringChoice(int id, BuildContext context){
   switch(id){
     case 1:
-      return FlutterLocalizations.of(context).getString(
+      return FlutterLocalizations.of(context)!.getString(
           context, 'favorite');
-      break;
     case 2:
-      return FlutterLocalizations.of(context).getString(
+      return FlutterLocalizations.of(context)!.getString(
           context, 'setting');
-      break;
     default:
       return '';
   }

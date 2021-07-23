@@ -14,13 +14,13 @@ import 'package:the_enest_english_grammar_test/helper/firebase_helper.dart';
 
 class UserController extends GetxController{
   Rx<bool> isShowLoading = Rx<bool>(false);
-  Rx<User> user = Rx<User>(null);
+  Rx<User?> user = Rx<User?>(null);
 
   ///Login with GOOGLE
   signInWithGoogle() async {
-    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+    final OAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
@@ -32,9 +32,9 @@ class UserController extends GetxController{
 
   ///Login with FACEBOOK
   signInWithFacebook() async {
-    final AccessToken accessToken = await FacebookAuth.instance.login();
-    final FacebookAuthCredential facebookAuthCredential =
-    FacebookAuthProvider.credential(accessToken.token);
+    final AccessToken? accessToken = (await FacebookAuth.instance.login()).accessToken;
+    final OAuthCredential facebookAuthCredential =
+    FacebookAuthProvider.credential(accessToken!.token);
     var userFacebook= await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
 
     user.value=userFacebook.user;
@@ -95,14 +95,14 @@ class UserController extends GetxController{
   }
 
   getDataScore(String uid) async{
-    DocumentSnapshot doc = await FireBaseHelper.fireStoreReference
+    var doc = await FireBaseHelper.fireStoreReference
         .collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc(Constants.ALL_SCORES)
         .get();
     if(doc.data()==null){
       await setDataScore(uid);
     }else{
-      if(doc.data()[Constants.FIELD_SCORES]!=null)
-        return doc.data()[Constants.FIELD_SCORES];
+      if(doc.data()![Constants.FIELD_SCORES] !=null)
+        return doc.data()![Constants.FIELD_SCORES];
       else
         return {};
     }
@@ -122,14 +122,14 @@ class UserController extends GetxController{
   }
 
   getDataQuestion(String uid) async{
-    DocumentSnapshot doc = await FireBaseHelper.fireStoreReference
+    var doc = await FireBaseHelper.fireStoreReference
         .collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc(Constants.ALL_QUESTIONS)
         .get();
     if(doc.data()==null){
       await setDataQuestion(uid);
     }else{
-      if(doc.data()[Constants.FIELD_QUESTIONS]!=null)
-        return doc.data()[Constants.FIELD_QUESTIONS];
+      if(doc.data()![Constants.FIELD_QUESTIONS]!=null)
+        return doc.data()![Constants.FIELD_QUESTIONS];
       else
         return {};
     }
@@ -149,14 +149,14 @@ class UserController extends GetxController{
   }
 
   getDataFavorite(String uid) async{
-    DocumentSnapshot doc = await FireBaseHelper.fireStoreReference
+    var doc = await FireBaseHelper.fireStoreReference
         .collection(Constants.USERS).doc(uid).collection(Constants.DATA).doc(Constants.FAVORITES)
         .get();
     if(doc.data()==null){
       await setDataFavorite(uid);
     }else{
-      if(doc.data()[Constants.FIELD_FAVORITES]!=null)
-        return doc.data()[Constants.FIELD_FAVORITES];
+      if(doc.data()![Constants.FIELD_FAVORITES]!=null)
+        return doc.data()![Constants.FIELD_FAVORITES];
       else
         return [];
     }

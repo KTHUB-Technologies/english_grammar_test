@@ -20,7 +20,7 @@ class EnglishGrammarTestApp extends StatefulWidget {
 class _EnglishGrammarTestAppState extends State<EnglishGrammarTestApp> {
   final GlobalKey<NavigatorState> nav = GlobalKey<NavigatorState>();
   final AppController appController= Get.put(AppController());
-  StreamSubscription connectivitySubscription;
+  StreamSubscription? connectivitySubscription;
 
   @override
   void initState() {
@@ -30,7 +30,7 @@ class _EnglishGrammarTestAppState extends State<EnglishGrammarTestApp> {
   @override
   void dispose() {
     super.dispose();
-    connectivitySubscription.cancel();
+    connectivitySubscription!.cancel();
   }
 
   @override

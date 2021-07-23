@@ -19,7 +19,7 @@ import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 class ProgressScreen extends StatefulWidget {
   final int level;
 
-  const ProgressScreen({Key key, this.level}) : super(key: key);
+  const ProgressScreen({Key? key, required this.level}) : super(key: key);
   @override
   _ProgressScreenState createState() => _ProgressScreenState();
 }
@@ -127,7 +127,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                     return WidgetAnimatorSlideTransition(
                       CategoryCard(
                         totalQuestion: totalQuestion,
-                        index: e,
+                        index: e!,
                         level: widget.level,
                         category: e,
                         testCompleted: Rx<int>(getTestCompleted(e) ?? Dimens.initialValue0),
@@ -150,7 +150,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
               borderRadius: BorderRadius.only(topRight: Radius.circular(Dimens.border70))),
           child: Center(
             child: AppText(
-              text: FlutterLocalizations.of(context).getString(
+              text: FlutterLocalizations.of(context)!.getString(
                   context, 'coming_soon'),
             ),
           ),
@@ -165,7 +165,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
               borderRadius: BorderRadius.only(topRight: Radius.circular(Dimens.border70))),
           child: Center(
             child: AppText(
-              text: FlutterLocalizations.of(context).getString(
+              text: FlutterLocalizations.of(context)!.getString(
                   context, 'something_wrong'),
             ),
           ),
@@ -212,7 +212,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
             .addAll(mainController.scoreOfCate['${widget.level}_$index']);
         scoreCate.forEach((key, value) {
           List<String> split = value.toString().split('_');
-          score += double.tryParse(split[0]);
+          score += num.tryParse(split[0])!;
         });
       }
     }
@@ -246,7 +246,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
             children: <Widget>[
               Expanded(
                 child: AppText(
-                  text: FlutterLocalizations.of(context).getString(
+                  text: FlutterLocalizations.of(context)!.getString(
                       context, 'delete_this_level'),
                   color: AppColors.red,
                   textSize: Dimens.paragraphHeaderTextSize,
@@ -258,10 +258,10 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   color: AppColors.red,
                 ),
                 onTap: () {
-                  showConfirmDialog(context,title: FlutterLocalizations.of(context).getString(
+                  showConfirmDialog(context,title: FlutterLocalizations.of(context)!.getString(
                       context, 'waring'),
                     content:
-                    FlutterLocalizations.of(context).getString(
+                    FlutterLocalizations.of(context)!.getString(
                         context, 'ask_reset_level'), cancel: () {
                       Get.back();
                     },
@@ -283,12 +283,12 @@ class _ProgressScreenState extends State<ProgressScreen> {
     if (userController.user.value != null) {
       var data = {'scores.${widget.level}': FieldValue.delete()};
 
-      userController.deleteDataScore(userController.user.value.uid, data);
+      userController.deleteDataScore(userController.user.value!.uid, data);
 
       var questions = {'questions.${widget.level}': FieldValue.delete()};
 
       userController.deleteDataQuestion(
-          userController.user.value.uid, questions);
+          userController.user.value!.uid, questions);
     } else {
       final openBox = await Hive.openBox('Table_${widget.level}');
       openBox.deleteFromDisk();

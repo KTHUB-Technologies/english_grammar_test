@@ -28,7 +28,7 @@ import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 class LevelScreen extends StatefulWidget {
   final int level;
 
-  const LevelScreen({Key key, this.level}) : super(key: key);
+  const LevelScreen({Key? key, required this.level}) : super(key: key);
 
   @override
   _LevelScreenState createState() => _LevelScreenState();
@@ -50,12 +50,12 @@ class _LevelScreenState extends State<LevelScreen> {
     mainController.scoreOfCate.clear();
     mainController.allQuestionsFromFS.value.clear();
     if (userController.user.value != null) {
-      Map data =
-          await userController.getDataScore(userController.user.value.uid);
-      Map question =
-          await userController.getDataQuestion(userController.user.value.uid);
+      Map? data =
+          await userController.getDataScore(userController.user.value!.uid);
+      Map? question =
+          await userController.getDataQuestion(userController.user.value!.uid);
 
-      await userController.getDataFavorite(userController.user.value.uid);
+      await userController.getDataFavorite(userController.user.value!.uid);
 
       if (data!=null) {
         if (data['${widget.level}'] != null)
@@ -229,11 +229,11 @@ class _LevelScreenState extends State<LevelScreen> {
                         .length;
                     return WidgetAnimatorScaleTransition(
                       NormalCategoryCard(
-                        index: e,
+                        index: e!,
                         level: widget.level,
                         totalQuestion: totalQuestion,
-                        trueQues: Rx<double>(getTrueScoreOfCate(e))??Dimens.doubleValue0,
-                        wrongQues: Rx<double>(getWrongScoreOfCate(e))??Dimens.doubleValue0,
+                        trueQues: Rx<double>(getTrueScoreOfCate(e)??Dimens.doubleValue0),
+                        wrongQues: Rx<double>(getWrongScoreOfCate(e)??Dimens.doubleValue0),
                         category: e,
                         onTap: () async {
                           await mainController
@@ -287,7 +287,7 @@ class _LevelScreenState extends State<LevelScreen> {
             margin: EdgeInsets.symmetric(
                 horizontal: Dimens.formPadding, vertical: Dimens.padding15),
             child: AppText(
-              text: FlutterLocalizations.of(context).getString(
+              text: FlutterLocalizations.of(context)!.getString(
                   context, 'the_enest'),
               fontWeight: FontWeight.bold,
               color: AppColors.blue,
@@ -299,12 +299,12 @@ class _LevelScreenState extends State<LevelScreen> {
     if (userController.user.value != null) {
       var data = {'scores.${widget.level}': FieldValue.delete()};
 
-      userController.deleteDataScore(userController.user.value.uid, data);
+      userController.deleteDataScore(userController.user.value!.uid, data);
 
       var questions = {'questions.${widget.level}': FieldValue.delete()};
 
       userController.deleteDataQuestion(
-          userController.user.value.uid, questions);
+          userController.user.value!.uid, questions);
     } else {
       final openBox = await Hive.openBox('Table_${widget.level}');
       openBox.deleteFromDisk();
@@ -327,7 +327,7 @@ class _LevelScreenState extends State<LevelScreen> {
             .addAll(mainController.scoreOfCate['${widget.level}_$index']);
         scoreCate.forEach((key, value) {
           List<String> split = value.toString().split('_');
-          scoreTrue += double.tryParse(split[0]);
+          scoreTrue += double.tryParse(split[0])!;
         });
       }
     }
@@ -345,7 +345,7 @@ class _LevelScreenState extends State<LevelScreen> {
             .addAll(mainController.scoreOfCate['${widget.level}_$index']);
         scoreCate.forEach((key, value) {
           List<String> split = value.toString().split('_');
-          scoreWrong += double.tryParse(split[1])-double.tryParse(split[0]);
+          scoreWrong += double.tryParse(split[1])!-double.tryParse(split[0])!;
         });
       }
     }
@@ -372,16 +372,16 @@ class _LevelScreenState extends State<LevelScreen> {
   modalBottomSheet(String cateName, int level, int categoryId) async {
     mainController.isGoToCheck.value=false;
     mainController.score.clear();
-    if (userController.user.value != null && mainController.scoreOfCate.containsKey('$level' '_' '$categoryId') && mainController.scoreOfCate['$level' '_' '$categoryId'] != null) {
-      mainController.score.assignAll(
-          mainController.scoreOfCate['$level' '_' '$categoryId']);
+    if (userController.user.value != null) {
+      if(mainController.scoreOfCate.containsKey('$level''_''$categoryId') && mainController.scoreOfCate['$level''_''$categoryId'] != null){
+        mainController.score.addAll(
+            mainController.scoreOfCate['$level''_''$categoryId']);
+      }
     } else {
       final openBox = await Hive.openBox('Table_Score_${widget.level}');
-      if (openBox.containsKey('$level' '_' '$categoryId') && openBox.get('$level' '_' '$categoryId') != null) {
-        mainController.score.assignAll(openBox.get('$level' '_' '$categoryId'));
+      if (openBox.containsKey('$level''_''$categoryId') && openBox.get('$level''_''$categoryId') != null) {
+        mainController.score.addAll(openBox.get('$level' '_' '$categoryId'));
         openBox.close();
-      } else {
-        mainController.score.clear();
       }
     }
     await showModalBottomSheet(
@@ -401,7 +401,7 @@ class _LevelScreenState extends State<LevelScreen> {
     switch (choice) {
       case 1:
         if (userController.user.value != null) {
-          List<dynamic> favorite=await userController.getDataFavorite(userController.user.value.uid);
+          List<dynamic> favorite=await userController.getDataFavorite(userController.user.value!.uid);
           if(favorite.isNotEmpty){
             mainController.questionsHiveFavorite=  RxList<Question>(favorite.map((e) => Question.fromJson(e)).toList());
           }

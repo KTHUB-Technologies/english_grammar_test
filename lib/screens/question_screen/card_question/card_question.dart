@@ -18,11 +18,11 @@ import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 class CardQuestion extends StatefulWidget {
   const CardQuestion(
-      {Key key,
-      this.question,
-      this.countTrue,
-      this.listQuestions,
-      this.isFavorite})
+      {Key? key,
+      required this.question,
+        required this.countTrue,
+        required this.listQuestions,
+        required this.isFavorite})
       : super(key: key);
 
   final Question question;
@@ -48,40 +48,40 @@ class _CardQuestionState extends State<CardQuestion> {
     List<String> options = [];
     RxList<Color> colorsI = RxList<Color>([]);
     RxList<Icon> iconsI = RxList<Icon>([]);
-    options = widget.question.options.split(Constants.SPLIT_ANSWER);
+    options = widget.question.options!.split(Constants.SPLIT_ANSWER);
     for (var i = Dimens.initialValue0; i < options.length; i++) {
       colorsI.add(AppColors.transparent);
       iconsI.add(Icon(Icons.adjust));
     }
     if (widget.isFavorite == true) {
-      widget.question.currentChecked.value = widget.question.correctAnswer - Dimens.intValue1;
-      colorsI[widget.question.currentChecked.value] =
+      widget.question.currentChecked.value = widget.question.correctAnswer! - Dimens.intValue1;
+      colorsI[widget.question.currentChecked.value!] =
           AppColors.green.withOpacity(Dimens.opacityColor0_2);
-      iconsI[widget.question.currentChecked.value] = Icon(
+      iconsI[widget.question.currentChecked.value!] = Icon(
         Icons.check,
         color: AppColors.green,
       );
     } else {
       if (widget.question.currentChecked.value != null) {
         if (widget.question.currentChecked.value ==
-            widget.question.correctAnswer - Dimens.intValue1) {
-          colorsI[widget.question.currentChecked.value] =
+            widget.question.correctAnswer! - Dimens.intValue1) {
+          colorsI[widget.question.currentChecked.value!] =
               AppColors.green.withOpacity(Dimens.opacityColor0_2);
-          iconsI[widget.question.currentChecked.value] = Icon(
+          iconsI[widget.question.currentChecked.value!] = Icon(
             Icons.check,
             color: AppColors.green,
           );
         } else {
-          colorsI[widget.question.currentChecked.value] =
+          colorsI[widget.question.currentChecked.value!] =
               AppColors.red.withOpacity(Dimens.opacityColor0_2);
-          colorsI[widget.question.correctAnswer - Dimens.intValue1] =
+          colorsI[widget.question.correctAnswer! - Dimens.intValue1] =
               AppColors.green.withOpacity(Dimens.opacityColor0_2);
 
-          iconsI[widget.question.currentChecked.value] = Icon(
+          iconsI[widget.question.currentChecked.value!] = Icon(
             Icons.clear,
             color: AppColors.red,
           );
-          iconsI[widget.question.correctAnswer - Dimens.intValue1] = Icon(
+          iconsI[widget.question.correctAnswer! - Dimens.intValue1] = Icon(
             Icons.check,
             color: AppColors.green,
           );
@@ -122,7 +122,7 @@ class _CardQuestionState extends State<CardQuestion> {
         child: ListView(
           children: <Widget>[
             AppText(
-              text: widget.question.task,
+              text: widget.question.task!,
               textSize: Dimens.paragraphHeaderTextSize,
             ),
             Dimens.height10,
@@ -189,7 +189,7 @@ class _CardQuestionState extends State<CardQuestion> {
               child: Card(
                 child: ListTile(
                   title: AppText(
-                    text: widget.question.explanation,
+                    text: widget.question.explanation!,
                   ),
                 ),
               ),
@@ -206,11 +206,11 @@ class _CardQuestionState extends State<CardQuestion> {
     Question ques=widget.question;
     if (userController.user.value != null) {
       if (mainController.containFromFavorite.isEmpty) {
-        int checked= widget.question.currentChecked.value;
+        int checked= widget.question.currentChecked.value!;
         Question ques=widget.question;
         ques.currentChecked.value=null;
         var favorite ={'favorites': FieldValue.arrayUnion([ques.toJson()])};
-        userController.updateDataFavorite(userController.user.value.uid, favorite);
+        userController.updateDataFavorite(userController.user.value!.uid, favorite);
         widget.question.currentChecked.value=checked;
         mainController.questionsHiveFavorite.add(widget.question);
         mainController.containFromFavorite = RxList<Question>(mainController
@@ -218,7 +218,7 @@ class _CardQuestionState extends State<CardQuestion> {
             .where((e) => e.id == widget.question.id)
             .toList());
       } else {
-        int checked= widget.question.currentChecked.value;
+        int checked= widget.question.currentChecked.value!;
         ques.currentChecked.value=null;
         if (widget.isFavorite == true) {
           widget.listQuestions
@@ -251,7 +251,7 @@ class _CardQuestionState extends State<CardQuestion> {
             () async{
               if(mainController.checkRemoveFavorite.value==true){
                 var favorite ={'favorites': FieldValue.arrayRemove([ques.toJson()])};
-                await userController.deleteDataFavorite(userController.user.value.uid, favorite);
+                await userController.deleteDataFavorite(userController.user.value!.uid, favorite);
                 widget.question.currentChecked.value=checked;
                 print('Remove success');
               }else{
@@ -272,7 +272,7 @@ class _CardQuestionState extends State<CardQuestion> {
             .where((e) => e.id == widget.question.id)
             .toList());
       } else {
-        num getIndex;
+        int getIndex;
         final openBox = await Hive.openBox(Constants.TABLE_FAVORITE_BOX_NAME);
         if (widget.isFavorite == true) {
           getIndex=widget.listQuestions.indexOf(widget.question);
@@ -328,15 +328,16 @@ class _CardQuestionState extends State<CardQuestion> {
   }
 
   _handleWithSnackBar(Function undo, Function notUndo){
-    Scaffold.of(context).showSnackBar(
+
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: Duration(seconds: Dimens.durationSeconds5),
         content: AppText(
-            text: FlutterLocalizations.of(context).getString(
+            text: FlutterLocalizations.of(context)!.getString(
                 context, 'remove_favorite')
         ),
         action: SnackBarAction(
-          label: FlutterLocalizations.of(context).getString(
+          label: FlutterLocalizations.of(context)!.getString(
               context, 'undo'),
           onPressed: (){
             mainController.checkRemoveFavorite.value=false;
@@ -354,7 +355,7 @@ class _CardQuestionState extends State<CardQuestion> {
     widget.countTrue.value = Dimens.initialValue0;
     SoundsHelper.checkAudio(Sounds.touch);
     for (var checkTrue in widget.listQuestions) {
-      if (checkTrue.currentChecked.value == checkTrue.correctAnswer - Dimens.intValue1)
+      if (checkTrue.currentChecked.value == checkTrue.correctAnswer! - Dimens.intValue1)
         widget.countTrue.value++;
     }
     mainController.index.value = widget.listQuestions.length;
@@ -470,7 +471,7 @@ class _CardQuestionState extends State<CardQuestion> {
   _handleOption(int selected, colorsI, iconsI) {
     widget.question.currentChecked.value = selected;
     if (widget.question.currentChecked.value ==
-        widget.question.correctAnswer - Dimens.intValue1) {
+        widget.question.correctAnswer! - Dimens.intValue1) {
       SoundsHelper.checkAudio(Sounds.correct);
       colorsI[widget.question.currentChecked.value] =
           AppColors.green.withOpacity(Dimens.opacityColor0_2);
@@ -483,13 +484,13 @@ class _CardQuestionState extends State<CardQuestion> {
       SoundsHelper.checkAudio(Sounds.in_correct);
       colorsI[widget.question.currentChecked.value] =
           AppColors.red.withOpacity(Dimens.opacityColor0_2);
-      colorsI[widget.question.correctAnswer - Dimens.intValue1] =
+      colorsI[widget.question.correctAnswer! - Dimens.intValue1] =
           AppColors.green.withOpacity(Dimens.opacityColor0_2);
       iconsI[widget.question.currentChecked.value] = Icon(
         Icons.clear,
         color: AppColors.red,
       );
-      iconsI[widget.question.correctAnswer - Dimens.intValue1] = Icon(
+      iconsI[widget.question.correctAnswer! - Dimens.intValue1] = Icon(
         Icons.check,
         color: AppColors.green,
       );

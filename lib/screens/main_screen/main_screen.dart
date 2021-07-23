@@ -49,7 +49,7 @@ class _MainScreenState extends State<MainScreen> {
     return Obx(() {
       return LoadingContainer(
         child: Scaffold(
-          resizeToAvoidBottomPadding: false,
+          resizeToAvoidBottomInset: false,
           body: Container(
             child: Row(
               children: [
@@ -151,31 +151,31 @@ class _MainScreenState extends State<MainScreen> {
         labelType: NavigationRailLabelType.all,
         trailing: Column(
           children: <Widget>[
-            // Padding(
-            //   padding: EdgeInsets.symmetric(vertical: 0),
-            //   child: IconButton(
-            //       icon: userController.user.value == null
-            //           ? Icon(Icons.person)
-            //           : CircleAvatar(
-            //               child: AppText(
-            //                   text: shortUserName(
-            //                       userController.user.value.displayName ??
-            //                           'Unknown Name')),
-            //             ),
-            //       onPressed: () async {
-            //         // await appController.loginWithMicrosoft();
-            //         userController.user.value == null
-            //             ? _buildChooseLogin()
-            //             : showConfirmDialog(context,
-            //                 title: 'WARNING!!!',
-            //                 content: 'Do you want to LOG OUT?',
-            //                 confirm: () async {
-            //                 await userController.logout();
-            //               }, cancel: () {
-            //                 Get.back();
-            //               });
-            //       }),
-            // ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 0),
+              child: IconButton(
+                  icon: userController.user.value == null
+                      ? Icon(Icons.person)
+                      : CircleAvatar(
+                          child: AppText(
+                              text: shortUserName(
+                                  userController.user.value!.displayName ??
+                                      'Unknown Name')),
+                        ),
+                  onPressed: () async {
+                    // await appController.loginWithMicrosoft();
+                    userController.user.value == null
+                        ? _buildChooseLogin()
+                        : showConfirmDialog(context,
+                            title: 'WARNING!!!',
+                            content: 'Do you want to LOG OUT?',
+                            confirm: () async {
+                            await userController.logout();
+                          }, cancel: () {
+                            Get.back();
+                          });
+                  }),
+            ),
             // IconButton(
             //     icon: Icon(Icons.card_giftcard),
             //     onPressed: () {
@@ -219,7 +219,7 @@ class _MainScreenState extends State<MainScreen> {
                     padding: EdgeInsets.symmetric(vertical: Dimens.padding10),
                     child: RotatedBox(
                       quarterTurns: -Dimens.intValue1,
-                      child: Text(getLevel(e)),
+                      child: Text(getLevel(e!)),
                     ),
                   )),
             )
@@ -237,7 +237,7 @@ class _MainScreenState extends State<MainScreen> {
         // Stack(
         // children: <Widget>[
         AppButton(
-          FlutterLocalizations.of(context).getString(
+          FlutterLocalizations.of(context)!.getString(
               context, 'let_start'),
       onTap: () async {
         SoundsHelper.checkAudio(Sounds.touch);
@@ -248,7 +248,7 @@ class _MainScreenState extends State<MainScreen> {
             levelController.categories.toSet().toList();
         levelController.distinctCategory.sort();
 
-        Get.to(
+        Get.to(()=>
             LevelScreen(
               level: level,
             ),
@@ -298,11 +298,11 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   _navigateToSettingScreen() async {
-    Get.to(SettingScreen());
+    Get.to(()=>SettingScreen());
   }
 
   _navigateToPromotionScreen() async {
-    Get.to(PromotionsScreen());
+    Get.to(()=>PromotionsScreen());
   }
 
   firstLoad() async {

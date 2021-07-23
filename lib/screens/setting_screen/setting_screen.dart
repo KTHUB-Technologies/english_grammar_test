@@ -60,7 +60,7 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             onPressed: () => Get.back()),
         title: AppText(
-          text: FlutterLocalizations.of(context).getString(context, 'setting'),
+          text: FlutterLocalizations.of(context)!.getString(context, 'setting'),
           textSize: Dimens.paragraphHeaderTextSize,
           color: AppColors.white,
         ),
@@ -98,15 +98,15 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             title: AppText(
               text: userController.user.value == null
-                  ? FlutterLocalizations.of(context).getString(context, 'sign_in_with_social')
-                  : userController.user.value.displayName ?? FlutterLocalizations.of(context).getString(context, 'unknown_name'),
+                  ? FlutterLocalizations.of(context)!.getString(context, 'sign_in_with_social')
+                  : userController.user.value!.displayName ?? FlutterLocalizations.of(context)!.getString(context, 'unknown_name'),
             ),
             onTap: () async {
               userController.user.value == null
                   ? Get.offAll(MainScreen())
                   : showConfirmDialog(context,
-                      title: FlutterLocalizations.of(context).getString(context, 'waring'),
-                      content: FlutterLocalizations.of(context).getString(context, 'ask_log_out'), confirm: () async {
+                      title: FlutterLocalizations.of(context)!.getString(context, 'waring'),
+                      content: FlutterLocalizations.of(context)!.getString(context, 'ask_log_out'), confirm: () async {
                       await userController.logout();
                     }, cancel: () {
                       Get.back();
@@ -129,7 +129,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 openBox.close();
               }),
           title: AppText(
-            text: FlutterLocalizations.of(context).getString(context, 'sound'),
+            text: FlutterLocalizations.of(context)!.getString(context, 'sound'),
             color: AppColors.blue,
           ),
         ),
@@ -145,7 +145,7 @@ class _SettingScreenState extends State<SettingScreen> {
           padding: EdgeInsets.symmetric(horizontal: Dimens.padding17),
         ),
         title: AppText(
-          text: FlutterLocalizations.of(context).getString(context, 'language'),
+          text: FlutterLocalizations.of(context)!.getString(context, 'language'),
         ),
         onTap: () {
           Get.to(ChangeLanguageScreen());

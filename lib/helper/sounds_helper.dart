@@ -1,7 +1,5 @@
 
 import 'dart:io';
-
-import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:get/get.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
@@ -11,7 +9,7 @@ class SoundsHelper {
   static final AppController appController=Get.find();
   static final audioCache =
       AudioCache(prefix: 'assets/sounds/',fixedPlayer: audioPlayer);
-  static AudioPlayer audioPlayer;
+  static AudioPlayer? audioPlayer;
 
   static Future<void> load() async {
     List<String> listAssetSounds = [
@@ -28,14 +26,14 @@ class SoundsHelper {
   }
 
   static void stop() {
-    audioPlayer.stop();
+    audioPlayer!.stop();
   }
 
   static void checkAudio(String audio) async {
     if(appController.sound.value==true){
       try {
         if(Platform.isIOS){
-          if (audioPlayer.state == AudioPlayerState.PLAYING)
+          if (audioPlayer!.state == PlayerState.PLAYING)
             stop();
           else
             play(audio);

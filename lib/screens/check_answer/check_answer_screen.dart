@@ -14,7 +14,7 @@ import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 class CheckAnswerScreen extends StatefulWidget {
   final RxList<Question> question;
 
-  const CheckAnswerScreen({Key key, this.question}) : super(key: key);
+  const CheckAnswerScreen({Key? key, required this.question}) : super(key: key);
 
   @override
   _CheckAnswerScreenState createState() => _CheckAnswerScreenState();
@@ -27,7 +27,7 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
   Rx<int> index = Rx<int>(0);
 
   List<Widget> get listCheckedAnswer => widget.question.map((e) {
-        options = e.options.split('///');
+        options = e.options!.split('///');
         return Container(
           child: Padding(
             padding: const EdgeInsets.all(Dimens.padding10),
@@ -43,23 +43,23 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
                   ),
                 ),
                 Dimens.height10,
-                e.currentChecked.value == e.correctAnswer - Dimens.intValue1
+                e.currentChecked.value == e.correctAnswer! - Dimens.intValue1
                     ? AppText(
-                        text: '${FlutterLocalizations.of(context).getString(
-                            context, 'your_answer')}: ${options[e.currentChecked.value]}',
+                        text: '${FlutterLocalizations.of(context)!.getString(
+                            context, 'your_answer')}: ${options[e.currentChecked.value!]}',
                         color: AppColors.green,
                       )
                     : AppText(
-                        text: '${FlutterLocalizations.of(context).getString(
-                            context, 'your_answer')}: ${options[e.currentChecked.value]}',
+                        text: '${FlutterLocalizations.of(context)!.getString(
+                            context, 'your_answer')}: ${options[e.currentChecked.value!]}',
                         color: AppColors.red,
                       ),
                 Dimens.height10,
-                e.currentChecked.value == e.correctAnswer - Dimens.intValue1
+                e.currentChecked.value == e.correctAnswer! - Dimens.intValue1
                     ? SizedBox()
                     : AppText(
-                        text: '${FlutterLocalizations.of(context).getString(
-                            context, 'correct_answer')}: ${options[e.correctAnswer - Dimens.intValue1]}',
+                        text: '${FlutterLocalizations.of(context)!.getString(
+                            context, 'correct_answer')}: ${options[e.correctAnswer! - Dimens.intValue1]}',
                         color: AppColors.green,
                       ),
                 Dimens.height10,
@@ -71,7 +71,7 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
                     ),
                   ),
                   child: ListTile(
-                    title: AppText(text: e.explanation, color: AppColors.white),
+                    title: AppText(text: e.explanation!, color: AppColors.white),
                   ),
                 ),
               ],
@@ -136,7 +136,7 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
       color: AppColors.white,
       child: ListTile(
         title: AppText(
-          text: FlutterLocalizations.of(context).getString(
+          text: FlutterLocalizations.of(context)!.getString(
               context, 'review'),
           textSize: Dimens.paragraphHeaderTextSize,
           color: AppColors.secondary,
@@ -144,7 +144,7 @@ class _CheckAnswerScreenState extends State<CheckAnswerScreen> {
         trailing: GestureDetector(
           onTap: _navigateBack,
           child: AppText(
-            text: FlutterLocalizations.of(context).getString(
+            text: FlutterLocalizations.of(context)!.getString(
                 context, 'back_home'),
             color: AppColors.red,
           ),
@@ -192,7 +192,7 @@ class ListCheck extends StatefulWidget {
   final RxList<Question> question;
   final Rx<int> index;
 
-  const ListCheck({Key key, this.question, this.index}) : super(key: key);
+  const ListCheck({Key? key, required this.question,required this.index}) : super(key: key);
 
   @override
   _ListCheckState createState() => _ListCheckState();
@@ -218,7 +218,7 @@ class _ListCheckState extends State<ListCheck> {
                               text:
                                   '${widget.question.indexOf(element) + Dimens.intValue1}. '),
                           element.currentChecked.value ==
-                                  element.correctAnswer - Dimens.intValue1
+                                  element.correctAnswer! - Dimens.intValue1
                               ? Icon(
                                   Icons.check,
                                   color: AppColors.green,

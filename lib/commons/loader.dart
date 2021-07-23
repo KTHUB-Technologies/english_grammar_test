@@ -9,9 +9,9 @@ class Loader extends StatefulWidget {
 }
 
 class _LoaderState extends State<Loader> with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  AnimationController? _controller;
 
-  Animation<double> _opacity;
+  Animation<double>? _opacity;
 
   @override
   initState() {
@@ -24,7 +24,7 @@ class _LoaderState extends State<Loader> with SingleTickerProviderStateMixin {
 
     _opacity = CurvedAnimation(
       curve: Curves.easeInOutCubic,
-      parent: _controller,
+      parent: _controller!,
     );
   }
 
@@ -38,13 +38,13 @@ class _LoaderState extends State<Loader> with SingleTickerProviderStateMixin {
           height: Dimens.getLogoSize(context),
         ),
       ),
-      opacity: _opacity,
+      opacity: _opacity!,
     );
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
 
     super.dispose();
   }

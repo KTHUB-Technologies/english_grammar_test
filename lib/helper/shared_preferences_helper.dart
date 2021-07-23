@@ -33,8 +33,8 @@ class SharedPreferencesHelper {
 
   static Future<List<String>> getListString(String key) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    List<String> listString = preferences.getStringList(key);
-    return listString;
+    List<String>? listString = preferences.getStringList(key);
+    return listString!;
   }
 
   remove(String key) async {

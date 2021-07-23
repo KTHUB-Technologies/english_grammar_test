@@ -30,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
   final MainController mainController = Get.find();
   final UserController userController = Get.find();
   final AppController appController = Get.find();
-  Timer timer;
+  Timer? timer;
 
   ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~///
   ///           OVERRIDE METHODS           ///
@@ -45,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void dispose() {
     if (timer != null) {
-      timer.cancel();
+      timer!.cancel();
     }
     super.dispose();
   }
@@ -118,10 +118,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   _loadUserData() async {
     if(FireBaseHelper.fireBaseAuth.currentUser!=null)
-      userController.user.value= FireBaseHelper.fireBaseAuth.currentUser;
+      userController.user.value= FireBaseHelper.fireBaseAuth.currentUser!;
   }
 
   _navigateToMainScreen() {
-    Get.offAll(MainScreen());
+    Get.offAll(()=>MainScreen());
   }
 }

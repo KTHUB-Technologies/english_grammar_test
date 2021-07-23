@@ -29,21 +29,21 @@ import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 class QuestionScreen extends StatefulWidget {
-  final int level;
-  final int categoryId;
-  final int testNumber;
+  final int? level;
+  final int? categoryId;
+  final int? testNumber;
   final RxList<Question> question;
   final bool isFavorite;
-  final RxList<Question> questionTemp;
+  final RxList<Question?>? questionTemp;
 
   const QuestionScreen(
-      {Key key,
-      this.level,
-      this.categoryId,
-      this.question,
-      this.testNumber,
-      this.isFavorite,
-      this.questionTemp})
+      {Key? key,
+       this.level,
+         this.categoryId,
+        required this.question,
+         this.testNumber,
+        required this.isFavorite,
+         this.questionTemp})
       : super(key: key);
 
   @override
@@ -54,9 +54,9 @@ class _QuestionScreenState extends State<QuestionScreen>
     with SingleTickerProviderStateMixin {
   final MainController mainController = Get.find();
   final UserController userController = Get.find();
-  AnimationController _formController;
-  Rx<int> countTrue = Rx<int>();
-  ConfettiController _controllerCenter;
+  AnimationController? _formController;
+  Rx<int> countTrue = Rx<int>(0);
+  ConfettiController? _controllerCenter;
 
   List<Widget> get listQuestion => widget.question
       .map((question) => TranslationAnimatedWidget.tween(
@@ -139,7 +139,7 @@ class _QuestionScreenState extends State<QuestionScreen>
                 ? () {
               alertDialog(
                   context,
-                  FlutterLocalizations.of(context)
+                  FlutterLocalizations.of(context)!
                       .getString(context, 'ask_cancel_result'), () {
                 Get.close(Dimens.getBack2);
               });
@@ -160,7 +160,7 @@ class _QuestionScreenState extends State<QuestionScreen>
             onPressed: () async {
               alertDialog(
                   context,
-                  FlutterLocalizations.of(context).getString(
+                  FlutterLocalizations.of(context)!.getString(
                       context, 'ask_restart_result'), () async {
                 Get.back();
 
@@ -171,9 +171,9 @@ class _QuestionScreenState extends State<QuestionScreen>
             : SizedBox(),
         title: AppText(
           text: widget.isFavorite == true
-              ? FlutterLocalizations.of(context).getString(
+              ? FlutterLocalizations.of(context)!.getString(
               context, 'favorite')
-              : getCategory(widget.categoryId),
+              : getCategory(widget.categoryId!),
           color: AppColors.white,
           fontWeight: FontWeight.bold,
           textSize: Dimens.paragraphHeaderTextSize,
@@ -193,14 +193,14 @@ class _QuestionScreenState extends State<QuestionScreen>
                   "${(widget.question.length < mainController.index.value + Dimens.intValue1) ? mainController.index.value : (mainController.index.value + Dimens.intValue1)}",
               style: Theme.of(context)
                   .textTheme
-                  .headline4
+                  .headline4!
                   .copyWith(color: AppColors.secondary),
               children: [
                 TextSpan(
                   text: "/${widget.question.length}",
                   style: Theme.of(context)
                       .textTheme
-                      .headline5
+                      .headline5!
                       .copyWith(color: AppColors.secondary),
                 ),
               ],
@@ -234,7 +234,7 @@ class _QuestionScreenState extends State<QuestionScreen>
   _buildQuestion() {
     return Expanded(
       child: SlideUpTransition(
-        animationController: _formController,
+        animationController: _formController!,
         child: BackdropContainer(
           child: Obx(() {
             return Container(
@@ -249,7 +249,7 @@ class _QuestionScreenState extends State<QuestionScreen>
                               : SizedBox()
                           : Center(
                               child: AppText(
-                                text: FlutterLocalizations.of(context).getString(
+                                text: FlutterLocalizations.of(context)!.getString(
                                     context, 'no_question'),
                                 color: AppColors.blue,
                               ),
@@ -266,13 +266,13 @@ class _QuestionScreenState extends State<QuestionScreen>
   }
 
   _buildFinalResultContent() {
-    _controllerCenter.play();
+    _controllerCenter!.play();
     return Stack(
       children: [
         Align(
           alignment: Alignment.center,
           child: ConfettiWidget(
-            confettiController: _controllerCenter,
+            confettiController: _controllerCenter!,
             blastDirectionality: BlastDirectionality.explosive,
             shouldLoop: true,
             colors: const [
@@ -303,7 +303,7 @@ class _QuestionScreenState extends State<QuestionScreen>
                     ),
                     AppText(
                       text:
-                          '${FlutterLocalizations.of(context).getString(
+                          '${FlutterLocalizations.of(context)!.getString(
                               context, 'score')}: ${countTrue.value}/${widget.question.length}',
                       textSize: Dimens.errorTextSize,
                     ),
@@ -315,7 +315,7 @@ class _QuestionScreenState extends State<QuestionScreen>
               ),
               Dimens.height20,
               AppButton(
-                FlutterLocalizations.of(context).getString(
+                FlutterLocalizations.of(context)!.getString(
                     context, 'review'),
                 widthButton: Dimens.widthValue150,
                 onTap: () async {
@@ -342,10 +342,10 @@ class _QuestionScreenState extends State<QuestionScreen>
             '${countTrue.value}_${widget.question.length}'
       };
 
-      userController.updateDataScore(userController.user.value.uid, score);
+      userController.updateDataScore(userController.user.value!.uid, score);
 
       var dataScore =
-          await userController.getDataScore(userController.user.value.uid);
+          await userController.getDataScore(userController.user.value!.uid);
       if (dataScore['${widget.level}'] != null)
         mainController.scoreOfCate.assignAll(dataScore['${widget.level}']);
       else
@@ -357,10 +357,10 @@ class _QuestionScreenState extends State<QuestionScreen>
       };
 
       userController.updateDataQuestion(
-          userController.user.value.uid, question);
+          userController.user.value!.uid, question);
 
       var dataQuestion =
-          await userController.getDataQuestion(userController.user.value.uid);
+          await userController.getDataQuestion(userController.user.value!.uid);
       if (dataQuestion != null) {
         if (dataQuestion['${widget.level}'] != null)
           mainController.allQuestionsFromFS.value =
@@ -370,7 +370,7 @@ class _QuestionScreenState extends State<QuestionScreen>
       }
     } else {
       final openBoxLevel = await Hive.openBox('Table_${widget.level}');
-      Map level = await openBoxLevel.get('${widget.categoryId}');
+      Map? level = await openBoxLevel.get('${widget.categoryId}');
       if (level == null) {
         level = {'${widget.testNumber}': listQuestions};
       } else {
@@ -380,7 +380,7 @@ class _QuestionScreenState extends State<QuestionScreen>
       openBoxLevel.close();
 
       final openBox = await Hive.openBox('Table_Score_${widget.level}');
-      Map score = await openBox.get('${widget.level}_${widget.categoryId}');
+      Map? score = await openBox.get('${widget.level}_${widget.categoryId}');
       if (score == null) {
         score = {
           '${widget.testNumber}': '${countTrue.value}_${widget.question.length}'
@@ -407,10 +407,10 @@ class _QuestionScreenState extends State<QuestionScreen>
             '0_0'
       };
 
-      userController.deleteDataScore(userController.user.value.uid, data);
+      userController.deleteDataScore(userController.user.value!.uid, data);
 
       var dataScore =
-          await userController.getDataScore(userController.user.value.uid);
+          await userController.getDataScore(userController.user.value!.uid);
       if (dataScore['${widget.level}'] != null)
         mainController.scoreOfCate.assignAll(dataScore['${widget.level}']);
       else
@@ -422,10 +422,10 @@ class _QuestionScreenState extends State<QuestionScreen>
       };
 
       userController.deleteDataQuestion(
-          userController.user.value.uid, questions);
+          userController.user.value!.uid, questions);
 
       var dataQuestion =
-          await userController.getDataQuestion(userController.user.value.uid);
+          await userController.getDataQuestion(userController.user.value!.uid);
       if (dataQuestion != null) {
         if (dataQuestion['${widget.level}'] != null)
           mainController.allQuestionsFromFS.value =

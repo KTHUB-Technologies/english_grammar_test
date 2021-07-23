@@ -16,7 +16,7 @@ class NormalCategoryCard extends StatefulWidget {
   final num totalQuestion;
   final Function onTap;
 
-  const NormalCategoryCard({Key key, this.level, this.category, this.onTap, this.index, this.trueQues, this.wrongQues, this.totalQuestion}) : super(key: key);
+  const NormalCategoryCard({Key? key, required this.level,required  this.category,required  this.onTap,required  this.index,required  this.trueQues,required  this.wrongQues,required  this.totalQuestion}) : super(key: key);
   @override
   _NormalCategoryCardState createState() => _NormalCategoryCardState();
 }

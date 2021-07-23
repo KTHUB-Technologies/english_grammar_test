@@ -9,7 +9,7 @@ import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 class PromotionsScreen extends StatefulWidget {
-  const PromotionsScreen({Key key}) : super(key: key);
+  const PromotionsScreen({Key? key}) : super(key: key);
 
   @override
   _PromotionsScreenState createState() => _PromotionsScreenState();
@@ -21,7 +21,7 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: AppText(
-          text: FlutterLocalizations.of(context).getString(
+          text: FlutterLocalizations.of(context)!.getString(
               context, 'promotion'),
         ),
       ),
@@ -56,7 +56,7 @@ class _PromotionsScreenState extends State<PromotionsScreen> {
                       Expanded(
                         child: Center(
                           child: AppText(
-                            text: FlutterLocalizations.of(context).getString(
+                            text: FlutterLocalizations.of(context)!.getString(
                                 context, 'coupon'),
                           ),
                         ),

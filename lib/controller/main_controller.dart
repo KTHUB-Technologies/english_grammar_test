@@ -22,18 +22,18 @@ class MainController extends GetxController {
   ///JSON DATA
   RxList<Question> questions = RxList<Question>([]);
 
-  List<int> categories = List<int>();
-  List<int> distinctCategory = List<int>();
+  List<int?> categories = [];
+  List<int?> distinctCategory = [];
 
-  List<int> levels = List<int>();
-  List<int> distinctLevel = List<int>();
+  List<int?> levels = [];
+  List<int?> distinctLevel = [];
   RxInt levelSelected = RxInt(0);
 
   RxList<Question> containFromFavorite = RxList<Question>([]);
 
   RxList<Question> questionsFromCategory = RxList<Question>([]);
   RxList<List<Question>> listChunkQuestions = RxList<List<Question>>([]);
-  List<Question> listQuestions = List<Question>();
+  List<Question> listQuestions = [];
   Rx<int> index = Rx<int>(0);
   Rx<int> currentTrue = Rx<int>(0);
   Rx<bool> isShowLoading = Rx<bool>(false);
@@ -68,7 +68,7 @@ class MainController extends GetxController {
 
     questionsFromCategory = RxList<Question>(
         questions.where((c) => c.categoryId == categoryId).toList());
-    questionsFromCategory.sort((a, b) => a.id.compareTo(b.id));
+    questionsFromCategory.sort((a, b) => a.id!.compareTo(b.id!));
     listChunkQuestions.clear();
 
     for (var i = 0; i < questionsFromCategory.length; i += 20) {
@@ -105,7 +105,7 @@ class MainController extends GetxController {
     } else {
       print('-----------> firebase');
       await loadJson();
-      QuerySnapshot data = await FireBaseHelper.fireStoreReference
+      var data = await FireBaseHelper.fireStoreReference
           .collection(Constants.QUESTIONS_DATA)
           .get();
 
@@ -114,7 +114,7 @@ class MainController extends GetxController {
       }
 
       questionsFromFirebase
-          .map((element) => element.questions.forEach((ques) {
+          .map((element) => element.questions!.forEach((ques) {
                 listQuestions.add(ques);
               }))
           .toList();

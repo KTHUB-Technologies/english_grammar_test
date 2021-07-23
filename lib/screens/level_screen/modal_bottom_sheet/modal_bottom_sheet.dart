@@ -19,7 +19,7 @@ class ModalBottomSheet extends StatefulWidget {
   final String categoryName;
 
   const ModalBottomSheet(
-      {Key key, this.level, this.categoryId, this.categoryName})
+      {Key? key,required this.level,required this.categoryId,required this.categoryName})
       : super(key: key);
 
   @override
@@ -69,7 +69,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
               child: ListTile(
                 title: AppText(
                   text:
-                  '${FlutterLocalizations.of(context).getString(
+                  '${FlutterLocalizations.of(context)!.getString(
                       context, 'test')}'' ${mainController.listChunkQuestions.indexOf(e) + Dimens.intValue1}',
                 ),
                 trailing:getScoreOfTest(e) == null || getScoreOfTest(e).isNaN ? Container(
@@ -81,7 +81,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
                     radius: Dimens.border15,
                     backgroundColor: AppColors.transparent,
                     child: AppText(
-                      text: FlutterLocalizations.of(context).getString(
+                      text: FlutterLocalizations.of(context)!.getString(
                           context, 'go'),
                       color: AppColors.black,
                       textSize: Dimens.errorTextSize,
@@ -108,7 +108,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
             onTap: () async {
               // Get.back();
               if (userController.user.value != null) {
-                List<dynamic> favorite=await userController.getDataFavorite(userController.user.value.uid);
+                List<dynamic> favorite=await userController.getDataFavorite(userController.user.value!.uid);
                 if(favorite.isNotEmpty){
                   mainController.questionsHiveFavorite=  RxList<Question>(favorite.map((e) => Question.fromJson(e)).toList());
                 }
@@ -152,8 +152,8 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
       List<String> splitScore =
       '${mainController.score['${mainController.listChunkQuestions.indexOf(index) + Dimens.intValue1}']}'
           .split('_');
-      return (double.tryParse(splitScore[0]) /
-          double.tryParse(splitScore[1])) *
+      return (double.tryParse(splitScore[0])! /
+          double.tryParse(splitScore[1])!) *
           Dimens.intValue100;
     }
   }
@@ -172,9 +172,9 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
     }else{
       final openBox = await Hive.openBox('Table_${widget.level}');
       if (openBox.containsKey('${widget.categoryId}')) {
-        Map getCate = openBox.get('${widget.categoryId}');
+        Map? getCate = openBox.get('${widget.categoryId}');
         if (getCate != null) {
-          List<dynamic> questions = getCate['$testNumber'];
+          List<dynamic>? questions = getCate['$testNumber'];
           if (questions != null) {
             mainController.questionsFromHive = RxList<Question>(
                 questions.map((e) => Question.fromJson(e)).toList());

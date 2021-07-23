@@ -6,7 +6,7 @@ import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 class PromotionDetail extends StatefulWidget {
-  const PromotionDetail({Key key}) : super(key: key);
+  const PromotionDetail({Key? key}) : super(key: key);
 
   @override
   _PromotionDetailState createState() => _PromotionDetailState();
@@ -18,7 +18,7 @@ class _PromotionDetailState extends State<PromotionDetail> {
     return Scaffold(
       appBar: AppBar(
         title: AppText(
-          text: FlutterLocalizations.of(context).getString(
+          text: FlutterLocalizations.of(context)!.getString(
               context, 'promotion_detail'),
         ),
       ),
@@ -28,16 +28,16 @@ class _PromotionDetailState extends State<PromotionDetail> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              _rowInputTextField(FlutterLocalizations.of(context).getString(
-                  context, 'user'),FlutterLocalizations.of(context).getString(
+              _rowInputTextField(FlutterLocalizations.of(context)!.getString(
+                  context, 'user'),FlutterLocalizations.of(context)!.getString(
                   context, 'enter_name')),
-              _rowInputTextField(FlutterLocalizations.of(context).getString(
-                  context, 'phone'),FlutterLocalizations.of(context).getString(
+              _rowInputTextField(FlutterLocalizations.of(context)!.getString(
+                  context, 'phone'),FlutterLocalizations.of(context)!.getString(
                   context, 'enter_phone')),
               Dimens.height10,
               TextButton(
                 child: AppText(
-                  text: FlutterLocalizations.of(context).getString(
+                  text: FlutterLocalizations.of(context)!.getString(
                       context, 'submit'),
                   color: AppColors.white,
                 ),

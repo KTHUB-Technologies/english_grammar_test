@@ -4,9 +4,9 @@ import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 
 class BackdropContainer extends StatelessWidget {
-  final Widget child;
+  final Widget? child;
 
-  const BackdropContainer({Key key, this.child}) : super(key: key);
+  const BackdropContainer({Key? key, this.child}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

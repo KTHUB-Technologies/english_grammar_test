@@ -12,7 +12,7 @@ class AppController extends GetxController {
 
   bool isEnglish = false;
 
-  Rx<Locale> locale = Rx<Locale>();
+  Rx<Locale?> locale = Rx<Locale?>(null);
 
   Rx<bool> isShowLoading = Rx<bool>(false);
 

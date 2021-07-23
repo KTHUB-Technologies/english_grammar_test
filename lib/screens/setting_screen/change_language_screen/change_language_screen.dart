@@ -58,7 +58,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
             ),
             onPressed: () => Get.back()),
         title: AppText(
-          text: FlutterLocalizations.of(context)
+          text: FlutterLocalizations.of(context)!
               .getString(context, 'change_language'),
           textSize: Dimens.paragraphHeaderTextSize,
           color: AppColors.white,
@@ -71,7 +71,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
     return Card(
       child: ListTile(
         title: AppText(
-            text: FlutterLocalizations.of(context)
+            text: FlutterLocalizations.of(context)!
                 .getString(context, 'vietnamese')),
         trailing: SizedBox(
             width: getScreenWidth(context) / 15,
@@ -87,7 +87,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
     return Card(
       child: ListTile(
         title: AppText(
-            text: FlutterLocalizations.of(context).getString(context, 'english')),
+            text: FlutterLocalizations.of(context)!.getString(context, 'english')),
         trailing: SizedBox(
             width: getScreenWidth(context) / 15,
             child: Image.asset(Images.us_flag)),
@@ -114,9 +114,9 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
 
   _handleClickMe(String languageCode) async {
     showConfirmDialog(context,
-        title: FlutterLocalizations.of(context)
+        title: FlutterLocalizations.of(context)!
             .getString(context, 'change_language'),
-        content: FlutterLocalizations.of(context)
+        content: FlutterLocalizations.of(context)!
             .getString(context, 'change_language_confirm'),
         cancel: () => Navigator.pop(context),
         confirm: () {
