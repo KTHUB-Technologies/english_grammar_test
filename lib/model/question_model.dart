@@ -9,8 +9,8 @@ class ListQuestion{
   ListQuestion({this.questions});
 
   ListQuestion.fromJson(Map<dynamic, dynamic> json)
-      :questions = (json['questions'])
-      .map((f) => Question.fromJson(f))
+      :questions = (json['questions'] ?? [])
+      .map<Question>((f) => Question.fromJson(f))
       .toList();
 
   Map<dynamic, dynamic> toJson() => {

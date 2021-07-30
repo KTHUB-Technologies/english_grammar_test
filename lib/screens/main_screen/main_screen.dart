@@ -151,31 +151,31 @@ class _MainScreenState extends State<MainScreen> {
         labelType: NavigationRailLabelType.all,
         trailing: Column(
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 0),
-              child: IconButton(
-                  icon: userController.user.value == null
-                      ? Icon(Icons.person)
-                      : CircleAvatar(
-                          child: AppText(
-                              text: shortUserName(
-                                  userController.user.value!.displayName ??
-                                      'Unknown Name')),
-                        ),
-                  onPressed: () async {
-                    // await appController.loginWithMicrosoft();
-                    userController.user.value == null
-                        ? _buildChooseLogin()
-                        : showConfirmDialog(context,
-                            title: 'WARNING!!!',
-                            content: 'Do you want to LOG OUT?',
-                            confirm: () async {
-                            await userController.logout();
-                          }, cancel: () {
-                            Get.back();
-                          });
-                  }),
-            ),
+            // Padding(
+            //   padding: EdgeInsets.symmetric(vertical: 0),
+            //   child: IconButton(
+            //       icon: userController.user.value == null
+            //           ? Icon(Icons.person)
+            //           : CircleAvatar(
+            //               child: AppText(
+            //                   text: shortUserName(
+            //                       userController.user.value!.displayName ??
+            //                           'Unknown Name')),
+            //             ),
+            //       onPressed: () async {
+            //         // await appController.loginWithMicrosoft();
+            //         userController.user.value == null
+            //             ? _buildChooseLogin()
+            //             : showConfirmDialog(context,
+            //                 title: 'WARNING!!!',
+            //                 content: 'Do you want to LOG OUT?',
+            //                 confirm: () async {
+            //                 await userController.logout();
+            //               }, cancel: () {
+            //                 Get.back();
+            //               });
+            //       }),
+            // ),
             // IconButton(
             //     icon: Icon(Icons.card_giftcard),
             //     onPressed: () {
