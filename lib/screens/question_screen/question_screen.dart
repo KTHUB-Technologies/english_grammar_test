@@ -129,7 +129,7 @@ class _QuestionScreenState extends State<QuestionScreen>
   _buildHeader() {
     return Obx((){
       return ListTile(
-        leading: mainController.isGoToCheck.value==true?SizedBox():IconButton(
+        leading: IconButton(
             icon: Icon(
               Icons.arrow_back_ios,
               color: AppColors.white,

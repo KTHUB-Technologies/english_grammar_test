@@ -86,24 +86,15 @@ class _LevelScreenState extends State<LevelScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.white,
       body: Obx(() {
         return LoadingContainer(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               _buildHeader(),
               Expanded(
-                child: Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                            colors: AppColors.gradientColorPrimary),
-                        border: Border.all(width: Dimens.borderWidth0, color: AppColors.transparent),
-                      ),
-                    ),
-                    _buildCategoryContent(mainController.sectionSelected.value)
-                  ],
-                ),
+                child: _buildCategoryContent(mainController.sectionSelected.value),
               )
             ],
           ),
@@ -118,10 +109,10 @@ class _LevelScreenState extends State<LevelScreen> {
       children: [
         Container(
           color: AppColors.white,
-          height: getScreenHeight(context) / Dimens.intValue4,
+          height: getScreenHeight(context) / Dimens.intValue6,
         ),
         Container(
-          height: getScreenHeight(context) / Dimens.intValue4,
+          height: getScreenHeight(context) / Dimens.intValue6,
           decoration: BoxDecoration(
               border: Border.all(width: Dimens.borderWidth0, color: AppColors.transparent),
               gradient: LinearGradient(colors: AppColors.gradientColorPrimary),

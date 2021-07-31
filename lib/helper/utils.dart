@@ -214,7 +214,7 @@ alertDialog(BuildContext context, String content, Function confirm) {
               ),
               Dimens.height10,
               AppText(
-                text: FlutterLocalizations.of(context)!.getString(context, 'ask_restart_result'),
+                text: content,
                 color: AppColors.black,
                 textSize: Dimens.errorTextSize,
               ),
