@@ -11,7 +11,7 @@ class LoadingContainer extends StatelessWidget {
   final bool isShadowed;
 
   LoadingContainer(
-      {@required this.child, this.isLoading, this.isShowIndicator=true, this.isShadowed= false});
+      {required this.child,required this.isLoading, this.isShowIndicator=true, this.isShadowed= false});
 
   @override
   Widget build(BuildContext context) {

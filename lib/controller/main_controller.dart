@@ -10,26 +10,30 @@ import 'package:the_enest_english_grammar_test/helper/firebase_helper.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 
 class MainController extends GetxController {
+  Rx<bool> checkRemoveFavorite=Rx<bool>(true);
   ///SECTION
   List<int> sections = [1, 2];
   RxList<bool> selected = RxList<bool>([true, false]);
   Rx<int> sectionSelected = Rx<int>(0);
 
+  ///Fire store
+  Rx<Map<dynamic,dynamic>> allQuestionsFromFS= Rx<Map<dynamic,dynamic>>({});
+
   ///JSON DATA
   RxList<Question> questions = RxList<Question>([]);
 
-  List<int> categories = List<int>();
-  List<int> distinctCategory = List<int>();
+  List<int?> categories = [];
+  List<int?> distinctCategory = [];
 
-  List<int> levels = List<int>();
-  List<int> distinctLevel = List<int>();
+  List<int?> levels = [];
+  List<int?> distinctLevel = [];
   RxInt levelSelected = RxInt(0);
 
   RxList<Question> containFromFavorite = RxList<Question>([]);
 
   RxList<Question> questionsFromCategory = RxList<Question>([]);
   RxList<List<Question>> listChunkQuestions = RxList<List<Question>>([]);
-  List<Question> listQuestions = List<Question>();
+  List<Question> listQuestions = [];
   Rx<int> index = Rx<int>(0);
   Rx<int> currentTrue = Rx<int>(0);
   Rx<bool> isShowLoading = Rx<bool>(false);
@@ -37,9 +41,11 @@ class MainController extends GetxController {
   RxList<Question> questionsFromHive = RxList<Question>([]);
   RxList<Question> questionsHiveFavorite = RxList<Question>([]);
 
-  Rx<Map> score = Rx<Map>({});
+  RxMap score = RxMap({});
 
-  Rx<Map> scoreOfCate = Rx<Map>({});
+  RxMap scoreOfCate = RxMap({});
+
+  Rx<bool> isGoToCheck = Rx<bool>(false);
 
   Future loadJson() async {
     isShowLoading.value = true;
@@ -62,7 +68,7 @@ class MainController extends GetxController {
 
     questionsFromCategory = RxList<Question>(
         questions.where((c) => c.categoryId == categoryId).toList());
-    questionsFromCategory.sort((a, b) => a.id.compareTo(b.id));
+    questionsFromCategory.sort((a, b) => a.id!.compareTo(b.id!));
     listChunkQuestions.clear();
 
     for (var i = 0; i < questionsFromCategory.length; i += 20) {
@@ -72,15 +78,14 @@ class MainController extends GetxController {
               ? questionsFromCategory.length
               : i + 20));
 
-      ///Merge last test to previous test if total questions less than 10
-
-      if (listChunkQuestions.length >= 2 &&
-          listChunkQuestions.last.length < 10) {
-        listChunkQuestions
-            .elementAt(listChunkQuestions.length - 2)
-            .addAll(listChunkQuestions.last);
-        listChunkQuestions.removeLast();
-      }
+      // ///Merge last test to previous test if total questions less than 10
+      // if (listChunkQuestions.length >= 2 &&
+      //     listChunkQuestions.last.length < 10) {
+      //   listChunkQuestions
+      //       .elementAt(listChunkQuestions.length - 2)
+      //       .addAll(listChunkQuestions.last);
+      //   listChunkQuestions.removeLast();
+      // }
     }
     isShowLoading.value = false;
   }
@@ -91,17 +96,16 @@ class MainController extends GetxController {
   RxList<ListQuestion> questionsFromFirebase = RxList<ListQuestion>([]);
 
   getAllQuestions() async {
-    final openBox = await Hive.openBox("Questions");
-
-    if (openBox.get('AllQuestions') != null) {
+    final openBox = await Hive.openBox(Constants.QUESTIONS_BOX_NAME);
+    if (openBox.get(Constants.ALL_QUESTIONS_KEY_NAME) != null) {
       print('-----------> local');
-      List<dynamic> allQues = openBox.get('AllQuestions');
+      List<dynamic> allQues = openBox.get(Constants.ALL_QUESTIONS_KEY_NAME);
 
       listQuestions = allQues.map((e) => Question.fromJson(e)).toList();
     } else {
       print('-----------> firebase');
       await loadJson();
-      QuerySnapshot data = await FireBaseHelper.fireStoreReference
+      var data = await FireBaseHelper.fireStoreReference
           .collection(Constants.QUESTIONS_DATA)
           .get();
 
@@ -110,14 +114,14 @@ class MainController extends GetxController {
       }
 
       questionsFromFirebase
-          .map((element) => element.questions.forEach((ques) {
+          .map((element) => element.questions!.forEach((ques) {
                 listQuestions.add(ques);
               }))
           .toList();
 
       var allQuestion = listQuestions.map((e) => e.toJson()).toList();
 
-      await openBox.put('AllQuestions', allQuestion);
+      await openBox.put(Constants.ALL_QUESTIONS_KEY_NAME, allQuestion);
     }
 
     openBox.close();

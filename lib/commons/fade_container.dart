@@ -3,9 +3,9 @@ import 'package:the_enest_english_grammar_test/helper/utils.dart';
 
 
 class FadeContainer extends StatefulWidget {
-  final Widget child;
+  final Widget? child;
 
-  const FadeContainer({Key key, this.child}) : super(key: key);
+  const FadeContainer({Key? key, this.child}) : super(key: key);
 
   @override
   _FadeContainerState createState() => _FadeContainerState();

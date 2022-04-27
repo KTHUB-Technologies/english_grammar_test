@@ -6,4 +6,5 @@ class Images {
   static const finish_flag = 'lib/res/images/finish_flag.png';
   static const vn_flag = 'lib/res/images/vn-flag.png';
   static const us_flag = 'lib/res/images/us-flag.png';
+  static const png_picture = 'lib/res/images/png_picture.png';
 }

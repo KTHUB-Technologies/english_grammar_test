@@ -6,13 +6,13 @@ import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 class IOSDialog extends StatefulWidget {
-  final String title;
-  final String content;
-  final Function cancel;
-  final Function confirm;
+  final String? title;
+  final String? content;
+  final Function? cancel;
+  final Function? confirm;
 
   const IOSDialog(
-      {Key key, this.title, this.content, this.cancel, this.confirm})
+      {Key? key, this.title, this.content, this.cancel, this.confirm})
       : super(key: key);
 
   @override
@@ -20,7 +20,7 @@ class IOSDialog extends StatefulWidget {
 }
 
 class _IOSDialogState extends State<IOSDialog> {
-  bool enable;
+  bool? enable;
 
   @override
   void initState() {
@@ -47,9 +47,11 @@ class _IOSDialogState extends State<IOSDialog> {
             widget.cancel != null
                 ? Expanded(
                     child: FlatButton(
-                        onPressed: widget.cancel,
+                        onPressed: (){
+                          widget.cancel!();
+                        },
                         child: Text(
-                          FlutterLocalizations.of(context)
+                          FlutterLocalizations.of(context)!
                               .getString(context, 'cancel'),
                           style: TextStyle(color: AppColors.red),
                         )))
@@ -58,15 +60,15 @@ class _IOSDialogState extends State<IOSDialog> {
                 ? Expanded(
                     child: FlatButton(
                         onPressed: () {
-                          if (enable) {
-                            widget.confirm();
+                          if (enable!) {
+                            widget.confirm!();
                           }
                           setState(() {
                             enable = false;
                           });
                         },
                         child: Text(
-                          FlutterLocalizations.of(context)
+                          FlutterLocalizations.of(context)!
                               .getString(context, 'confirm'),
                           style: TextStyle(color: AppColors.clickableText),
                         )))

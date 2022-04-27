@@ -5,13 +5,13 @@ import 'package:the_enest_english_grammar_test/theme/colors.dart';
 import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 class AndroidDialog extends StatefulWidget {
-  final String title;
-  final String content;
-  final Function cancel;
-  final Function confirm;
+  final String? title;
+  final String? content;
+  final Function? cancel;
+  final Function? confirm;
 
   const AndroidDialog(
-      {Key key, this.title, this.content, this.cancel, this.confirm})
+      {Key? key, this.title, this.content, this.cancel, this.confirm})
       : super(key: key);
 
   @override
@@ -19,7 +19,7 @@ class AndroidDialog extends StatefulWidget {
 }
 
 class _AndroidDialogState extends State<AndroidDialog> {
-  bool enable;
+  bool? enable;
 
   @override
   void initState() {
@@ -42,9 +42,11 @@ class _AndroidDialogState extends State<AndroidDialog> {
       actions: <Widget>[
         widget.cancel != null
             ? FlatButton(
-                onPressed: widget.cancel,
+                onPressed: (){
+                  widget.cancel!();
+                },
                 child: AppText(
-                  text: FlutterLocalizations.of(context)
+                  text: FlutterLocalizations.of(context)!
                       .getString(context, 'cancel'),
                   color: AppColors.red,
                 ))
@@ -52,15 +54,15 @@ class _AndroidDialogState extends State<AndroidDialog> {
         widget.confirm != null
             ? FlatButton(
                 onPressed: () {
-                  if (enable) {
-                    widget.confirm();
+                  if (enable!) {
+                    widget.confirm!();
                   }
                   setState(() {
                     enable = false;
                   });
                 },
                 child: AppText(
-                  text: FlutterLocalizations.of(context)
+                  text: FlutterLocalizations.of(context)!
                       .getString(context, 'confirm'),
                   color: AppColors.clickableText,
                 ))

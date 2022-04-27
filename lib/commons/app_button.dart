@@ -7,10 +7,10 @@ import '../helper/utils.dart';
 
 class AppButton extends StatelessWidget {
   final String titleButton;
-  final double widthButton;
-  final double heightButton;
-  final Color textColor;
-  final Function onTap;
+  final double? widthButton;
+  final double? heightButton;
+  final Color? textColor;
+  final Function? onTap;
 
   const AppButton(this.titleButton,
       {this.widthButton, this.heightButton, this.textColor, this.onTap});
@@ -22,10 +22,10 @@ class AppButton extends StatelessWidget {
   }
 
   Widget _buildAppButton(BuildContext context, String titleButton,
-      double widthButton, double heightButton, textColor) {
+      double? widthButton, double? heightButton, textColor) {
     return GestureDetector(
       onTap: () {
-        onTap();
+        onTap!();
       },
       child: Container(
         width:
@@ -33,7 +33,7 @@ class AppButton extends StatelessWidget {
         height:
             heightButton != null ? heightButton : getScreenWidth(context) / 8,
         decoration: BoxDecoration(
-            gradient: LinearGradient(colors: AppColors.gradientColorPrimary),
+            gradient: LinearGradient(colors: AppColors.gradientColorCard2),
             borderRadius: BorderRadius.circular(15)),
         child: Align(
           alignment: Alignment.center,

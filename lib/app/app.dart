@@ -4,10 +4,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/localization/flutter_localizations_delegate.dart';
 import 'package:the_enest_english_grammar_test/routes/routes.dart';
 import 'package:the_enest_english_grammar_test/screens/splash/splash_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
+import 'package:the_enest_english_grammar_test/theme/fonts.dart';
 
 
 class EnglishGrammarTestApp extends StatefulWidget {
@@ -18,7 +20,7 @@ class EnglishGrammarTestApp extends StatefulWidget {
 class _EnglishGrammarTestAppState extends State<EnglishGrammarTestApp> {
   final GlobalKey<NavigatorState> nav = GlobalKey<NavigatorState>();
   final AppController appController= Get.put(AppController());
-  StreamSubscription connectivitySubscription;
+  StreamSubscription? connectivitySubscription;
 
   @override
   void initState() {
@@ -28,7 +30,7 @@ class _EnglishGrammarTestAppState extends State<EnglishGrammarTestApp> {
   @override
   void dispose() {
     super.dispose();
-    connectivitySubscription.cancel();
+    connectivitySubscription!.cancel();
   }
 
   @override
@@ -40,6 +42,7 @@ class _EnglishGrammarTestAppState extends State<EnglishGrammarTestApp> {
             getPages: Routes.route,
             initialBinding: BindingsBuilder((){
               Get.put(MainController());
+              Get.put(UserController());
             }),
             debugShowCheckedModeBanner: false,
             title: '',
@@ -54,7 +57,7 @@ class _EnglishGrammarTestAppState extends State<EnglishGrammarTestApp> {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            theme: appController.isDark.value==true?ThemeData(brightness: Brightness.dark):ThemeData.light(),
+            theme: ThemeData(brightness: Brightness.light, fontFamily: Fonts.Helvetica),
             // theme: ThemeData(
             //    // primaryColor: AppColors.primary,
             //  //   accentColor: AppColors.primary,

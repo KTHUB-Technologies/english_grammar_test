@@ -4,46 +4,48 @@ import 'package:hive/hive.dart';
 part 'question_model.g.dart';
 
 class ListQuestion{
-  List<Question> questions;
+  List<Question>? questions;
 
   ListQuestion({this.questions});
 
   ListQuestion.fromJson(Map<dynamic, dynamic> json)
-      :questions = (json['questions'] as List ?? [])
-      .map((f) => Question.fromJson(f))
+      :questions = (json['questions'] ?? [])
+      .map<Question>((f) => Question.fromJson(f))
       .toList();
 
   Map<dynamic, dynamic> toJson() => {
-    "questions": questions.map((e) => e.toJson()).toList()?? [],
+    "questions": questions!.map((e) => e.toJson()).toList(),
   };
 }
 
 @HiveType(typeId: 0)
 class Question extends HiveObject{
   @HiveField(0)
-  final int categoryId;
+  final int? categoryId;
   @HiveField(1)
-  final String categoryName;
+  final String? categoryName;
   @HiveField(2)
-  final int correctAnswer;
+  final int? correctAnswer;
   @HiveField(3)
-  final String explanation;
+  final String? explanation;
   @HiveField(4)
-  final String explanationVi;
+  final String? explanationVi;
   @HiveField(5)
-  final String groupId;
+  final String? groupId;
   @HiveField(6)
-  final int id;
+  final int? id;
   @HiveField(7)
-  final int level;
+  final int? level;
   @HiveField(8)
-  final String options;
+  final String? options;
   @HiveField(9)
-  final String task;
+  final String? task;
   @HiveField(10)
-  Rx<int> currentChecked;
+  Rx<int?> currentChecked;
 
-  Question({this.categoryId,this.categoryName,this.correctAnswer,this.explanation,this.explanationVi,this.groupId,this.id,this.level,this.options,this.task,this.currentChecked});
+  Question({this.categoryId,this.categoryName,this.correctAnswer,
+    this.explanation,this.explanationVi,this.groupId,this.id,this.level,
+    this.options,this.task,required this.currentChecked});
 
   Question.fromJson(Map<dynamic,dynamic>json):
         categoryId=json['categoryId']??null,
@@ -56,7 +58,7 @@ class Question extends HiveObject{
         level=json['level']??null,
         options=json['options']??'',
         task=json['task']??'',
-        currentChecked=Rx<int>(json['currentChecked']??null);
+        currentChecked=Rx<int?>(json['currentChecked']??null);
 
   Map<dynamic, dynamic> toJson()=>{
     'categoryId':categoryId??null,
@@ -259,37 +261,37 @@ class Question extends HiveObject{
 // }
 
 class QuestionNew{
-  final int level;
-  final List<CategoryNew> categoryNews;
+  final int? level;
+  final List<CategoryNew>? categoryNews;
 
   QuestionNew({this.level, this.categoryNews});
 
   QuestionNew.fromJson(Map<dynamic, dynamic> json)
       :level = json['level'],
-        categoryNews = (json['categoryNews'] as List ?? [])
+        categoryNews = (json['categoryNews'])
             .map((f) => CategoryNew.fromJson(f))
             .toList();
 
   Map<dynamic, dynamic> toJson() => {
     "level": level?? '',
-    "categoryNews": categoryNews.map((e) => e.toJson()).toList()?? []
+    "categoryNews": categoryNews!.map((e) => e.toJson()).toList()
   };
 }
 
 class CategoryNew{
-  final int categoryId;
-  final List<Question> questions;
+  final int? categoryId;
+  final List<Question>? questions;
 
   CategoryNew({this.categoryId, this.questions});
 
   CategoryNew.fromJson(Map<dynamic, dynamic> json)
       :categoryId = json['categoryId'],
-        questions = (json['questions'] as List ?? [])
+        questions = (json['questions'])
             .map((f) => Question.fromJson(f))
             .toList();
 
   Map<dynamic, dynamic> toJson() => {
     "categoryId": categoryId?? '',
-    "questions": questions.map((e) => e.toJson()).toList()?? []
+    "questions": questions!.map((e) => e.toJson()).toList()
   };
 }

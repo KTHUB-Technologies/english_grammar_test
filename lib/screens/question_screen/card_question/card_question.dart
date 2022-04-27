@@ -1,10 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
+import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
+import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/res/sounds/sounds.dart';
@@ -14,11 +18,11 @@ import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 class CardQuestion extends StatefulWidget {
   const CardQuestion(
-      {Key key,
-      this.question,
-      this.countTrue,
-      this.listQuestions,
-      this.isFavorite})
+      {Key? key,
+      required this.question,
+        required this.countTrue,
+        required this.listQuestions,
+        required this.isFavorite})
       : super(key: key);
 
   final Question question;
@@ -32,6 +36,7 @@ class CardQuestion extends StatefulWidget {
 
 class _CardQuestionState extends State<CardQuestion> {
   final MainController mainController = Get.find();
+  final UserController userController = Get.find();
 
   @override
   void initState() {
@@ -43,40 +48,40 @@ class _CardQuestionState extends State<CardQuestion> {
     List<String> options = [];
     RxList<Color> colorsI = RxList<Color>([]);
     RxList<Icon> iconsI = RxList<Icon>([]);
-    options = widget.question.options.split('///');
-    for (var i = 0; i < options.length; i++) {
+    options = widget.question.options!.split(Constants.SPLIT_ANSWER);
+    for (var i = Dimens.initialValue0; i < options.length; i++) {
       colorsI.add(AppColors.transparent);
       iconsI.add(Icon(Icons.adjust));
     }
     if (widget.isFavorite == true) {
-      widget.question.currentChecked.value = widget.question.correctAnswer - 1;
-      colorsI[widget.question.currentChecked.value] =
-          AppColors.green.withOpacity(0.2);
-      iconsI[widget.question.currentChecked.value] = Icon(
+      widget.question.currentChecked.value = widget.question.correctAnswer! - Dimens.intValue1;
+      colorsI[widget.question.currentChecked.value!] =
+          AppColors.green.withOpacity(Dimens.opacityColor0_2);
+      iconsI[widget.question.currentChecked.value!] = Icon(
         Icons.check,
         color: AppColors.green,
       );
     } else {
       if (widget.question.currentChecked.value != null) {
         if (widget.question.currentChecked.value ==
-            widget.question.correctAnswer - 1) {
-          colorsI[widget.question.currentChecked.value] =
-              AppColors.green.withOpacity(0.2);
-          iconsI[widget.question.currentChecked.value] = Icon(
+            widget.question.correctAnswer! - Dimens.intValue1) {
+          colorsI[widget.question.currentChecked.value!] =
+              AppColors.green.withOpacity(Dimens.opacityColor0_2);
+          iconsI[widget.question.currentChecked.value!] = Icon(
             Icons.check,
             color: AppColors.green,
           );
         } else {
-          colorsI[widget.question.currentChecked.value] =
-              AppColors.red.withOpacity(0.2);
-          colorsI[widget.question.correctAnswer - 1] =
-              AppColors.green.withOpacity(0.2);
+          colorsI[widget.question.currentChecked.value!] =
+              AppColors.red.withOpacity(Dimens.opacityColor0_2);
+          colorsI[widget.question.correctAnswer! - Dimens.intValue1] =
+              AppColors.green.withOpacity(Dimens.opacityColor0_2);
 
-          iconsI[widget.question.currentChecked.value] = Icon(
+          iconsI[widget.question.currentChecked.value!] = Icon(
             Icons.clear,
             color: AppColors.red,
           );
-          iconsI[widget.question.correctAnswer - 1] = Icon(
+          iconsI[widget.question.correctAnswer! - Dimens.intValue1] = Icon(
             Icons.check,
             color: AppColors.green,
           );
@@ -91,7 +96,7 @@ class _CardQuestionState extends State<CardQuestion> {
       return Stack(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(Dimens.padding10),
             child: Column(
               children: <Widget>[
                 buildQuestionContent(options, colorsI, iconsI),
@@ -117,14 +122,14 @@ class _CardQuestionState extends State<CardQuestion> {
         child: ListView(
           children: <Widget>[
             AppText(
-              text: widget.question.task,
+              text: widget.question.task!,
               textSize: Dimens.paragraphHeaderTextSize,
             ),
             Dimens.height10,
             Column(
               children: options.map((e) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 5.0),
+                  padding: const EdgeInsets.only(bottom: Dimens.padding5),
                   child: Obx(() {
                     return AbsorbPointer(
                       ignoringSemantics: true,
@@ -139,20 +144,20 @@ class _CardQuestionState extends State<CardQuestion> {
                           duration: Duration(
                               milliseconds:
                                   widget.question.currentChecked.value==null
-                                      ? 0
-                                      : 200),
+                                      ? Dimens.initialValue0
+                                      : Dimens.durationMilliseconds200),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(Dimens.border10),
 
                             color: widget.question.currentChecked.value != null
                                 ? colorsI[options.indexOf(e)]
                                 : Colors.transparent,
-                            border: Border.all(
-                              color:
-                                  widget.question.currentChecked.value != null
-                                      ? colorsI[options.indexOf(e)]
-                                      : Colors.blueGrey,
-                            ),
+                              // border: Border.all(
+                              //   color:
+                              //       widget.question.currentChecked.value != null
+                              //           ? colorsI[options.indexOf(e)]
+                              //           : Colors.blueGrey,
+                              // ),
                           ),
                           child: ListTile(
                             title: AppText(
@@ -173,20 +178,19 @@ class _CardQuestionState extends State<CardQuestion> {
             Dimens.height10,
             AnimatedOpacity(
               opacity: widget.question.currentChecked.value==null
-                  ? 0.0
-                  : 1.0,
+                  ? Dimens.opacityColor0
+                  : Dimens.opacityColor1,
               duration: Duration(
                   milliseconds:
                       widget.question.currentChecked.value==null
-                          ? 0
-                          : 500),
+                          ? Dimens.initialValue0
+                          : Dimens.durationMilliseconds500),
               curve: Curves.easeInOut,
               child: Card(
                 child: ListTile(
                   title: AppText(
-                    text: widget.question.explanation,
+                    text: widget.question.explanation!,
                   ),
-
                 ),
               ),
             ),
@@ -198,55 +202,174 @@ class _CardQuestionState extends State<CardQuestion> {
   }
 
   addOrRemoveFromFavorite() async {
-    if (mainController.containFromFavorite.isEmpty) {
-      List<Question> question = [];
-      question.add(widget.question);
-      var questions = question.map((e) => e.toJson()).toList();
-      await HiveHelper.addBoxes(questions, 'Table_Favorite');
-      mainController.questionsHiveFavorite.add(widget.question);
-      mainController.containFromFavorite = RxList<Question>(mainController
-          .questionsHiveFavorite
-          .where((e) => e.id == widget.question.id)
-          .toList());
-    } else {
-      final openBox = await Hive.openBox('Table_Favorite');
-      if (widget.isFavorite == true) {
-        openBox.deleteAt(widget.listQuestions.indexOf(widget.question));
-        widget.listQuestions
-            .removeWhere((element) => element.id == widget.question.id);
-        if (mainController.index.value > 0) mainController.index.value--;
-      } else {
-        openBox.deleteAt(mainController.questionsHiveFavorite
-            .indexWhere((e) => e.id == widget.question.id));
-        mainController.questionsHiveFavorite
-            .removeWhere((e) => e.id == widget.question.id);
+    mainController.checkRemoveFavorite.value=true;
+    Question ques=widget.question;
+    if (userController.user.value != null) {
+      if (mainController.containFromFavorite.isEmpty) {
+        int checked= widget.question.currentChecked.value!;
+        Question ques=widget.question;
+        ques.currentChecked.value=null;
+        var favorite ={'favorites': FieldValue.arrayUnion([ques.toJson()])};
+        userController.updateDataFavorite(userController.user.value!.uid, favorite);
+        widget.question.currentChecked.value=checked;
+        mainController.questionsHiveFavorite.add(widget.question);
         mainController.containFromFavorite = RxList<Question>(mainController
             .questionsHiveFavorite
             .where((e) => e.id == widget.question.id)
             .toList());
+      } else {
+        int checked= widget.question.currentChecked.value!;
+        ques.currentChecked.value=null;
+        if (widget.isFavorite == true) {
+          widget.listQuestions
+              .removeWhere((element) => element.id == widget.question.id);
+          if (mainController.index.value > Dimens.initialValue0) mainController.index.value--;
+        } else {
+          mainController.questionsHiveFavorite
+              .removeWhere((e) => e.id == widget.question.id);
+          mainController.containFromFavorite = RxList<Question>(mainController
+              .questionsHiveFavorite
+              .where((e) => e.id == widget.question.id)
+              .toList());
+        }
+        _handleWithSnackBar(
+            (){
+              if (widget.isFavorite == true) {
+                if(!widget.listQuestions.contains(widget.question.id)){
+                  widget.listQuestions.add(ques);
+                }
+              } else {
+                if(!mainController.questionsFromHive.contains(widget.question.id)){
+                  mainController.questionsHiveFavorite.add(ques);
+                }
+                mainController.containFromFavorite = RxList<Question>(mainController
+                    .questionsHiveFavorite
+                    .where((e) => e.id == widget.question.id)
+                    .toList());
+              }
+            },
+            () async{
+              if(mainController.checkRemoveFavorite.value==true){
+                var favorite ={'favorites': FieldValue.arrayRemove([ques.toJson()])};
+                await userController.deleteDataFavorite(userController.user.value!.uid, favorite);
+                widget.question.currentChecked.value=checked;
+                print('Remove success');
+              }else{
+                print('User press Undo');
+              }
+            }
+        );
+      }
+    } else {
+      if (mainController.containFromFavorite.isEmpty) {
+        List<Question> question = [];
+        question.add(widget.question);
+        var questions = question.map((e) => e.toJson()).toList();
+        await HiveHelper.addBoxes(questions, Constants.TABLE_FAVORITE_BOX_NAME);
+        mainController.questionsHiveFavorite.add(widget.question);
+        mainController.containFromFavorite = RxList<Question>(mainController
+            .questionsHiveFavorite
+            .where((e) => e.id == widget.question.id)
+            .toList());
+      } else {
+        int getIndex;
+        final openBox = await Hive.openBox(Constants.TABLE_FAVORITE_BOX_NAME);
+        if (widget.isFavorite == true) {
+          getIndex=widget.listQuestions.indexOf(widget.question);
+          widget.listQuestions
+              .removeWhere((element) => element.id == widget.question.id);
+          if (mainController.index.value > Dimens.initialValue0) mainController.index.value--;
+        } else {
+          getIndex=mainController.questionsHiveFavorite
+              .indexWhere((e) => e.id == widget.question.id);
+          mainController.questionsHiveFavorite
+              .removeWhere((e) => e.id == widget.question.id);
+          mainController.containFromFavorite = RxList<Question>(mainController
+              .questionsHiveFavorite
+              .where((e) => e.id == widget.question.id)
+              .toList());
+        }
+        _handleWithSnackBar(
+            (){
+              if (widget.isFavorite == true) {
+                if(!widget.listQuestions.contains(widget.question.id)){
+                  widget.listQuestions.add(ques);
+                }
+              } else {
+                if(!mainController.questionsFromHive.contains(widget.question.id)){
+                  mainController.questionsHiveFavorite.add(ques);
+                }
+                mainController.containFromFavorite = RxList<Question>(mainController
+                    .questionsHiveFavorite
+                    .where((e) => e.id == widget.question.id)
+                    .toList());
+              }
+            },
+            () async{
+              if(mainController.checkRemoveFavorite.value==true){
+                if (widget.isFavorite == true) {
+                  openBox.deleteAt(getIndex);
+                  if (mainController.index.value > Dimens.initialValue0) mainController.index.value--;
+                } else {
+                  openBox.deleteAt(getIndex);
+                  mainController.containFromFavorite = RxList<Question>(mainController
+                      .questionsHiveFavorite
+                      .where((e) => e.id == widget.question.id)
+                      .toList());
+                }
+                print('Remove success');
+              }else{
+                print('User press Undo');
+              }
+            }
+        );
       }
     }
   }
 
+  _handleWithSnackBar(Function undo, Function notUndo){
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: Duration(seconds: Dimens.durationSeconds5),
+        content: AppText(
+            text: FlutterLocalizations.of(context)!.getString(
+                context, 'remove_favorite')
+        ),
+        action: SnackBarAction(
+          label: FlutterLocalizations.of(context)!.getString(
+              context, 'undo'),
+          onPressed: (){
+            mainController.checkRemoveFavorite.value=false;
+            undo();
+          },
+        ),
+      ),
+    );
+    Future.delayed(Duration(seconds: 5)).then((_) async{
+      notUndo();
+    });
+  }
+
   countTrueAnswer() {
-    widget.countTrue.value = 0;
+    widget.countTrue.value = Dimens.initialValue0;
     SoundsHelper.checkAudio(Sounds.touch);
     for (var checkTrue in widget.listQuestions) {
-      if (checkTrue.currentChecked.value == checkTrue.correctAnswer - 1)
+      if (checkTrue.currentChecked.value == checkTrue.correctAnswer! - Dimens.intValue1)
         widget.countTrue.value++;
     }
     mainController.index.value = widget.listQuestions.length;
   }
 
   _buildFloatingPreviousButton() {
-    return mainController.index.value + 1 > 1
+    return mainController.index.value + Dimens.intValue1 > Dimens.intValue1
         ? Align(
             alignment: Alignment.bottomLeft,
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(Dimens.padding10),
               child: FloatingActionButton(
-                elevation: 0,
-                backgroundColor: Colors.transparent,
+                elevation: Dimens.elevation0,
+                backgroundColor: AppColors.transparent,
                 heroTag: 'previous',
                 onPressed: () async {
                   SoundsHelper.checkAudio(Sounds.touch);
@@ -261,7 +384,7 @@ class _CardQuestionState extends State<CardQuestion> {
 
   _buildCompleteButton() {
     return widget.question.currentChecked.value != null
-        ? widget.listQuestions.length > (mainController.index.value + 1)
+        ? widget.listQuestions.length > (mainController.index.value + Dimens.intValue1)
             ? _buildFloatingNextButton()
             : mainController
                     .questionsFromHive.isEmpty
@@ -276,10 +399,10 @@ class _CardQuestionState extends State<CardQuestion> {
     return Align(
       alignment: Alignment.bottomRight,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(Dimens.padding10),
         child: FloatingActionButton(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
+          elevation: Dimens.elevation0,
+          backgroundColor: AppColors.transparent,
           heroTag: 'next',
           onPressed: () async {
             SoundsHelper.checkAudio(Sounds.touch);
@@ -296,12 +419,13 @@ class _CardQuestionState extends State<CardQuestion> {
     return Align(
       alignment: Alignment.bottomRight,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(Dimens.padding10),
         child: FloatingActionButton(
-          elevation: 0,
+          elevation: Dimens.elevation0,
           backgroundColor: Colors.transparent,
           heroTag: 'submit',
           onPressed: () async {
+            mainController.isGoToCheck.value=true;
             SoundsHelper.checkAudio(Sounds.touch);
             widget.isFavorite == false
                 ? countTrueAnswer()
@@ -319,9 +443,9 @@ class _CardQuestionState extends State<CardQuestion> {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(Dimens.padding10),
         child: FloatingActionButton(
-          elevation: 0,
+          elevation: Dimens.elevation0,
           backgroundColor: Colors.transparent,
           heroTag: 'favorite',
           onPressed: () async {},
@@ -333,7 +457,7 @@ class _CardQuestionState extends State<CardQuestion> {
                   )
                 : Icon(
                     Icons.favorite_border,
-                    color: Colors.grey,
+                    color: AppColors.divider,
                   );
           }), onPressed: () async {
             SoundsHelper.checkAudio(Sounds.touch);
@@ -347,10 +471,10 @@ class _CardQuestionState extends State<CardQuestion> {
   _handleOption(int selected, colorsI, iconsI) {
     widget.question.currentChecked.value = selected;
     if (widget.question.currentChecked.value ==
-        widget.question.correctAnswer - 1) {
+        widget.question.correctAnswer! - Dimens.intValue1) {
       SoundsHelper.checkAudio(Sounds.correct);
       colorsI[widget.question.currentChecked.value] =
-          AppColors.green.withOpacity(0.2);
+          AppColors.green.withOpacity(Dimens.opacityColor0_2);
       iconsI[widget.question.currentChecked.value] = Icon(
         Icons.check,
         color: AppColors.green,
@@ -359,14 +483,14 @@ class _CardQuestionState extends State<CardQuestion> {
     } else {
       SoundsHelper.checkAudio(Sounds.in_correct);
       colorsI[widget.question.currentChecked.value] =
-          AppColors.red.withOpacity(0.2);
-      colorsI[widget.question.correctAnswer - 1] =
-          AppColors.green.withOpacity(0.2);
+          AppColors.red.withOpacity(Dimens.opacityColor0_2);
+      colorsI[widget.question.correctAnswer! - Dimens.intValue1] =
+          AppColors.green.withOpacity(Dimens.opacityColor0_2);
       iconsI[widget.question.currentChecked.value] = Icon(
         Icons.clear,
         color: AppColors.red,
       );
-      iconsI[widget.question.correctAnswer - 1] = Icon(
+      iconsI[widget.question.correctAnswer! - Dimens.intValue1] = Icon(
         Icons.check,
         color: AppColors.green,
       );

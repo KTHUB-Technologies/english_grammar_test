@@ -4,7 +4,7 @@ import 'package:the_enest_english_grammar_test/model/question_model.dart';
 
 class HiveHelper{
 
-  static isExists({String boxName}) async {
+  static isExists({required String boxName}) async {
     bool exists=await Hive.boxExists(boxName);
     if(exists)
       return true;
@@ -22,7 +22,7 @@ class HiveHelper{
   }
 
   static getBoxes(String boxName) async {
-    List<Question> boxList = List<Question>();
+    List<Question> boxList = [];
 
     final openBox = await Hive.openBox(boxName);
 

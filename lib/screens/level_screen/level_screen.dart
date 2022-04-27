@@ -1,20 +1,25 @@
+import 'dart:collection';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:the_enest_english_grammar_test/commons/animted_list.dart';
+import 'package:the_enest_english_grammar_test/commons/scale_transition.dart';
 import 'package:the_enest_english_grammar_test/commons/app_text.dart';
-import 'package:the_enest_english_grammar_test/commons/ios_dialog.dart';
 import 'package:the_enest_english_grammar_test/commons/loading_container.dart';
 import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/hive_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
+import 'package:the_enest_english_grammar_test/localization/flutter_localizations.dart';
 import 'package:the_enest_english_grammar_test/model/question_model.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/category_card.dart';
 import 'package:the_enest_english_grammar_test/screens/level_screen/modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
+import 'package:the_enest_english_grammar_test/screens/level_screen/normal_card.dart';
+import 'package:the_enest_english_grammar_test/screens/progress_screen/progress_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/question_screen/question_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/setting_screen/setting_screen.dart';
 import 'package:the_enest_english_grammar_test/theme/colors.dart';
@@ -22,9 +27,8 @@ import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 class LevelScreen extends StatefulWidget {
   final int level;
-  final bool isProgress;
 
-  const LevelScreen({Key key, this.level, this.isProgress}) : super(key: key);
+  const LevelScreen({Key? key, required this.level}) : super(key: key);
 
   @override
   _LevelScreenState createState() => _LevelScreenState();
@@ -33,18 +37,45 @@ class LevelScreen extends StatefulWidget {
 class _LevelScreenState extends State<LevelScreen> {
   final MainController mainController = Get.find();
   final AppController appController = Get.put(AppController());
+  final UserController userController = Get.find();
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
-    loadAllScoreOfLevel();
     super.initState();
+    loadAllScoreOfLevel();
   }
 
   loadAllScoreOfLevel() async {
-    final openBox = await Hive.openBox('Table_Score_${widget.level}');
-    mainController.scoreOfCate.value = openBox.toMap();
-    openBox.close();
+    mainController.scoreOfCate.clear();
+    mainController.allQuestionsFromFS.value.clear();
+    if (userController.user.value != null) {
+      Map? data =
+          await userController.getDataScore(userController.user.value!.uid);
+      Map? question =
+          await userController.getDataQuestion(userController.user.value!.uid);
+
+      await userController.getDataFavorite(userController.user.value!.uid);
+
+      if (data!=null) {
+        if (data['${widget.level}'] != null)
+          mainController.scoreOfCate.assignAll(data['${widget.level}']);
+        else
+          mainController.scoreOfCate.clear();
+      }
+
+      if (question!=null) {
+        if (question['${widget.level}'] != null)
+          mainController.allQuestionsFromFS.value =
+              HashMap.from(question['${widget.level}']);
+        else
+          mainController.allQuestionsFromFS.value = {};
+      }
+    } else {
+      final openBox = await Hive.openBox('Table_Score_${widget.level}');
+      mainController.scoreOfCate.assignAll(openBox.toMap());
+      openBox.close();
+    }
   }
 
   @override
@@ -55,24 +86,15 @@ class _LevelScreenState extends State<LevelScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.white,
       body: Obx(() {
         return LoadingContainer(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               _buildHeader(),
               Expanded(
-                child: Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                            colors: AppColors.gradientColorPrimary),
-                        border: Border.all(width: 0, color: Colors.transparent),
-                      ),
-                    ),
-                    _buildCategoryContent(mainController.sectionSelected.value)
-                  ],
-                ),
+                child: _buildCategoryContent(mainController.sectionSelected.value),
               )
             ],
           ),
@@ -87,14 +109,14 @@ class _LevelScreenState extends State<LevelScreen> {
       children: [
         Container(
           color: AppColors.white,
-          height: getScreenHeight(context) / 4,
+          height: getScreenHeight(context) / Dimens.intValue6,
         ),
         Container(
-          height: getScreenHeight(context) / 4,
+          height: getScreenHeight(context) / Dimens.intValue6,
           decoration: BoxDecoration(
-              border: Border.all(width: 0, color: Colors.transparent),
+              border: Border.all(width: Dimens.borderWidth0, color: AppColors.transparent),
               gradient: LinearGradient(colors: AppColors.gradientColorPrimary),
-              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(70))),
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(Dimens.border70))),
           child: Container(
             padding: EdgeInsets.symmetric(vertical: Dimens.formPadding),
             child: Column(
@@ -107,18 +129,7 @@ class _LevelScreenState extends State<LevelScreen> {
                       color: AppColors.white,
                     ),
                     onPressed: () {
-                      if (!widget.isProgress) {
-                        Navigator.pop(context);
-                      } else {
                         Get.back();
-                        Get.to(
-                            LevelScreen(
-                              level: widget.level,
-                              isProgress: false,
-                            ),
-                            transition: Transition.rightToLeftWithFade,
-                            duration: Duration(milliseconds: 500));
-                      }
                     },
                   ),
                   title: AppText(
@@ -128,9 +139,10 @@ class _LevelScreenState extends State<LevelScreen> {
                     text: getLevel(widget.level),
                   ),
                   trailing: PopupMenuButton(
-                      elevation: 20,
+                      elevation: Dimens.elevation20,
+                      icon: Icon(Icons.menu,color: AppColors.white,),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15)),
+                          borderRadius: BorderRadius.circular(Dimens.border15)),
                       onSelected: choiceAction,
                       itemBuilder: (context) {
                         return Constants.choices.map((e) {
@@ -138,7 +150,7 @@ class _LevelScreenState extends State<LevelScreen> {
                             value: e,
                             child: ListTile(
                               title: AppText(
-                                text: e,
+                                text: getStringChoice(e, context),
                                 color: AppColors.orangeAccent,
                               ),
                             ),
@@ -146,7 +158,7 @@ class _LevelScreenState extends State<LevelScreen> {
                         }).toList();
                       }),
                 ),
-                _buildSectionTitle()
+                // _buildSectionTitle()
               ],
             ),
           ),
@@ -155,47 +167,47 @@ class _LevelScreenState extends State<LevelScreen> {
     );
   }
 
-  _buildSectionTitle() {
-    return ToggleButtons(
-      children: mainController.sections
-          .map((e) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: AppText(
-                  text: getSection(e),
-                  color: AppColors.white,
-                ),
-              ))
-          .toList(),
-      borderRadius: BorderRadius.circular(15),
-      onPressed: (int index) {
-        for (int buttonIndex = 0;
-            buttonIndex < mainController.selected.length;
-            buttonIndex++) {
-          if (buttonIndex == index) {
-            mainController.selected[buttonIndex] = true;
-          } else {
-            mainController.selected[buttonIndex] = false;
-          }
-        }
-        mainController.sectionSelected.value = index;
-      },
-      isSelected: mainController.selected,
-    );
-  }
+  // _buildSectionTitle() {
+  //   return ToggleButtons(
+  //     children: mainController.sections
+  //         .map((e) => Padding(
+  //               padding: const EdgeInsets.all(8.0),
+  //               child: AppText(
+  //                 text: getSection(e),
+  //                 color: AppColors.white,
+  //               ),
+  //             ))
+  //         .toList(),
+  //     borderRadius: BorderRadius.circular(15),
+  //     onPressed: (int index) {
+  //       for (int buttonIndex = 0;
+  //           buttonIndex < mainController.selected.length;
+  //           buttonIndex++) {
+  //         if (buttonIndex == index) {
+  //           mainController.selected[buttonIndex] = true;
+  //         } else {
+  //           mainController.selected[buttonIndex] = false;
+  //         }
+  //       }
+  //       mainController.sectionSelected.value = index;
+  //     },
+  //     isSelected: mainController.selected,
+  //   );
+  // }
 
   _buildCategoryContent(int sectionSelected) {
-    switch (sectionSelected) {
-      case 0:
+    // switch (sectionSelected) {
+    //   case 0:
         return Container(
           decoration: BoxDecoration(
-              border: Border.all(width: 0, color: Colors.transparent),
+              border: Border.all(width: Dimens.borderWidth0, color: Colors.transparent),
               color: AppColors.white,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
+              borderRadius: BorderRadius.only(topRight: Radius.circular(Dimens.border70))),
           child: Column(
             children: [
               SizedBox(
                 child: _buildProgress(),
-                height: 54,
+                height: Dimens.height54,
               ),
               Expanded(
                 child: ListView(
@@ -206,26 +218,22 @@ class _LevelScreenState extends State<LevelScreen> {
                             .where((c) => c.categoryId == e)
                             .toList())
                         .length;
-                    return WidgetAnimator(
-                      CategoryCard(
-                        totalQuestion: totalQuestion,
-                        index: e,
+                    return WidgetAnimatorScaleTransition(
+                      NormalCategoryCard(
+                        index: e!,
                         level: widget.level,
+                        totalQuestion: totalQuestion,
+                        trueQues: Rx<double>(getTrueScoreOfCate(e)??Dimens.doubleValue0),
+                        wrongQues: Rx<double>(getWrongScoreOfCate(e)??Dimens.doubleValue0),
                         category: e,
-                        onTap: widget.isProgress == false
-                            ? () async {
-                                await mainController
-                                    .loadQuestionFromLevelAndCategory(
-                                        widget.level, e);
+                        onTap: () async {
+                          await mainController
+                              .loadQuestionFromLevelAndCategory(
+                              widget.level, e);
 
-                                modalBottomSheet(
-                                    getCategory(e), widget.level, e);
-                              }
-                            : () {},
-                        testCompleted: Rx<int>(
-                            getTestCompleted(e) ??
-                                0),
-                        score: Rx<double>((getScoreOfCate(e) ?? 0)),
+                          modalBottomSheet(
+                              getCategory(e), widget.level, e);
+                        },
                       ),
                     );
                   }).toList(),
@@ -234,128 +242,118 @@ class _LevelScreenState extends State<LevelScreen> {
             ],
           ),
         );
-      case 1:
-        return Container(
-          height: getScreenHeight(context),
-          width: getScreenWidth(context),
-          decoration: BoxDecoration(
-              border: Border.all(width: 0, color: Colors.transparent),
-              color: AppColors.white,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
-          child: Center(
-            child: AppText(
-              text: "COMING SOON",
-            ),
-          ),
-        );
-      default:
-        return Container(
-          height: getScreenHeight(context),
-          width: getScreenWidth(context),
-          decoration: BoxDecoration(
-              border: Border.all(width: 0, color: Colors.transparent),
-              color: AppColors.white,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
-          child: Center(
-            child: AppText(
-              text: "Something wrong",
-            ),
-          ),
-        );
-    }
+      // case 1:
+      //   return Container(
+      //     height: getScreenHeight(context),
+      //     width: getScreenWidth(context),
+      //     decoration: BoxDecoration(
+      //         border: Border.all(width: 0, color: Colors.transparent),
+      //         color: AppColors.white,
+      //         borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
+      //     child: Center(
+      //       child: AppText(
+      //         text: "COMING SOON",
+      //       ),
+      //     ),
+      //   );
+      // default:
+      //   return Container(
+      //     height: getScreenHeight(context),
+      //     width: getScreenWidth(context),
+      //     decoration: BoxDecoration(
+      //         border: Border.all(width: 0, color: Colors.transparent),
+      //         color: AppColors.white,
+      //         borderRadius: BorderRadius.only(topRight: Radius.circular(70))),
+      //     child: Center(
+      //       child: AppText(
+      //         text: "Something wrong",
+      //       ),
+      //     ),
+      //   );
+    // }
   }
 
   _buildProgress() {
-    return widget.isProgress == false
-        ? SizedBox()
-        : Column(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.symmetric(
-                    horizontal: Dimens.formPadding, vertical: 15),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        'Delete All At This Level',
-                        style: TextStyle(
-                          color: AppColors.red,
-                          fontSize: Dimens.paragraphHeaderTextSize,
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      child: Icon(
-                        Icons.delete,
-                        color: AppColors.red,
-                      ),
-                      onTap: () {
-                        showCupertinoDialog(
-                            context: context,
-                            builder: (context) {
-                              return IOSDialog(
-                                title: 'WARNING',
-                                content:
-                                    "Do you want to reset all question in this level?",
-                                cancel: () {
-                                  Get.back();
-                                },
-                                confirm: () async {
-                                  Get.offAll(MainScreen());
-
-                                  await restartLevel();
-                                },
-                              );
-                            });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
+    return Container(
+            margin: EdgeInsets.symmetric(
+                horizontal: Dimens.formPadding, vertical: Dimens.padding15),
+            child: AppText(
+              text: FlutterLocalizations.of(context)!.getString(
+                  context, 'the_enest'),
+              fontWeight: FontWeight.bold,
+              color: AppColors.blue,
+              textSize: Dimens.paragraphHeaderTextSize,
+            ));
   }
 
   restartLevel() async {
-    final openBox = await Hive.openBox('Table_${widget.level}');
-    openBox.deleteFromDisk();
-    openBox.close();
+    if (userController.user.value != null) {
+      var data = {'scores.${widget.level}': FieldValue.delete()};
 
-    final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
-    openBoxScore.deleteFromDisk();
-    openBoxScore.close();
+      userController.deleteDataScore(userController.user.value!.uid, data);
+
+      var questions = {'questions.${widget.level}': FieldValue.delete()};
+
+      userController.deleteDataQuestion(
+          userController.user.value!.uid, questions);
+    } else {
+      final openBox = await Hive.openBox('Table_${widget.level}');
+      openBox.deleteFromDisk();
+      openBox.close();
+
+      final openBoxScore = await Hive.openBox('Table_Score_${widget.level}');
+      openBoxScore.deleteFromDisk();
+      openBoxScore.close();
+    }
   }
 
-  getScoreOfCate(int index) {
-    double score = 0;
+  getTrueScoreOfCate(int index) {
+    double scoreTrue = Dimens.doubleValue0;
     Map scoreCate = new Map();
-    if (mainController.scoreOfCate.value
+    if (mainController.scoreOfCate
         .containsKey('${widget.level}_$index')) {
-      if (mainController.scoreOfCate.value['${widget.level}_$index'] != null ||
-          mainController.scoreOfCate.value['${widget.level}_$index'] == '0_0') {
+      if (mainController.scoreOfCate['${widget.level}_$index'] != null ||
+          mainController.scoreOfCate['${widget.level}_$index'] == '0_0') {
         scoreCate
-            .addAll(mainController.scoreOfCate.value['${widget.level}_$index']);
+            .addAll(mainController.scoreOfCate['${widget.level}_$index']);
         scoreCate.forEach((key, value) {
           List<String> split = value.toString().split('_');
-          score += double.tryParse(split[0]);
+          scoreTrue += double.tryParse(split[0])!;
         });
       }
     }
-    return score;
+    return scoreTrue;
+  }
+
+  getWrongScoreOfCate(int index) {
+    double scoreWrong = Dimens.doubleValue0;
+    Map scoreCate = new Map();
+    if (mainController.scoreOfCate
+        .containsKey('${widget.level}_$index')) {
+      if (mainController.scoreOfCate['${widget.level}_$index'] != null ||
+          mainController.scoreOfCate['${widget.level}_$index'] == '0_0') {
+        scoreCate
+            .addAll(mainController.scoreOfCate['${widget.level}_$index']);
+        scoreCate.forEach((key, value) {
+          List<String> split = value.toString().split('_');
+          scoreWrong += double.tryParse(split[1])!-double.tryParse(split[0])!;
+        });
+      }
+    }
+    return scoreWrong;
   }
 
   getTestCompleted(int index) {
-    int countTest = 0;
+    int countTest = Dimens.intValue1;
     Map scoreCate = new Map();
-    if (mainController.scoreOfCate.value
+    if (mainController.scoreOfCate
         .containsKey('${widget.level}_$index')) {
-      if (mainController.scoreOfCate.value['${widget.level}_$index'] != null ||
-          mainController.scoreOfCate.value['${widget.level}_$index'] == '0_0') {
+      if (mainController.scoreOfCate['${widget.level}_$index'] != null ||
+          mainController.scoreOfCate['${widget.level}_$index'] == '0_0') {
         scoreCate
-            .addAll(mainController.scoreOfCate.value['${widget.level}_$index']);
+            .addAll(mainController.scoreOfCate['${widget.level}_$index']);
         scoreCate.forEach((key, value) {
-          if(value!='0_0')
-            countTest++;
+          if (value != '0_0') countTest++;
         });
       }
     }
@@ -363,17 +361,19 @@ class _LevelScreenState extends State<LevelScreen> {
   }
 
   modalBottomSheet(String cateName, int level, int categoryId) async {
-    mainController.score.value.clear();
-    final openBox = await Hive.openBox('Table_Score_${widget.level}');
-    if (openBox.containsKey('$level' '_' '$categoryId')) {
-      if (openBox.get('$level' '_' '$categoryId') != null) {
-        mainController.score.value
-            .addAll(openBox.get('$level' '_' '$categoryId'));
-      } else {
-        mainController.score.value.clear();
+    mainController.isGoToCheck.value=false;
+    mainController.score.clear();
+    if (userController.user.value != null) {
+      if(mainController.scoreOfCate.containsKey('$level''_''$categoryId') && mainController.scoreOfCate['$level''_''$categoryId'] != null){
+        mainController.score.addAll(
+            mainController.scoreOfCate['$level''_''$categoryId']);
       }
     } else {
-      mainController.score.value.clear();
+      final openBox = await Hive.openBox('Table_Score_${widget.level}');
+      if (openBox.containsKey('$level''_''$categoryId') && openBox.get('$level''_''$categoryId') != null) {
+        mainController.score.addAll(openBox.get('$level' '_' '$categoryId'));
+        openBox.close();
+      }
     }
     await showModalBottomSheet(
         backgroundColor: AppColors.transparent,
@@ -388,39 +388,35 @@ class _LevelScreenState extends State<LevelScreen> {
         });
   }
 
-  choiceAction(String choice) async {
+  choiceAction(int choice) async {
     switch (choice) {
-      case 'Favorite':
-        bool exist = await HiveHelper.isExists(boxName: 'Table_Favorite');
-        if (exist) {
-          print('-----------------------------------------');
-          mainController.questionsHiveFavorite =
-              RxList<Question>(await HiveHelper.getBoxes('Table_Favorite'));
+      case 1:
+        if (userController.user.value != null) {
+          List<dynamic> favorite=await userController.getDataFavorite(userController.user.value!.uid);
+          if(favorite.isNotEmpty){
+            mainController.questionsHiveFavorite=  RxList<Question>(favorite.map((e) => Question.fromJson(e)).toList());
+          }
+        } else {
+          bool exist = await HiveHelper.isExists(boxName: Constants.TABLE_FAVORITE_BOX_NAME);
+          if (exist) {
+            print('-----------------------------------------');
+            mainController.questionsHiveFavorite =
+                RxList<Question>(await HiveHelper.getBoxes(Constants.TABLE_FAVORITE_BOX_NAME));
+          }
         }
+        mainController.isGoToCheck.value=false;
         Get.to(
             QuestionScreen(
               question: mainController.questionsHiveFavorite,
               isFavorite: true,
             ),
             transition: Transition.fadeIn,
-            duration: Duration(milliseconds: 500));
+            duration: Duration(milliseconds: Dimens.durationMilliseconds500));
         return;
-      case 'Progress':
-        if (!widget.isProgress) {
-          Get.back();
-          Get.to(
-              LevelScreen(
-                level: widget.level,
-                isProgress: true,
-              ),
-              transition: Transition.rightToLeftWithFade,
-              duration: Duration(milliseconds: 500));
-        }
-        return;
-      case 'Settings':
+      case 2:
         Get.to(SettingScreen(),
             transition: Transition.rightToLeftWithFade,
-            duration: Duration(milliseconds: 500));
+            duration: Duration(milliseconds: Dimens.durationMilliseconds500));
         return;
     }
   }

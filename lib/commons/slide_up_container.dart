@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class SlideUpTransition extends StatefulWidget {
-  final Widget child;
-  final AnimationController animationController;
+  final Widget? child;
+  final AnimationController? animationController;
 
-  const SlideUpTransition({Key key, this.child, this.animationController}) : super(key: key);
+  const SlideUpTransition({Key? key, this.child, this.animationController}) : super(key: key);
 
   @override
   _SlideUpTransitionState createState() => _SlideUpTransitionState();
@@ -12,8 +12,8 @@ class SlideUpTransition extends StatefulWidget {
 
 class _SlideUpTransitionState extends State<SlideUpTransition>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation<Offset> _offset;
+  AnimationController? _controller;
+  Animation<Offset>? _offset;
 
   @override
   void initState() {
@@ -28,21 +28,21 @@ class _SlideUpTransitionState extends State<SlideUpTransition>
     }
 
     _offset = Tween<Offset>(begin: Offset(0.0, 1.0), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn));
+        .animate(CurvedAnimation(parent: _controller!, curve: Curves.fastOutSlowIn));
 
-    _controller.forward();
+    _controller!.forward();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return SlideTransition(
-      position: _offset,
+      position: _offset!,
       child: widget.child,
     );
   }

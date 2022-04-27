@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesHelper {
   static const String LANGUAGE_CODE = 'languageCode';
+  static const String USER = 'user';
 
   static saveStringValue(String key, String value) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -32,8 +33,8 @@ class SharedPreferencesHelper {
 
   static Future<List<String>> getListString(String key) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    List<String> listString = preferences.getStringList(key);
-    return listString;
+    List<String>? listString = preferences.getStringList(key);
+    return listString!;
   }
 
   remove(String key) async {

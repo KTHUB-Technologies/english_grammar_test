@@ -1,19 +1,25 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:the_enest_english_grammar_test/commons/fade_container.dart';
+import 'package:the_enest_english_grammar_test/constants/constants.dart';
 import 'package:the_enest_english_grammar_test/controller/app_controller.dart';
 import 'package:the_enest_english_grammar_test/controller/main_controller.dart';
+import 'package:the_enest_english_grammar_test/controller/user_controller.dart';
 import 'package:the_enest_english_grammar_test/helper/config_microsoft.dart';
+import 'package:the_enest_english_grammar_test/helper/firebase_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/sounds_helper.dart';
 import 'package:the_enest_english_grammar_test/helper/utils.dart';
 import 'package:the_enest_english_grammar_test/res/images/images.dart';
 import 'package:the_enest_english_grammar_test/screens/about_screen/about_screen.dart';
 import 'package:the_enest_english_grammar_test/screens/main_screen/main_screen.dart';
+import 'package:the_enest_english_grammar_test/theme/colors.dart';
+import 'package:the_enest_english_grammar_test/theme/dimens.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -22,8 +28,9 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final MainController mainController = Get.find();
+  final UserController userController = Get.find();
   final AppController appController = Get.find();
-  Timer timer;
+  Timer? timer;
 
   ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~///
   ///           OVERRIDE METHODS           ///
@@ -38,16 +45,16 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void dispose() {
     if (timer != null) {
-      timer.cancel();
+      timer!.cancel();
     }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final logoSize = getScreenWidth(context) / 2;
+    final logoSize = Dimens.getLogoSize(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       body: Center(
         child: FadeContainer(
           child: Image.asset(
@@ -77,19 +84,19 @@ class _SplashScreenState extends State<SplashScreen> {
   onBuildDone() async {
     await mainController.getAllQuestions();
     await SoundsHelper.load();
-    // await checkDarkMode();
+    await checkSound();
     /// Delay 3 seconds, then navigate to Login screen
-    timer = Timer.periodic(Duration(seconds: 2), (timer) async {
-      // await _loadUserData();
+    timer = Timer.periodic(Duration(seconds: Dimens.durationSeconds2), (timer) async {
+      await _loadUserData();
       _navigateToMainScreen();
       //  await checkFirstLoad();
     });
   }
 
   checkSound() async {
-    final openBox = await Hive.openBox('Sound');
-    if (openBox.get('isSound') != null)
-      appController.isDark.value = openBox.get('isSound');
+    final openBox = await Hive.openBox(Constants.SOUND_BOX_NAME);
+    if (openBox.get(Constants.SOUND_KEY_NAME) != null)
+      appController.sound.value = openBox.get(Constants.SOUND_KEY_NAME);
     openBox.close();
   }
 
@@ -109,28 +116,12 @@ class _SplashScreenState extends State<SplashScreen> {
   //   openBox.close();
   // }
 
-  // _loadUserData() async {
-  //   Dio dio = Dio();
-  //   final openBox = await Hive.openBox('accessToken');
-  //
-  //   try{
-  //     if (openBox.get('accessToken') != null) {
-  //       final response = await dio.get(ConfigMicrosoft.userProfileBaseUrl,
-  //           options: Options(headers: {
-  //             ConfigMicrosoft.authorization:
-  //             ConfigMicrosoft.bearer + openBox.get('accessToken')
-  //           }));
-  //       Map profile = jsonDecode(response.toString());
-  //       print(profile);
-  //       appController.user.value = profile;
-  //     }
-  //     openBox.close();
-  //   }catch (e){
-  //     print(e);
-  //   }
-  // }
+  _loadUserData() async {
+    if(FireBaseHelper.fireBaseAuth.currentUser!=null)
+      userController.user.value= FireBaseHelper.fireBaseAuth.currentUser!;
+  }
 
   _navigateToMainScreen() {
-    Get.offAll(MainScreen());
+    Get.offAll(()=>MainScreen());
   }
 }

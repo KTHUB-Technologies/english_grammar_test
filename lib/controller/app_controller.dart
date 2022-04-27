@@ -12,9 +12,7 @@ class AppController extends GetxController {
 
   bool isEnglish = false;
 
-  Rx<Locale> locale = Rx<Locale>();
-
-  Rx<Map> user = Rx<Map>(null);
+  Rx<Locale?> locale = Rx<Locale?>(null);
 
   Rx<bool> isShowLoading = Rx<bool>(false);
 
@@ -45,6 +43,8 @@ class AppController extends GetxController {
           locale.value = Locale("en", 'US');
           break;
         default:
+          locale.value = Locale("en", 'US');
+          break;
       }
     }
   }

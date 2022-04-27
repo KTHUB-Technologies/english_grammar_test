@@ -12,44 +12,43 @@ class Animator extends StatefulWidget {
 
 class _AnimatorState extends State<Animator>
     with SingleTickerProviderStateMixin {
-  Timer timer;
-  AnimationController animationController;
-  Animation animation;
+  Timer? timer;
+  AnimationController? animationController;
+  Animation? animation;
   @override
   void initState() {
     super.initState();
     animationController =
-        AnimationController(duration: Duration(milliseconds: 300), vsync: this);
+        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
     animation =
-        CurvedAnimation(parent: animationController, curve: Curves.easeInOut);
-    timer = Timer(widget.time, animationController.forward);
+        CurvedAnimation(parent: animationController!, curve: Curves.fastOutSlowIn);
+    timer = Timer(widget.time, animationController!.forward);
   }
 
   @override
   void dispose() {
-    animationController.dispose();
+    animationController!.dispose();
     super.dispose();
-    timer.cancel();
+    timer!.cancel();
 
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: animation,
+      animation: animation!,
       child: widget.child,
-      builder: (BuildContext context, Widget child) {
-        return SlideTransition(position: Tween<Offset>(begin: Offset(-1.0, 0.0), end: Offset.zero)
-            .animate(animationController), child: child);
+      builder: (BuildContext context, Widget? child) {
+        return ScaleTransition(scale: animationController!, child: child);
       },
     );
   }
 }
 
-Timer timer;
+Timer? timer;
 Duration duration = Duration();
 wait() {
-  if (timer == null || !timer.isActive) {
+  if (timer == null || !timer!.isActive) {
     timer = Timer(Duration(microseconds: 120), () {
       duration = Duration();
     });
@@ -58,9 +57,9 @@ wait() {
   return duration;
 }
 
-class WidgetAnimator extends StatelessWidget {
+class WidgetAnimatorScaleTransition extends StatelessWidget {
   final Widget child;
-  WidgetAnimator(this.child);
+  WidgetAnimatorScaleTransition(this.child);
   @override
   Widget build(BuildContext context) {
     return Animator(child, wait());

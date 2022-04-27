@@ -62,7 +62,7 @@ class _AboutScreenState extends State<AboutScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
                   data.length,
-                      (index) => buildDot(index: index),
+                      (index) => buildDot(index),
                 ),
               ),
               Dimens.height30,
@@ -90,14 +90,14 @@ class _AboutScreenState extends State<AboutScreen> {
             },
             itemCount: data.length,
             itemBuilder: (context, index) => Content(
-              image: data[index]["image"],
-              text: data[index]['text'],
+              image: data[index]["image"]!,
+              text: data[index]['text']!,
             ),
           ),
         );
   }
 
-  Widget buildDot({int index}) {
+  Widget buildDot(int index) {
     return Obx((){
       return AnimatedContainer(
         duration: Duration(milliseconds: 500),
@@ -115,9 +115,9 @@ class _AboutScreenState extends State<AboutScreen> {
 
 class Content extends StatelessWidget {
   const Content({
-    Key key,
-    this.text,
-    this.image,
+    Key? key,
+    required this.text,
+    required this.image,
   }) : super(key: key);
   final String text, image;
 
